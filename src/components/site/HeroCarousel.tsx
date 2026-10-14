@@ -78,6 +78,9 @@ export function HeroCarousel({
               />
             ))}
           </div>
+          <p className="visually-hidden" aria-live="polite">
+            {slideLabel(index + 1)}
+          </p>
         </>
       )}
     </section>

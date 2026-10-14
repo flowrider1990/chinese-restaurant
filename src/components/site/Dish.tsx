@@ -36,7 +36,7 @@ export function Dish({
       data-vegetarian={vegetarian || undefined}
       data-vegan={vegan || undefined}
       data-spicy={item.spiciness || undefined}
-      data-allergens={allergens.map((a) => a.code ?? a.id).join(' ') || undefined}
+      data-allergens={allergens.map((a) => a.id).join(' ') || undefined}
       data-unavailable={unavailable || undefined}
     >
       {item.menuNumber ? (

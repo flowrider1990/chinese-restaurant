@@ -29,7 +29,7 @@ export function MenuFilter({
   target: string
   label: string
   options: Record<Filter, string>
-  /** Allergens that appear on the menu: code (as in data-allergens) and full name. */
+  /** Allergens that appear on the menu: id (as in data-allergens) and full name. */
   allergens: { code: string; name: string }[]
   labels: { without: string; reset: string; note: string }
 }) {
@@ -77,10 +77,8 @@ export function MenuFilter({
         ))}
       </div>
       {allergens.length > 0 && (
-        <details
-          className="menu-filter menu-filter--allergens"
-          open={excluded.length > 0 || undefined}
-        >
+        // Uncontrolled: the panel stays open while the visitor un-toggles or resets.
+        <details className="menu-filter menu-filter--allergens">
           <summary>
             {labels.without}
             {excluded.length > 0 && ` (${excluded.length})`}

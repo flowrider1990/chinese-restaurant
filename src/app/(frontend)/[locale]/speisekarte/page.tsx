@@ -69,7 +69,7 @@ export default async function MenuPage() {
                 spicy: t.menu.filterSpicy,
                 mild: t.menu.filterMild,
               }}
-              allergens={allergens.map((a) => ({ code: a.code ?? String(a.id), name: a.name }))}
+              allergens={allergens.map((a) => ({ code: String(a.id), name: a.name }))}
               labels={{
                 without: t.menu.filterWithout,
                 reset: t.menu.filterReset,
