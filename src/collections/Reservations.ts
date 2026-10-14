@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access'
 import { anonymiseExpiredReservations, isAuthorisedCron } from '@/lib/reservation-cleanup'
 import { mailsFor, sendReservationMails } from '@/lib/reservation-mails'
-import { localToUtc } from '@/lib/reservation-rules'
+import { isValidDate, isValidTime, localToUtc } from '@/lib/reservation-rules'
 
 /** Name and e-mail are required, except after the cleanup removed them. */
 const requiredUnlessAnonymised = (
@@ -47,10 +47,15 @@ export const Reservations: CollectionConfig = {
   ],
   hooks: {
     beforeValidate: [
-      ({ data }) => {
-        if (data?.date && data?.time)
+      ({ data, operation, req }) => {
+        if (!data) return data
+        // Anything created by a logged-in user (admin form, "Duplicate", REST) is a staff entry:
+        // only the public form, which runs without a user, creates website requests.
+        if (operation === 'create' && req.user) data.source = 'admin'
+        // Malformed values are left to the field validation, which shows a field error.
+        if (isValidDate(data.date ?? '') && isValidTime(data.time ?? ''))
           data.startsAt = localToUtc(data.date, data.time, 'Europe/Berlin').toISOString()
-        if (typeof data?.email === 'string') data.email = data.email.trim().toLowerCase()
+        if (typeof data.email === 'string') data.email = data.email.trim().toLowerCase()
         return data
       },
     ],
@@ -71,9 +76,21 @@ export const Reservations: CollectionConfig = {
           type: 'text',
           label: 'Datum (JJJJ-MM-TT)',
           required: true,
+          validate: (value: unknown) =>
+            (typeof value === 'string' && isValidDate(value)) ||
+            'Datum im Format JJJJ-MM-TT, z. B. 2026-10-24.',
           admin: { width: '33%' },
         },
-        { name: 'time', type: 'text', label: 'Uhrzeit', required: true, admin: { width: '33%' } },
+        {
+          name: 'time',
+          type: 'text',
+          label: 'Uhrzeit',
+          required: true,
+          admin: { width: '33%' },
+          validate: (value: unknown) =>
+            (typeof value === 'string' && isValidTime(value)) ||
+            'Uhrzeit im Format HH:MM, z. B. 19:30.',
+        },
         {
           name: 'partySize',
           type: 'number',

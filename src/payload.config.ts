@@ -20,6 +20,7 @@ import { ReservationSettings } from './globals/ReservationSettings'
 import { About, Home, Legal } from './globals/Pages'
 import { SiteSettings } from './globals/SiteSettings'
 import { defaultLocale, locales } from './i18n/locales'
+import { mailConfigProblem } from './lib/mail-config'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -75,5 +76,9 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, 'migrations'),
   }),
   sharp,
+  onInit: async (payload) => {
+    const problem = mailConfigProblem(process.env)
+    if (problem) payload.logger.error(problem)
+  },
   plugins: [],
 })

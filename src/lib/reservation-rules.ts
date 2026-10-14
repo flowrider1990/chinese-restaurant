@@ -44,7 +44,7 @@ const pad = (n: number) => String(n).padStart(2, '0')
 const toTime = (m: number) => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`
 
 /** A real calendar date in YYYY-MM-DD form (rejects 2026-13-40 and 2026-02-30). */
-function isValidDate(date: string): boolean {
+export function isValidDate(date: string): boolean {
   const m = DATE.exec(date)
   if (!m) return false
   const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])))
@@ -88,6 +88,11 @@ export function localToUtc(date: string, time: string, timeZone: string): Date {
   const first = guess - offsetMinutes(new Date(guess), timeZone) * 60000
   // Re-check with the offset at the result: differs only around a DST change.
   return new Date(guess - offsetMinutes(new Date(first), timeZone) * 60000)
+}
+
+/** HH:MM, 24-hour clock. */
+export function isValidTime(time: string): boolean {
+  return TIME.test(time)
 }
 
 export function normaliseEmail(value: string): string {

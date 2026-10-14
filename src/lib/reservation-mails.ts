@@ -142,7 +142,7 @@ export async function sendReservationMails(payload: Payload, r: Reservation, kin
       const to =
         kind === 'newRequestRestaurant' ? (settings.notificationEmail ?? rest.email) : r.email
       if (!to) {
-        payload.logger.warn(`Reservation ${r.id}: no recipient for ${kind} mail`)
+        payload.logger.error(`Reservation ${r.id}: no recipient for ${kind} mail`)
         continue
       }
       const mail = buildMail(kind, r, rest, adminUrl)

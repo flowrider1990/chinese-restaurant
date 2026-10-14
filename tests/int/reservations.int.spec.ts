@@ -247,3 +247,46 @@ describe('cleanup', () => {
     expect(isAuthorisedCron('Bearer undefined', undefined)).toBe(false)
   })
 })
+
+describe('review fixes', () => {
+  it('rejects malformed dates and times entered by staff with a field error', async () => {
+    await expect(
+      payload.create({ collection: 'reservations', data: { ...base, date: '14.10.2026' } }),
+    ).rejects.toThrow(/Datum/)
+    await expect(
+      payload.create({ collection: 'reservations', data: { ...base, date: '2026-13-40' } }),
+    ).rejects.toThrow(/Datum/)
+    await expect(
+      payload.create({ collection: 'reservations', data: { ...base, time: '7:30' } }),
+    ).rejects.toThrow(/Uhrzeit/)
+  })
+
+  it('treats every reservation created by a logged-in user as a staff entry (no mails)', async () => {
+    const user = await payload.create({
+      collection: 'users',
+      data: { email: 'staff@example.com', password: 'Staff-test-123!' } as never,
+    })
+    const sent = vi.spyOn(payload, 'sendEmail').mockResolvedValue(undefined as never)
+    const copy = await payload.create({
+      collection: 'reservations',
+      user,
+      overrideAccess: false,
+      data: { ...base, date: '2026-12-01', source: 'website' },
+    })
+    expect(copy.source).toBe('admin')
+    expect(sent).not.toHaveBeenCalled()
+    sent.mockRestore()
+  })
+
+  it('logs a missing recipient as an error, not a warning', async () => {
+    await payload.updateGlobal({ slug: 'site-settings', data: { email: null } as never })
+    const error = vi.spyOn(payload.logger, 'error')
+    vi.spyOn(payload, 'sendEmail').mockResolvedValue(undefined as never)
+    await payload.create({
+      collection: 'reservations',
+      data: { ...base, date: '2026-12-08', email: 'norecipient@example.com', source: 'website' },
+    })
+    expect(error.mock.calls.some((c) => String(c[0]).includes('no recipient'))).toBe(true)
+    vi.restoreAllMocks()
+  })
+})
