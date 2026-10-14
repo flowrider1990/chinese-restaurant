@@ -1,3 +1,4 @@
+import { and, eq } from '@payloadcms/db-sqlite/drizzle'
 import type { Payload } from 'payload'
 import type { Voucher } from '@/payload-types'
 import { sendVoucherMails } from './voucher-mails'
@@ -31,8 +32,10 @@ async function unusedCode(payload: Payload): Promise<string> {
 }
 
 /**
- * pending → paid exactly once: the update only matches a still-pending voucher, so a repeated
- * webhook event changes nothing and sends no second mail.
+ * pending → paid exactly once. The claim is ONE conditional SQL statement (UPDATE … WHERE
+ * id = ? AND status = 'pending' RETURNING id), so of any number of concurrent deliveries of the
+ * same event only one gets a row back and sends the mails; the others return 'already'.
+ * (Payload's bulk update is find-then-update-by-id and would not be atomic here.)
  */
 export async function markPaid(payload: Payload, session: SessionLike, now = new Date()) {
   const voucher = await bySession(payload, session.id)
@@ -48,22 +51,23 @@ export async function markPaid(payload: Payload, session: SessionLike, now = new
 
   const intent =
     typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id
-  const result = await payload.update({
-    collection: 'vouchers',
-    where: { and: [{ id: { equals: voucher.id } }, { status: { equals: 'pending' } }] },
-    data: {
+  const table = payload.db.tables.vouchers
+  const claimed = await payload.db.drizzle
+    .update(table)
+    .set({
       status: 'paid',
       code: await unusedCode(payload),
       paidAt: now.toISOString(),
       validUntil: validUntil(now),
       stripePaymentIntent: intent ?? null,
-    },
-  })
-  if (result.errors.length > 0)
-    throw new Error(`Voucher ${voucher.id}: ${result.errors[0].message}`)
-  const updated = result.docs[0]
-  if (!updated) return 'already' as const
-  await sendVoucherMails(payload, updated as Voucher)
+      updatedAt: new Date().toISOString(),
+    })
+    .where(and(eq(table.id, voucher.id), eq(table.status, 'pending')))
+    .returning({ id: table.id })
+  if (claimed.length === 0) return 'already' as const
+
+  const updated = await payload.findByID({ collection: 'vouchers', id: voucher.id, depth: 0 })
+  await sendVoucherMails(payload, updated)
   return 'paid' as const
 }
 

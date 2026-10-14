@@ -38,6 +38,7 @@ export async function handleStripeEvent({
         if (session.payment_status === 'paid') await markPaid(payload, session)
         break
       case 'checkout.session.expired':
+      case 'checkout.session.async_payment_failed':
         await expireSession(payload, session.id)
         break
     }

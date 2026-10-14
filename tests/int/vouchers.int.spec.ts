@@ -3,6 +3,7 @@ import Stripe from 'stripe'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import config from '@/payload.config'
 import { migrations } from '@/migrations'
+import { Vouchers } from '@/collections/Vouchers'
 import { expireSession, voucherStatusForSession } from '@/lib/voucher-fulfilment'
 import { handleStripeEvent } from '@/lib/voucher-webhook'
 import { CODE_PATTERN } from '@/lib/voucher-code'
@@ -285,6 +286,71 @@ describe('stripe webhook', () => {
     ).toBe(200)
     expect(await voucherStatusForSession(payload, 'cs_test_unknown')).toBe('unknown')
     await expireSession(payload, 'cs_test_unknown') // no throw
+  })
+
+  it('sends the mails once when the same event arrives concurrently', async () => {
+    const sent = vi.spyOn(payload, 'sendEmail').mockResolvedValue(undefined as never)
+    const v = await payload.create({ collection: 'vouchers', data: voucherData() })
+    await Promise.all([
+      deliver(completed(v.stripeSessionId!)),
+      deliver(completed(v.stripeSessionId!)),
+      deliver(completed(v.stripeSessionId!, 'checkout.session.async_payment_succeeded')),
+    ])
+    const paid = await payload.findByID({ collection: 'vouchers', id: v.id })
+    expect(paid.status).toBe('paid')
+    expect(paid.code).toMatch(CODE_PATTERN)
+    expect(sent).toHaveBeenCalledTimes(2) // buyer + restaurant, once
+    const buyerMail = sent.mock.calls[0][0] as { attachments?: { filename: string }[] }
+    expect(buyerMail.attachments?.[0].filename).toBe(`gutschein-${paid.code}.pdf`)
+    sent.mockRestore()
+  })
+
+  it('expires a pending voucher when the async payment fails', async () => {
+    const v = await payload.create({ collection: 'vouchers', data: voucherData() })
+    await deliver(completed(v.stripeSessionId!, 'checkout.session.async_payment_failed'))
+    expect((await payload.findByID({ collection: 'vouchers', id: v.id })).status).toBe('expired')
+  })
+
+  it('the collection endpoint passes the raw body to signature verification', async () => {
+    const endpoint = Vouchers.endpoints
+      ? Vouchers.endpoints.find((e) => e.path === '/stripe-webhook')
+      : undefined
+    expect(endpoint).toBeDefined()
+    const saved = {
+      STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    }
+    process.env.STRIPE_WEBHOOK_SECRET = secret
+    if (!saved.STRIPE_SECRET_KEY?.startsWith('sk_test_'))
+      process.env.STRIPE_SECRET_KEY = 'sk_test_dummy'
+    const sent = vi.spyOn(payload, 'sendEmail').mockResolvedValue(undefined as never)
+    try {
+      const call = (rawBody: string, signature: string) =>
+        (endpoint!.handler as (req: unknown) => Promise<Response>)({
+          payload,
+          headers: new Headers({ 'stripe-signature': signature }),
+          text: () => Promise.resolve(rawBody),
+        })
+      const v = await payload.create({ collection: 'vouchers', data: voucherData() })
+      const rawBody = JSON.stringify(completed(v.stripeSessionId!))
+
+      const bad = await call(rawBody, 't=1,v1=deadbeef')
+      expect(bad.status).toBe(400)
+      expect((await payload.findByID({ collection: 'vouchers', id: v.id })).status).toBe('pending')
+
+      const good = await call(
+        rawBody,
+        stripe.webhooks.generateTestHeaderString({ payload: rawBody, secret }),
+      )
+      expect(good.status).toBe(200)
+      expect((await payload.findByID({ collection: 'vouchers', id: v.id })).status).toBe('paid')
+    } finally {
+      sent.mockRestore()
+      for (const [name, value] of Object.entries(saved)) {
+        if (value === undefined) delete process.env[name]
+        else process.env[name] = value
+      }
+    }
   })
 
   it('refuses to work without a webhook secret', async () => {
