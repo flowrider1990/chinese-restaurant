@@ -58,7 +58,7 @@ export function HeroCarousel({
             onClick={() => go(index - 1)}
             aria-label={labels.prev}
           >
-            <Icon name="chevronLeft" size={26} />
+            <Icon name="chevronLeft" size={34} />
           </button>
           <button
             type="button"
@@ -66,7 +66,7 @@ export function HeroCarousel({
             onClick={() => go(index + 1)}
             aria-label={labels.next}
           >
-            <Icon name="chevronRight" size={26} />
+            <Icon name="chevronRight" size={34} />
           </button>
           <div className="carousel__dots">
             {slides.map((s, i) => (
