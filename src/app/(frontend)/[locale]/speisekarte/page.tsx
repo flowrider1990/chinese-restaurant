@@ -9,9 +9,13 @@ import { href } from '@/i18n/routes'
 import { getLocale, isLocale } from '@/i18n/server'
 import { getMenu } from '@/lib/queries'
 
-export async function generateMetadata({ params }: PageProps<'/[locale]/speisekarte'>): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<'/[locale]/speisekarte'>): Promise<Metadata> {
   const { locale } = await params
-  return isLocale(locale) ? pageMetadata({ key: 'menu', locale, title: dictionaries[locale].menu.title }) : {}
+  return isLocale(locale)
+    ? pageMetadata({ key: 'menu', locale, title: dictionaries[locale].menu.title })
+    : {}
 }
 
 export default async function MenuPage() {
@@ -65,17 +69,32 @@ export default async function MenuPage() {
                 spicy: t.menu.filterSpicy,
                 mild: t.menu.filterMild,
               }}
+              allergens={allergens.map((a) => ({ code: a.code ?? String(a.id), name: a.name }))}
+              labels={{
+                without: t.menu.filterWithout,
+                reset: t.menu.filterReset,
+                note: t.menu.filterNote,
+              }}
             />
           </div>
 
           <div id="menu" className="menu">
             {sections.map((s, index) => (
-              <section key={s.id} id={s.slug} className="menu-section" aria-labelledby={`${s.slug}-title`}>
+              <section
+                key={s.id}
+                id={s.slug}
+                className="menu-section"
+                aria-labelledby={`${s.slug}-title`}
+              >
                 <h2 id={`${s.slug}-title`}>{s.name}</h2>
                 {s.description && <p className="menu-section__note">{s.description}</p>}
                 {s.image && (
                   <figure className="menu-section__image">
-                    <MediaImage media={s.image} sizes="(max-width: 72rem) 100vw, 72rem" priority={index === 0} />
+                    <MediaImage
+                      media={s.image}
+                      sizes="(max-width: 72rem) 100vw, 72rem"
+                      priority={index === 0}
+                    />
                     {s.image.caption && <figcaption>{s.image.caption}</figcaption>}
                   </figure>
                 )}

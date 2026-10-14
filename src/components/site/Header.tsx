@@ -7,6 +7,7 @@ import { Icon } from './Icon'
 import { LanguageSwitch } from './LanguageSwitch'
 import { MobileNav } from './MobileNav'
 import { NavLinks } from './NavLinks'
+import { ThemeToggle } from './ThemeToggle'
 
 export function Header({
   info,
@@ -41,6 +42,7 @@ export function Header({
         <NavLinks items={navItems} label={t.navLabel} externalLabel={t.externalLink} />
         <div className="site-header__actions">
           <LanguageSwitch locale={locale} label={t.languageLabel} />
+          <ThemeToggle labels={t.theme} />
           <a className="btn btn--primary site-header__call" href={`tel:${info.phoneE164}`}>
             <Icon name="phone" size={18} />
             <span>{info.phone}</span>

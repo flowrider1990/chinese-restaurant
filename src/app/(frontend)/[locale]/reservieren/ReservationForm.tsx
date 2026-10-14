@@ -92,114 +92,115 @@ export function ReservationForm({ locale, hours, rules, phone, privacyHref }: Pr
         </label>
       </div>
 
-      <div className="reserve-form__row">
-        <div className="field">
-          <label htmlFor="date">{t.date}</label>
-          <input
-            id="date"
-            name="date"
-            type="date"
-            required
-            min={range?.min}
-            max={range?.max}
-            value={date}
-            onChange={(e) => {
-              setDate(e.target.value)
-              setValues((v) => ({ ...v, time: '' }))
-            }}
-            aria-invalid={Boolean(problems.date)}
-            aria-describedby={described('date')}
-          />
-          {err('date')}
-        </div>
-        <div className="field">
-          <label htmlFor="time">{t.time}</label>
-          <select
-            id="time"
-            name="time"
-            required
-            disabled={!date || times.length === 0}
-            aria-invalid={Boolean(problems.time)}
-            aria-describedby={described('time')}
-            {...bind('time')}
-          >
-            <option value="" disabled>
-              {t.chooseTime}
-            </option>
-            {times.map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-          {date && times.length === 0 && <p className="field__hint">{t.noTimes}</p>}
-          {err('time')}
-        </div>
-        <div className="field">
-          <label htmlFor="partySize">{t.partySize}</label>
-          <select
-            id="partySize"
-            name="partySize"
-            {...bind('partySize')}
-            aria-invalid={Boolean(problems.partySize)}
-            aria-describedby={described('partySize')}
-          >
-            {Array.from({ length: rules.maxPartySize }, (_, i) => i + 1).map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-          {err('partySize')}
-        </div>
+      <div className="field field--third">
+        <label htmlFor="date">{t.date}</label>
+        <input
+          id="date"
+          name="date"
+          type="date"
+          required
+          min={range?.min}
+          max={range?.max}
+          value={date}
+          onChange={(e) => {
+            setDate(e.target.value)
+            setValues((v) => ({ ...v, time: '' }))
+          }}
+          aria-invalid={Boolean(problems.date)}
+          aria-describedby={described('date')}
+        />
+        {err('date')}
       </div>
-      <p className="field__hint">{t.largeGroup(rules.maxPartySize, phone)}</p>
+      <div className="field field--third">
+        <label htmlFor="time">{t.time}</label>
+        <select
+          id="time"
+          name="time"
+          required
+          disabled={!date || times.length === 0}
+          aria-invalid={Boolean(problems.time)}
+          aria-describedby={described('time')}
+          {...bind('time')}
+        >
+          <option value="" disabled>
+            {t.chooseTime}
+          </option>
+          {times.map((time) => (
+            <option key={time} value={time}>
+              {time}
+            </option>
+          ))}
+        </select>
+        {date && times.length === 0 && <p className="field__hint">{t.noTimes}</p>}
+        {err('time')}
+      </div>
+      <div className="field field--third field--party">
+        <label htmlFor="partySize">{t.partySize}</label>
+        <select
+          id="partySize"
+          name="partySize"
+          {...bind('partySize')}
+          aria-invalid={Boolean(problems.partySize)}
+          aria-describedby={['party-hint', described('partySize')].filter(Boolean).join(' ')}
+        >
+          {Array.from({ length: rules.maxPartySize }, (_, i) => i + 1).map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
+        </select>
+        <p className="field__hint" id="party-hint">
+          {t.largeGroup(rules.maxPartySize, phone)}
+        </p>
+        {err('partySize')}
+      </div>
 
-      <div className="reserve-form__row">
-        <div className="field">
-          <label htmlFor="name">{t.name}</label>
-          <input
-            id="name"
-            name="name"
-            {...bind('name')}
-            type="text"
-            required
-            maxLength={100}
-            autoComplete="name"
-            aria-invalid={Boolean(problems.name)}
-            aria-describedby={described('name')}
-          />
-          {err('name')}
-        </div>
-        <div className="field">
-          <label htmlFor="email">{t.email}</label>
-          <input
-            id="email"
-            name="email"
-            {...bind('email')}
-            type="email"
-            required
-            maxLength={200}
-            autoComplete="email"
-            aria-invalid={Boolean(problems.email)}
-            aria-describedby={described('email')}
-          />
-          {err('email')}
-        </div>
-        <div className="field">
-          <label htmlFor="phone">{t.phone}</label>
-          <input
-            id="phone"
-            name="phone"
-            {...bind('phone')}
-            type="tel"
-            maxLength={40}
-            autoComplete="tel"
-            aria-invalid={Boolean(problems.phone)}
-            aria-describedby={described('phone')}
-          />
-          {err('phone')}
-        </div>
+      <div className="field field--half">
+        <label htmlFor="name">{t.name}</label>
+        <input
+          id="name"
+          name="name"
+          {...bind('name')}
+          type="text"
+          required
+          maxLength={100}
+          autoComplete="name"
+          aria-invalid={Boolean(problems.name)}
+          aria-describedby={described('name')}
+        />
+        {err('name')}
+      </div>
+      <div className="field field--half">
+        <label htmlFor="email">{t.email}</label>
+        <input
+          id="email"
+          name="email"
+          {...bind('email')}
+          type="email"
+          required
+          maxLength={200}
+          autoComplete="email"
+          aria-invalid={Boolean(problems.email)}
+          aria-describedby={described('email')}
+        />
+        {err('email')}
+      </div>
+      <div className="field field--half">
+        <label htmlFor="phone">{t.phone}</label>
+        <input
+          id="phone"
+          name="phone"
+          {...bind('phone')}
+          type="tel"
+          maxLength={40}
+          autoComplete="tel"
+          aria-invalid={Boolean(problems.phone)}
+          aria-describedby={['phone-hint', described('phone')].filter(Boolean).join(' ')}
+        />
+        <p className="field__hint" id="phone-hint">
+          {t.phoneHint}
+        </p>
+        {err('phone')}
       </div>
 
       <div className="field">

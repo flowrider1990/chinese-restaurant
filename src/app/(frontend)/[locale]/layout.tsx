@@ -28,6 +28,9 @@ const body = Instrument_Sans({
   display: 'swap',
 })
 
+/** Applies a saved theme choice before the first paint (no flash). Without one, the device decides. */
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()`
+
 export function generateStaticParams() {
   return locales.map((l) => ({ locale: l.code }))
 }
@@ -51,7 +54,11 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[lo
   const [info, reserve] = await Promise.all([getRestaurantInfo(locale), getReservationLink(locale)])
 
   return (
-    <html lang={locale} className={`${display.variable} ${body.variable}`}>
+    // The theme script sets data-theme before hydration, hence suppressHydrationWarning.
+    <html lang={locale} className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body>
         <a className="skip-link" href="#main">
           {t.skipToContent}

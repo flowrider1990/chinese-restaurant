@@ -9,12 +9,15 @@ export function MediaImage({
   size,
   sizes,
   priority,
+  eager,
   className,
 }: {
   media: Media
   size?: Size
   sizes: string
   priority?: boolean
+  /** Load immediately without preload priority (e.g. later carousel slides). */
+  eager?: boolean
   className?: string
 }) {
   const variant = size ? media.sizes?.[size] : undefined
@@ -34,6 +37,7 @@ export function MediaImage({
       height={height}
       sizes={sizes}
       priority={priority}
+      loading={priority ? undefined : eager ? 'eager' : undefined}
       style={position ? { objectPosition: position } : undefined}
     />
   )

@@ -73,6 +73,14 @@ the Local API, then prints the target and versions.
 - Design tokens are at the top of `src/app/(frontend)/[locale]/site.css`: enamel white, ink blue,
   cobalt accent, light jade surface, chili only for spice markers. Fonts (Bricolage Grotesque,
   Instrument Sans, both OFL) are self-hosted through `next/font`; Chinese text uses system fonts.
+- Light/dark: follows the device by default; the header toggle stores `theme` in localStorage and
+  sets `data-theme` on `<html>` before the first paint (inline script in the layout). Every dark
+  colour rule therefore exists twice: under `prefers-color-scheme: dark` (guarded by
+  `:not([data-theme='light'])`) and under `[data-theme='dark']`. The map has a light and a dark SVG.
+- Menu filters (`MenuFilter`): one dietary choice plus any number of allergens to leave out; dishes
+  carry `data-allergens` codes.
+- `pnpm demo:post` adds a second demo post with a title image and an inline image (needs
+  `pnpm images:import` first).
 - `pnpm typecheck` runs `next typegen` first, because route types (`LayoutProps`) are generated.
 
 ## SEO and caching (Phase 5)
