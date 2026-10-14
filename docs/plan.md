@@ -10,8 +10,9 @@ plans folder.
 | 1 Scaffold | Done. Turso connection spike passed (see `docs/architecture.md`) |
 | 2 Content model + admin | Done. Dev DB holds the fictional restaurant and a 135-item placeholder menu |
 | 3 Design system + shell | Done. Header, footer, mobile action bar, DE/EN routing, open-now status |
-| 4 Public pages | Next |
-| 5–6 | Not started |
+| 4 Public pages | Done. Home, menu (filter, legend), restaurant (two-click map), news, imprint, privacy |
+| 5 Images, SEO, caching | Next |
+| 6 | Not started |
 
 **Open items**
 - Create the first admin account at `/admin` (the dev DB has 0 users).
@@ -22,6 +23,8 @@ plans folder.
 - Restaurant: fictional "Xiao Chu", Simon-Dach-Straße 99, 10245 Berlin-Friedrichshain. Placeholder images.
 - Ordering: Lieferando and Wolt are shown, but not functional yet (no URL, no redirect).
 - No hosting yet.
+- Official Lieferando and Wolt logos from their press kits; Uber Eats as an option (logo pending). Payment methods at the restaurant (cash, girocard, credit card, PayPal) are a CMS field, shown as text until official acceptance marks are sourced.
+- **Open question:** online payment via Stripe was mentioned. The approved scope excludes payments, ordering and checkout. Needs an explicit scope decision before any work.
 
 **Changes since approval**
 - The cuisine is now **Chinese**, not Vietnamese/Chinese Asian fusion. Before Phase 3, rework the

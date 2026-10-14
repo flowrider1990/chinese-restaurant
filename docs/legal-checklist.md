@@ -13,7 +13,9 @@ authoritative sources for Germany/EU at release time, not from this list alone.
 
 ## Trademarks and assets
 
-- [ ] Lieferando and Wolt names and logos. Use only the official partner assets and follow their brand guidelines. Until then, show the text names only.
+- [ ] Lieferando and Wolt logos (`public/brands/`) come from the providers' press kits (newsroom.justeattakeaway.com, press.wolt.com, 2026-10-14), which state no licence ("all rights reserved"). Before launch, confirm the restaurant is a listed partner and use the logos under the partner brand guidelines (or the partner-portal assets).
+- [ ] Uber Eats: the co-marketing asset page could not be read automatically (it loads only in a browser). The logo is not included yet; the site shows the name as text.
+- [ ] Payment method marks (PayPal, Visa, Mastercard): use only the official acceptance marks from the payment providers, under their rules. Currently shown as text only.
 - [ ] Every photo and font needs a recorded licence. Self-host the fonts, with no requests to Google.
 
 ## Consumer information

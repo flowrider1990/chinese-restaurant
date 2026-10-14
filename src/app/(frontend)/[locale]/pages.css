@@ -1,0 +1,537 @@
+/* Page content: sections, dishes, menu, restaurant, news, carousel. Tokens come from site.css. */
+
+.page-head {
+  display: grid;
+  gap: 0.5rem;
+  padding-block: clamp(2rem, 6vw, 3.5rem) 1.5rem;
+  max-width: 48rem;
+}
+.page-head h1 {
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.page-head p,
+.page-head time {
+  color: var(--ink-soft);
+}
+.page-head__native {
+  font-size: 0.5em;
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.section {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: start;
+  padding-block: clamp(2rem, 5vw, 3rem);
+}
+.section > * {
+  max-width: 100%;
+}
+.section__title {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 800;
+}
+.lead-text {
+  font-size: 1.15rem;
+  max-width: 60ch;
+}
+
+.band {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+  background: var(--jade);
+  border-radius: var(--radius);
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+.visit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1.5rem 2rem;
+  width: 100%;
+}
+.visit > div {
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+  min-width: 0;
+}
+.visit h2,
+.visit h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.visit address {
+  font-style: normal;
+}
+.visit__payment {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+/* Rich text */
+.prose {
+  max-width: 65ch;
+  display: grid;
+  gap: 0.9rem;
+}
+.prose h2 {
+  font-size: 1.4rem;
+  margin-top: 0.75rem;
+}
+.prose h3 {
+  font-size: 1.15rem;
+}
+.prose ul,
+.prose ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+/* Dishes: the plate badge is the site's signature element */
+.plate {
+  --s: 3rem;
+  width: var(--s);
+  height: var(--s);
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  color: var(--enamel);
+  font: 700 0.9rem/1 var(--display);
+  font-variant-numeric: tabular-nums;
+  border: 3px solid var(--enamel);
+  box-shadow:
+    inset 0 0 0 3px var(--surface),
+    inset 0 0 0 4px color-mix(in srgb, var(--enamel) 35%, transparent);
+}
+.plate--empty {
+  border-color: var(--line);
+  box-shadow:
+    inset 0 0 0 3px var(--surface),
+    inset 0 0 0 4px var(--line);
+}
+.dishes {
+  display: grid;
+  width: 100%;
+}
+.dish {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.25rem 1rem;
+  align-items: start;
+  padding-block: 1rem;
+  border-top: 1px solid var(--line);
+}
+.dish:first-child {
+  border-top: 0;
+}
+.dish__body {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+.dish__name {
+  font: 600 1.1rem/1.3 var(--display);
+}
+.dish__original {
+  font-weight: 400;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+.dish__desc {
+  color: var(--ink-soft);
+}
+.dish__tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+}
+.tag {
+  font-size: 0.8rem;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--enamel) 14%, var(--surface));
+}
+.tag--state {
+  background: var(--ink);
+  color: var(--porcelain);
+}
+.spice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--chili);
+}
+.spice__dots {
+  display: inline-flex;
+  gap: 2px;
+}
+.spice__dots i {
+  width: 0.5rem;
+  height: 0.85rem;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow: inset 0 0 0 1.5px currentColor;
+}
+.spice__dots i[data-on] {
+  background: currentColor;
+}
+.dish__allergens {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.dish__prices {
+  display: grid;
+  gap: 0.15rem;
+  justify-items: end;
+  text-align: right;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.dish__prices li {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+.dish__price {
+  font: 600 1.05rem/1.3 var(--display);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.dish__option {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.dish[data-unavailable] .dish__name,
+.dish[data-unavailable] .dish__desc,
+.dish[data-unavailable] .dish__prices,
+.dish[data-unavailable] .plate {
+  opacity: 0.55;
+}
+
+/* Menu page */
+.menu-tools {
+  position: sticky;
+  top: 4.3rem;
+  z-index: 10;
+  display: grid;
+  gap: 0.5rem;
+  padding-block: 0.6rem;
+  background: var(--porcelain);
+  border-bottom: 1px solid var(--line);
+}
+.menu-tools > * {
+  min-width: 0;
+}
+.menu-nav ul {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 0.25rem;
+}
+.menu-nav a {
+  display: inline-block;
+  white-space: nowrap;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.menu-nav a:hover {
+  border-color: var(--enamel);
+}
+.menu-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+.menu-filter__label {
+  color: var(--ink-soft);
+  margin-right: 0.25rem;
+}
+.menu-filter button {
+  font: 500 0.9rem/1 var(--body);
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.menu-filter button[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--porcelain);
+  border-color: var(--ink);
+}
+.menu-section {
+  scroll-margin-top: 9rem;
+  padding-block: 2rem 0.5rem;
+  display: grid;
+  gap: 0.5rem;
+}
+.menu-section h2 {
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 800;
+}
+.menu-section__note {
+  color: var(--ink-soft);
+}
+.menu-section__empty {
+  display: none;
+  color: var(--ink-soft);
+}
+.menu[data-filter='vegetarian'] .dish:not([data-vegetarian]),
+.menu[data-filter='vegan'] .dish:not([data-vegan]),
+.menu[data-filter='mild'] .dish[data-spicy] {
+  display: none;
+}
+.menu[data-filter] .dish {
+  border-top: 1px solid var(--line);
+}
+.menu[data-filter='vegetarian'] .menu-section:not(:has(.dish[data-vegetarian])) .menu-section__empty,
+.menu[data-filter='vegan'] .menu-section:not(:has(.dish[data-vegan])) .menu-section__empty,
+.menu[data-filter='mild'] .menu-section:not(:has(.dish:not([data-spicy]))) .menu-section__empty {
+  display: block;
+}
+.legend {
+  margin-top: 2.5rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: var(--jade);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 1rem;
+}
+.legend h2 {
+  font-size: 1.4rem;
+}
+.legend h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+.legend__cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.5rem;
+}
+.legend dl {
+  margin: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+.legend dl div {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+}
+.legend dt {
+  font-weight: 700;
+}
+.legend dd {
+  margin: 0;
+}
+
+/* Restaurant page */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+.gallery img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+.team {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+.team img {
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+}
+.team__name {
+  font-weight: 700;
+}
+.exceptions ul {
+  margin: 0.4rem 0 0;
+  padding-left: 1.25rem;
+}
+.map {
+  width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.map__placeholder {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  min-height: 16rem;
+  align-content: center;
+  background: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--jade) 85%, var(--ink)) 0 1px,
+    var(--jade) 1px 14px
+  );
+}
+.map__placeholder p {
+  max-width: 55ch;
+  background: var(--surface);
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+}
+.map iframe {
+  display: block;
+  width: 100%;
+  height: 24rem;
+  border: 0;
+}
+
+/* News */
+.post-list {
+  display: grid;
+  gap: 1.5rem;
+}
+.post-card {
+  display: grid;
+  grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+  min-width: 0;
+}
+.post-card:not(:has(img)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.post-card img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+.post-card time {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+.post-card h2,
+.post-card h3 {
+  font-size: 1.35rem;
+  margin-block: 0.2rem 0.4rem;
+}
+.post-card h2 a,
+.post-card h3 a {
+  color: var(--ink);
+}
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-block: 2rem;
+}
+.post {
+  display: grid;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+.post__back {
+  font-size: 0.95rem;
+}
+.post__image {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+.legal {
+  padding-bottom: 2rem;
+}
+
+/* Carousel */
+.carousel {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.carousel__list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  border-radius: var(--radius);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.carousel__list > li {
+  scroll-snap-align: start;
+}
+.hero__figure {
+  margin: 0;
+}
+.hero__figure img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3.4;
+  object-fit: cover;
+  display: block;
+}
+.carousel__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.carousel__count {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 48rem) {
+  /* On phones the category bar and filter would cover a third of the screen: keep them in the flow. */
+  .menu-tools {
+    position: static;
+  }
+  .menu-nav ul {
+    scrollbar-width: none;
+  }
+}
+
+@media (max-width: 40rem) {
+  .dish {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .dish__prices {
+    grid-column: 2;
+    justify-items: start;
+    text-align: left;
+  }
+  .dish__prices li {
+    justify-content: flex-start;
+  }
+  .post-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

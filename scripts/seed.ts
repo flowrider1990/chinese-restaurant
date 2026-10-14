@@ -166,6 +166,7 @@ await payload.updateGlobal({
       { provider: 'lieferando', label: 'Bei Lieferando bestellen' },
       { provider: 'wolt', label: 'Bei Wolt bestellen' },
     ],
+    paymentMethods: ['cash', 'girocard', 'creditcard', 'paypal'],
     seoDescription:
       'Chinesisches Restaurant in Berlin-Friedrichshain: Dim Sum, Wok-Gerichte und Sichuan-Küche. Im Restaurant, zum Mitnehmen oder geliefert.',
   },

@@ -677,12 +677,16 @@ export interface SiteSetting {
    */
   orderLinks?:
     | {
-        provider: 'lieferando' | 'wolt' | 'other';
+        provider: 'lieferando' | 'wolt' | 'ubereats' | 'other';
         label: string;
         url?: string | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Wird auf der Restaurant-Seite und in der Fußzeile angezeigt.
+   */
+  paymentMethods?: ('cash' | 'girocard' | 'creditcard' | 'paypal')[] | null;
   socialLinks?:
     | {
         platform: 'instagram' | 'facebook' | 'tiktok' | 'google' | 'other';
@@ -887,6 +891,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         url?: T;
         id?: T;
       };
+  paymentMethods?: T;
   socialLinks?:
     | T
     | {

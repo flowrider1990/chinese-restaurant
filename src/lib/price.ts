@@ -1,9 +1,12 @@
 /** Prices are stored as integer cents to avoid floating-point rounding. */
 
-const euro = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
+const formatters = new Map<string, Intl.NumberFormat>()
 
-export function formatPrice(cents: number): string {
-  return euro.format(cents / 100)
+/** 1290 → "12,90 €" (de) or "€12.90" (en). */
+export function formatPrice(cents: number, locale: string = 'de-DE'): string {
+  let f = formatters.get(locale)
+  if (!f) formatters.set(locale, (f = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' })))
+  return f.format(cents / 100)
 }
 
 /** "12,90" | "12.90" | "12" | "12,9" | "-1,50" → cents. Returns null for anything else. */

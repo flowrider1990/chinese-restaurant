@@ -106,7 +106,7 @@ export const SiteSettings: GlobalConfig = {
           ],
         },
         {
-          label: 'Bestellen & Social Media',
+          label: 'Bestellen, Bezahlen & Social Media',
           fields: [
             {
               name: 'orderLinks',
@@ -127,6 +127,7 @@ export const SiteSettings: GlobalConfig = {
                   options: [
                     { label: 'Lieferando', value: 'lieferando' },
                     { label: 'Wolt', value: 'wolt' },
+                    { label: 'Uber Eats', value: 'ubereats' },
                     { label: 'Eigene Bestellseite / Sonstige', value: 'other' },
                   ],
                 },
@@ -144,6 +145,19 @@ export const SiteSettings: GlobalConfig = {
                   label: 'URL (optional)',
                   validate: (value: string | null | undefined) => !value || validateHttpsUrl(value),
                 },
+              ],
+            },
+            {
+              name: 'paymentMethods',
+              type: 'select',
+              hasMany: true,
+              label: 'Zahlungsarten im Restaurant',
+              admin: { description: 'Wird auf der Restaurant-Seite und in der Fußzeile angezeigt.' },
+              options: [
+                { label: 'Bargeld', value: 'cash' },
+                { label: 'girocard (EC-Karte)', value: 'girocard' },
+                { label: 'Kreditkarte (Visa, Mastercard)', value: 'creditcard' },
+                { label: 'PayPal', value: 'paypal' },
               ],
             },
             {

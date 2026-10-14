@@ -12,6 +12,7 @@ import { href } from '@/i18n/routes'
 import { isLocale } from '@/i18n/server'
 import { getRestaurantInfo } from '@/lib/queries'
 import './site.css'
+import './pages.css'
 
 // Downloaded at build time and served from this site: browsers never contact Google.
 const display = Bricolage_Grotesque({

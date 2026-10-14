@@ -1,31 +1,97 @@
 import Link from 'next/link'
+import { Dish } from '@/components/site/Dish'
+import { HeroCarousel } from '@/components/site/HeroCarousel'
+import { MediaImage } from '@/components/site/MediaImage'
 import { OpenStatus } from '@/components/site/OpenStatus'
 import { OrderOptions } from '@/components/site/OrderOptions'
+import { RichText } from '@/components/site/RichText'
+import { VisitInfo } from '@/components/site/VisitInfo'
 import { href } from '@/i18n/routes'
 import { getLocale } from '@/i18n/server'
-import { getRestaurantInfo } from '@/lib/queries'
+import { getHome, getPosts, getRestaurantInfo } from '@/lib/queries'
 
-// Minimal home page for the Phase 3 shell. Phase 4 replaces it with the full landing page.
 export default async function HomePage() {
   const { locale, t } = await getLocale()
-  const info = await getRestaurantInfo(locale)
+  const [info, home, posts] = await Promise.all([getRestaurantInfo(locale), getHome(locale), getPosts(locale, 1, 1)])
+  const latest = posts.docs[0]
+  const dateFormat = new Intl.DateTimeFormat(t.dateLocale, { dateStyle: 'long', timeZone: 'Europe/Berlin' })
 
   return (
-    <section className="hero">
-      <div className="hero__text">
-        <h1>{info.tagline ?? info.name}</h1>
-        <OpenStatus hours={info.hours} locale={locale} />
-        <div className="hero__actions">
-          <Link className="btn btn--primary" href={href('menu', locale)}>
-            {t.nav.menu}
-          </Link>
-          <a className="btn btn--outline" href={`tel:${info.phoneE164}`}>
-            {t.call}
-          </a>
+    <>
+      <section className="hero">
+        <div className="hero__text">
+          <h1>{info.tagline ?? info.name}</h1>
+          <OpenStatus hours={info.hours} locale={locale} />
+          <div className="hero__actions">
+            <Link className="btn btn--primary" href={href('menu', locale)}>
+              {t.nav.menu}
+            </Link>
+            <a className="btn btn--outline" href={`tel:${info.phoneE164}`}>
+              {t.call}
+            </a>
+          </div>
+          {info.orderLinks.length > 0 && <OrderOptions links={info.orderLinks} t={t} />}
         </div>
-        {info.orderLinks.length > 0 && <OrderOptions links={info.orderLinks} t={t} />}
-      </div>
-      <div className="hero__media" aria-hidden="true" />
-    </section>
+        {home.slides.length > 0 ? (
+          <HeroCarousel
+            labels={{ region: info.name, ...t.carousel }}
+            slides={home.slides.map((s, i) => ({
+              key: s.id ?? String(i),
+              content: (
+                <figure className="hero__figure">
+                  <MediaImage media={s.image} size="hero" sizes="(max-width: 48rem) 100vw, 50vw" priority={i === 0} />
+                  {s.caption && <figcaption>{s.caption}</figcaption>}
+                </figure>
+              ),
+            }))}
+          />
+        ) : (
+          <div className="hero__media" aria-hidden="true" />
+        )}
+      </section>
+
+      <section className="band" aria-label={t.openingHours}>
+        <VisitInfo info={info} t={t} />
+        <Link href={href('restaurant', locale)}>{t.home.directions}</Link>
+      </section>
+
+      {home.highlights.length > 0 && (
+        <section className="section" aria-labelledby="highlights">
+          <h2 id="highlights" className="section__title">
+            {t.home.highlights}
+          </h2>
+          <ul className="dishes">
+            {home.highlights.map((item) => (
+              <Dish key={item.id} item={item} t={t} />
+            ))}
+          </ul>
+          <Link className="btn btn--outline" href={href('menu', locale)}>
+            {t.home.fullMenu}
+          </Link>
+        </section>
+      )}
+
+      {home.intro && (
+        <section className="section section--split">
+          <RichText data={home.intro} className="lead-text" />
+          <Link href={href('restaurant', locale)}>{t.home.aboutLink}</Link>
+        </section>
+      )}
+
+      {latest && (
+        <section className="section" aria-labelledby="latest">
+          <h2 id="latest" className="section__title">
+            {t.home.latestPost}
+          </h2>
+          <article className="post-card">
+            {latest.publishedAt && <time dateTime={latest.publishedAt}>{dateFormat.format(new Date(latest.publishedAt))}</time>}
+            <h3>
+              <Link href={href('news', locale, latest.slug ?? '')}>{latest.title}</Link>
+            </h3>
+            {latest.excerpt && <p>{latest.excerpt}</p>}
+          </article>
+        </section>
+      )}
+    </>
   )
 }
