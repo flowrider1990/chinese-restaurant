@@ -57,6 +57,9 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[lo
     // The theme script sets data-theme before hydration, hence suppressHydrationWarning.
     <html lang={locale} className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
       <head>
+        {/* The site has its own dark mode. Stops the Dark Reader extension from restyling it, which
+            also rewrote attributes before hydration and caused hydration errors. */}
+        <meta name="darkreader-lock" />
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>
