@@ -37,9 +37,11 @@
     "graphql": "^16.8.1",
     "next": "16.3.8",
     "payload": "3.90.2",
+    "pdf-lib": "1.17.1",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "sharp": "0.35.4"
+    "sharp": "0.35.4",
+    "stripe": "^23.0.0"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2",
