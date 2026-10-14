@@ -43,7 +43,9 @@ const altEn: Record<string, string> = {
  * to 3:1, so this decides what stays visible.
  */
 const focal: Record<string, { x: number; y: number }> = {
-  'bier-wein': { x: 55, y: 28 }, // the glasses, not the edamame
+  'bier-wein': { x: 55, y: 15 }, // the glasses, not the edamame
+  'reis-nudeln': { x: 50, y: 35 }, // both bowls, including the rice bowl's rim
+  'softdrinks-saefte': { x: 50, y: 20 }, // the tops of the glasses with the fruit
 }
 
 /** Re-import these even if the library already has them (e.g. after fixing a mixed-up file). */

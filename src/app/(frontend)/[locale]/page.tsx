@@ -5,6 +5,7 @@ import { HeroCarousel } from '@/components/site/HeroCarousel'
 import { MediaImage } from '@/components/site/MediaImage'
 import { OpenStatus } from '@/components/site/OpenStatus'
 import { OrderOptions } from '@/components/site/OrderOptions'
+import { PostCard } from '@/components/site/PostCard'
 import { RichText } from '@/components/site/RichText'
 import { VisitInfo } from '@/components/site/VisitInfo'
 import { href } from '@/i18n/routes'
@@ -26,10 +27,6 @@ export default async function HomePage() {
     getReservationLink(locale),
   ])
   const latest = posts.docs[0]
-  const dateFormat = new Intl.DateTimeFormat(t.dateLocale, {
-    dateStyle: 'long',
-    timeZone: 'Europe/Berlin',
-  })
 
   return (
     <>
@@ -61,7 +58,7 @@ export default async function HomePage() {
                   {t.reserve.cta}
                 </Link>
               ))}
-            <a className="btn btn--outline" href={`tel:${info.phoneE164}`}>
+            <a className="btn btn--outline hero__call" href={`tel:${info.phoneE164}`}>
               {t.call}
             </a>
           </div>
@@ -79,6 +76,7 @@ export default async function HomePage() {
                     size="hero"
                     sizes="(max-width: 48rem) 100vw, 50vw"
                     priority={i === 0}
+                    eager
                   />
                   {(s.caption || s.image.caption) && (
                     <figcaption>{s.caption ?? s.image.caption}</figcaption>
@@ -125,17 +123,12 @@ export default async function HomePage() {
           <h2 id="latest" className="section__title">
             {t.home.latestPost}
           </h2>
-          <article className="post-card">
-            {latest.publishedAt && (
-              <time dateTime={latest.publishedAt}>
-                {dateFormat.format(new Date(latest.publishedAt))}
-              </time>
-            )}
-            <h3>
-              <Link href={href('news', locale, latest.slug ?? '')}>{latest.title}</Link>
-            </h3>
-            {latest.excerpt && <p>{latest.excerpt}</p>}
-          </article>
+          <PostCard
+            post={latest}
+            href={href('news', locale, latest.slug ?? '')}
+            dateLocale={t.dateLocale}
+            headingLevel="h3"
+          />
         </section>
       )}
     </>

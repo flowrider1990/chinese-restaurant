@@ -1,5 +1,5 @@
 /**
- * Builds public/map/restaurant.svg: our own drawing of the streets around the restaurant
+ * Builds public/map/restaurant.svg and restaurant-dark.svg: our own drawing of the streets around the restaurant
  * (site settings → "Koordinaten"), rendered from OpenStreetMap data. Visitors load the map from
  * this site, so no third party is contacted when the page is viewed.
  *
@@ -133,7 +133,16 @@ for (const l of best.values()) {
 
 const px = WIDTH / 2
 const py = HEIGHT / 2
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" width="${WIDTH}" height="${HEIGHT}" role="img">
+/** Dark variant colours; the page shows the matching file for its theme (see StaticMap). */
+const DARK_RULES = `
+  .bg { fill: #1a2133 } .green { fill: #22382b } .water { fill: #1f3352 }
+  .casing { stroke: #10151f } .road { stroke: #2c3550 } .rail { stroke: #5b6580 }
+  .label { fill: #a9b1c4; stroke: #1a2133 }
+  .pin { fill: #8fb1ec; stroke: #10182a } .pin-dot { fill: #10182a }
+  .name { fill: #eef0ea; stroke: #1a2133 }
+`
+
+const render = (dark: boolean) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" width="${WIDTH}" height="${HEIGHT}" role="img">
 <title>${esc(name)}</title>
 <style>
   .bg { fill: #eef0ea }
@@ -151,13 +160,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEI
   .pin { fill: #2b57a0; stroke: #ffffff; stroke-width: 3 }
   .pin-dot { fill: #ffffff }
   .name { font: 800 20px "Segoe UI", system-ui, sans-serif; fill: #1e2740; paint-order: stroke; stroke: #ffffff; stroke-width: 5px; stroke-linejoin: round }
-  @media (prefers-color-scheme: dark) {
-    .bg { fill: #1a2133 } .green { fill: #22382b } .water { fill: #1f3352 }
-    .casing { stroke: #10151f } .road { stroke: #2c3550 } .rail { stroke: #5b6580 }
-    .label { fill: #a9b1c4; stroke: #1a2133 }
-    .pin { fill: #8fb1ec; stroke: #10182a } .pin-dot { fill: #10182a }
-    .name { fill: #eef0ea; stroke: #1a2133 }
-  }
+${dark ? DARK_RULES : ''}
 </style>
 <defs>${labelDefs.join('')}</defs>
 <rect class="bg" width="${WIDTH}" height="${HEIGHT}"/>
@@ -173,8 +176,10 @@ ${labelUses.join('\n')}
 `
 
 await mkdir('public/map', { recursive: true })
-await writeFile('public/map/restaurant.svg', svg)
+const light = render(false)
+await writeFile('public/map/restaurant.svg', light)
+await writeFile('public/map/restaurant-dark.svg', render(true))
 console.log(
-  `Wrote public/map/restaurant.svg (${elements.length} OSM ways, ${labelUses.length} street labels, ${(svg.length / 1024).toFixed(0)} KB) for ${lat}, ${lng}.`,
+  `Wrote public/map/restaurant.svg and restaurant-dark.svg (${elements.length} OSM ways, ${labelUses.length} street labels, ${(light.length / 1024).toFixed(0)} KB) for ${lat}, ${lng}.`,
 )
 process.exit(0)

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { MediaImage } from '@/components/site/MediaImage'
+import { PostCard } from '@/components/site/PostCard'
 import { dictionaries } from '@/i18n/dictionary'
 import { pageMetadata } from '@/lib/seo'
 import { href } from '@/i18n/routes'
@@ -17,7 +17,6 @@ export default async function NewsPage({ searchParams }: PageProps<'/[locale]/ak
   const raw = (await searchParams).page
   const page = Math.max(1, Number.parseInt(typeof raw === 'string' ? raw : '1', 10) || 1)
   const posts = await getPosts(locale, page)
-  const dateFormat = new Intl.DateTimeFormat(t.dateLocale, { dateStyle: 'long', timeZone: 'Europe/Berlin' })
   const base = href('news', locale)
 
   return (
@@ -31,20 +30,7 @@ export default async function NewsPage({ searchParams }: PageProps<'/[locale]/ak
         <ul className="post-list">
           {posts.docs.map((post) => (
             <li key={post.id}>
-              <article className="post-card">
-                {typeof post.heroImage === 'object' && post.heroImage && (
-                  <MediaImage media={post.heroImage} size="card" sizes="(max-width: 48rem) 100vw, 20rem" />
-                )}
-                <div>
-                  {post.publishedAt && (
-                    <time dateTime={post.publishedAt}>{dateFormat.format(new Date(post.publishedAt))}</time>
-                  )}
-                  <h2>
-                    <Link href={href('news', locale, post.slug ?? '')}>{post.title}</Link>
-                  </h2>
-                  {post.excerpt && <p>{post.excerpt}</p>}
-                </div>
-              </article>
+              <PostCard post={post} href={href('news', locale, post.slug ?? '')} dateLocale={t.dateLocale} />
             </li>
           ))}
         </ul>

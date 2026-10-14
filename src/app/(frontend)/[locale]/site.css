@@ -28,8 +28,10 @@
   color-scheme: light;
 }
 
+/* Dark theme: follows the device unless the visitor picked a theme with the header toggle
+   (data-theme on <html>, set before the first paint by the script in the layout). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --porcelain: #141a29;
     --surface: #1c2336;
     --ink: #eef0ea;
@@ -37,14 +39,30 @@
     --enamel: #8fb1ec;
     --enamel-strong: #b0c8f3;
     --enamel-ink: #10182a;
-    --jade: #23362b;
-    --jade-strong: #2e4c39;
+    --jade: #1c2539;
+    --jade-strong: #2a3753;
     --chili: #f07d62;
     --open: #6fcf97;
     --line: #2f3850;
     --focus: #f07d62;
     color-scheme: dark;
   }
+}
+:root[data-theme='dark'] {
+  --porcelain: #141a29;
+  --surface: #1c2336;
+  --ink: #eef0ea;
+  --ink-soft: #a9b1c4;
+  --enamel: #8fb1ec;
+  --enamel-strong: #b0c8f3;
+  --enamel-ink: #10182a;
+  --jade: #1c2539;
+  --jade-strong: #2a3753;
+  --chili: #f07d62;
+  --open: #6fcf97;
+  --line: #2f3850;
+  --focus: #f07d62;
+  color-scheme: dark;
 }
 
 *,
@@ -99,9 +117,16 @@ p {
   margin: 0;
 }
 
+/* One link style everywhere: cobalt, thin underline that gets stronger on hover. */
 a {
   color: var(--enamel);
-  text-underline-offset: 0.18em;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--enamel) 45%, transparent);
+  text-underline-offset: 0.2em;
+}
+a:hover {
+  text-decoration-color: currentColor;
 }
 
 :focus-visible {
@@ -182,6 +207,7 @@ a {
 
 /* Wordmark */
 .wordmark {
+  white-space: nowrap;
   display: inline-flex;
   align-items: baseline;
   gap: 0.45rem;
@@ -401,12 +427,18 @@ a.provider:hover {
   display: none;
 }
 @media (prefers-color-scheme: dark) {
-  .provider__logo--light {
+  :root:not([data-theme='light']) .provider__logo--light {
     display: none;
   }
-  .provider__logo--dark {
+  :root:not([data-theme='light']) .provider__logo--dark {
     display: block;
   }
+}
+:root[data-theme='dark'] .provider__logo--light {
+  display: none;
+}
+:root[data-theme='dark'] .provider__logo--dark {
+  display: block;
 }
 .provider__name {
   font-weight: 700;
@@ -496,7 +528,20 @@ a.provider:hover {
   display: none;
 }
 
+@media (min-width: 48.01rem) {
+  /* The header has the phone button on desktop; the hero repeats it only on phones. */
+  .hero__call {
+    display: none;
+  }
+}
+
 @media (max-width: 48rem) {
+  .site-header__inner {
+    gap: 0.75rem;
+  }
+  .site-header__actions {
+    gap: 0.35rem;
+  }
   .site-nav,
   .site-header__call {
     display: none;

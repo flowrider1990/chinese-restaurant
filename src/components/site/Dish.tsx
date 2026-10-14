@@ -2,13 +2,22 @@ import type { Dictionary } from '@/i18n/dictionary'
 import { formatPrice } from '@/lib/price'
 import type { Attribute, MenuItem } from '@/payload-types'
 
-const attrs = (item: MenuItem) => (item.attributes ?? []).filter((a): a is Attribute => typeof a === 'object')
+const attrs = (item: MenuItem) =>
+  (item.attributes ?? []).filter((a): a is Attribute => typeof a === 'object')
 
 /**
  * One dish. Allergens and additives are always written out in full; the codes in the legend are
  * only a convenience. Options (protein choice, drink sizes) are listed with their final price.
  */
-export function Dish({ item, t, as: Heading = 'h3' }: { item: MenuItem; t: Dictionary; as?: 'h2' | 'h3' }) {
+export function Dish({
+  item,
+  t,
+  as: Heading = 'h3',
+}: {
+  item: MenuItem
+  t: Dictionary
+  as?: 'h2' | 'h3'
+}) {
   const list = attrs(item)
   const allergens = list.filter((a) => a.kind === 'allergen')
   const additives = list.filter((a) => a.kind === 'additive')
@@ -27,6 +36,7 @@ export function Dish({ item, t, as: Heading = 'h3' }: { item: MenuItem; t: Dicti
       data-vegetarian={vegetarian || undefined}
       data-vegan={vegan || undefined}
       data-spicy={item.spiciness || undefined}
+      data-allergens={allergens.map((a) => a.id).join(' ') || undefined}
       data-unavailable={unavailable || undefined}
     >
       {item.menuNumber ? (
@@ -60,7 +70,9 @@ export function Dish({ item, t, as: Heading = 'h3' }: { item: MenuItem; t: Dicti
             ) : (
               vegetarian && <span className="tag">{t.menu.tags.vegetarian}</span>
             )}
-            {item.spiciness && <Spice level={item.spiciness} label={t.menu.spice[item.spiciness]} />}
+            {item.spiciness && (
+              <Spice level={item.spiciness} label={t.menu.spice[item.spiciness]} />
+            )}
           </p>
         )}
         {(allergens.length > 0 || additives.length > 0) && (
@@ -82,7 +94,8 @@ export function Dish({ item, t, as: Heading = 'h3' }: { item: MenuItem; t: Dicti
         <ul className="dish__prices">
           {options.map((o) => (
             <li key={o.id ?? o.label}>
-              <span>{o.label}</span> <span className="dish__price">{price(item.price + (o.priceDelta ?? 0))}</span>
+              <span>{o.label}</span>{' '}
+              <span className="dish__price">{price(item.price + (o.priceDelta ?? 0))}</span>
             </li>
           ))}
         </ul>
@@ -91,7 +104,10 @@ export function Dish({ item, t, as: Heading = 'h3' }: { item: MenuItem; t: Dicti
           <span className="dish__price">{price(item.price)}</span>
           {options.map((o) => (
             <span key={o.id ?? o.label} className="dish__option">
-              {o.label} {o.priceDelta ? `${o.priceDelta > 0 ? '+' : '−'}${price(Math.abs(o.priceDelta))}` : ''}
+              {o.label}{' '}
+              {o.priceDelta
+                ? `${o.priceDelta > 0 ? '+' : '−'}${price(Math.abs(o.priceDelta))}`
+                : ''}
             </span>
           ))}
         </div>

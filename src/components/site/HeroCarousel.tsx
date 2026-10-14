@@ -1,9 +1,10 @@
 'use client'
 
 import { useRef, useState, type ReactNode } from 'react'
+import { Icon } from './Icon'
 
 /**
- * Scroll-snap carousel with previous/next buttons. No autoplay; swiping, the buttons and the
+ * Scroll-snap carousel. Arrows and dots sit on the image; no autoplay. Swiping, the buttons and the
  * keyboard (Tab into the list, arrow keys scroll it) all work.
  */
 export function HeroCarousel({
@@ -11,17 +12,24 @@ export function HeroCarousel({
   labels,
 }: {
   slides: { key: string; content: ReactNode }[]
-  labels: { region: string; prev: string; next: string; /** e.g. "Bild {n} von {of}" */ slide: string }
+  labels: {
+    region: string
+    prev: string
+    next: string
+    /** e.g. "Bild {n} von {of}" */ slide: string
+  }
 }) {
   const list = useRef<HTMLUListElement>(null)
-  const slideLabel = (n: number) => labels.slide.replace('{n}', String(n)).replace('{of}', String(slides.length))
+  const slideLabel = (n: number) =>
+    labels.slide.replace('{n}', String(n)).replace('{of}', String(slides.length))
   const [index, setIndex] = useState(0)
 
   const go = (to: number) => {
     const el = list.current
     if (!el) return
     const next = (to + slides.length) % slides.length
-    el.scrollTo({ left: next * el.clientWidth, behavior: 'smooth' })
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    el.scrollTo({ left: next * el.clientWidth, behavior: reduce ? 'auto' : 'smooth' })
     setIndex(next)
   }
 
@@ -43,17 +51,38 @@ export function HeroCarousel({
         ))}
       </ul>
       {slides.length > 1 && (
-        <div className="carousel__controls">
-          <button type="button" className="icon-btn" onClick={() => go(index - 1)} aria-label={labels.prev}>
-            ‹
+        <>
+          <button
+            type="button"
+            className="carousel__arrow carousel__arrow--prev"
+            onClick={() => go(index - 1)}
+            aria-label={labels.prev}
+          >
+            <Icon name="chevronLeft" size={34} />
           </button>
-          <span aria-live="polite" className="carousel__count">
+          <button
+            type="button"
+            className="carousel__arrow carousel__arrow--next"
+            onClick={() => go(index + 1)}
+            aria-label={labels.next}
+          >
+            <Icon name="chevronRight" size={34} />
+          </button>
+          <div className="carousel__dots">
+            {slides.map((s, i) => (
+              <button
+                key={s.key}
+                type="button"
+                aria-label={slideLabel(i + 1)}
+                aria-current={i === index ? 'true' : undefined}
+                onClick={() => go(i)}
+              />
+            ))}
+          </div>
+          <p className="visually-hidden" aria-live="polite">
             {slideLabel(index + 1)}
-          </span>
-          <button type="button" className="icon-btn" onClick={() => go(index + 1)} aria-label={labels.next}>
-            ›
-          </button>
-        </div>
+          </p>
+        </>
       )}
     </section>
   )

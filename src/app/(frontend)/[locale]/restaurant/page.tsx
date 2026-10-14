@@ -26,6 +26,10 @@ export default async function RestaurantPage() {
     ? `${info.geo[1]},${info.geo[0]}`
     : `${info.address.street}, ${info.address.postalCode} ${info.address.city}`
   const mapsUrl = info.mapsUrl ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+  // Apple Maps: pin at the coordinates (or the address), labelled with the restaurant name.
+  const appleMapsUrl = info.geo
+    ? `https://maps.apple.com/?ll=${info.geo[1]},${info.geo[0]}&q=${encodeURIComponent(info.name)}`
+    : `https://maps.apple.com/?q=${encodeURIComponent(query)}`
   const today = new Date().toISOString().slice(0, 10)
   const dateFormat = new Intl.DateTimeFormat(t.dateLocale, { dateStyle: 'medium', timeZone: 'Europe/Berlin' })
   const upcoming = (info.hours.exceptions ?? []).filter((e) => (e.to ?? e.from).slice(0, 10) >= today)
@@ -110,7 +114,13 @@ export default async function RestaurantPage() {
         <StaticMap
           alt={t.map.alt(info.name, `${info.address.street}, ${info.address.postalCode} ${info.address.city}`)}
           mapsUrl={mapsUrl}
-          labels={{ open: t.map.open, attribution: t.map.attribution, external: t.externalLink }}
+          appleMapsUrl={appleMapsUrl}
+          labels={{
+            open: t.map.open,
+            openApple: t.map.openApple,
+            attribution: t.map.attribution,
+            external: t.externalLink,
+          }}
         />
       </section>
     </div>
