@@ -1,4 +1,4 @@
-import { ValidationError, type CollectionConfig } from 'payload'
+import { ValidationError, type CollectionConfig, type Where } from 'payload'
 import { authenticated } from '@/access'
 import { priceField } from '@/fields/price'
 import { getStripe } from '@/lib/stripe'
@@ -25,7 +25,22 @@ export const Vouchers: CollectionConfig = {
     create: () => false,
     update: authenticated,
     // Paid or cancelled vouchers are business records and stay.
-    delete: ({ req }) => (req.user ? { status: { in: ['pending', 'expired'] } } : false),
+    // A pending voucher's Stripe page stays payable for 31 minutes, so it may only be deleted after
+    // an hour; deleting it earlier could lose a payment that arrives afterwards.
+    delete: ({ req }): Where | false =>
+      req.user
+        ? {
+            or: [
+              { status: { equals: 'expired' } },
+              {
+                and: [
+                  { status: { equals: 'pending' } },
+                  { createdAt: { less_than: new Date(Date.now() - 60 * 60 * 1000).toISOString() } },
+                ],
+              },
+            ],
+          }
+        : false,
   },
   endpoints: [
     {

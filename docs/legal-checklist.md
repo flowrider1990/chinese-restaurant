@@ -38,7 +38,8 @@ authoritative sources for Germany/EU at release time, not from this list alone.
 - [ ] Reservations: privacy policy section (purpose incl. recognising frequent guests within the retention period, legal basis, 30-day deletion), checked against current sources.
 - [ ] Resend: data processing agreement signed; EU/US transfer basis checked; sender domain verified (SPF/DKIM).
 - [ ] Daily cleanup (`/api/reservations/cleanup`) scheduled on the hosting with a secret `CRON_SECRET`; verified once in production.
-- [ ] Spam: if fake requests appear, add rate limiting at the hosting level.
+- [ ] Spam: if fake requests appear, add rate limiting at the hosting level. Applies to the voucher
+  checkout too: every request creates a pending voucher and a Stripe Checkout Session.
 - [ ] Vouchers: terms and conditions (AGB) and withdrawal (Widerruf) information for voucher sales, checked against current sources before launch.
 - [ ] Vouchers: privacy policy section for Stripe (recipient, purpose: payment processing, legal basis Art. 6(1)(b) GDPR, voucher records kept as business records), checked against current sources before launch. The seeded placeholder is section 7 of the German privacy text (`scripts/seed.ts`); the seed does not overwrite existing CMS content, so paste this section into the dev/production CMS privacy page manually.
 - [ ] Vouchers: keep the button wording "Zahlungspflichtig bestellen" and show the price including VAT, checked against current sources before launch.

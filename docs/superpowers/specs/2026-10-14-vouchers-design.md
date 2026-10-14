@@ -88,7 +88,8 @@ Copy uses the formal "Sie", like the rest of the site and the reservation mails.
 
 Access: no public read, create, update or delete. Create only through the server code
 (`overrideAccess: true` in `startVoucherCheckout`). Signed-in staff read, update (redemptions,
-status `cancelled`) and may delete only `pending` or `expired` vouchers.
+status `cancelled`) and may delete only `expired` vouchers and `pending` ones older than one hour (the Stripe page stays
+payable for 31 minutes; deleting earlier could lose a payment).
 
 ## Website
 
@@ -102,7 +103,7 @@ status `cancelled`) and may delete only `pending` or `expired` vouchers.
   is set to `expired`.
 - **Checkout Session**: `mode: 'payment'`, one line item with `price_data` (EUR, amount in cents,
   product name "Gutschein Xiao Chu"), `customer_email`, `locale`, `metadata.voucherId`,
-  `client_reference_id`, `expires_at` now + 30 minutes, `success_url` with
+  `client_reference_id`, `expires_at` now + 31 minutes (Stripe requires at least 30), `success_url` with
   `{CHECKOUT_SESSION_ID}`, `cancel_url` back to the form.
 - **Thank-you state** (`?session_id=`): looks up the voucher by session id in our DB (not in
   Stripe) and shows one of: paid → "Vielen Dank! Ihr Gutschein ist per E-Mail unterwegs.";

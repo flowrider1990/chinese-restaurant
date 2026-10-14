@@ -176,10 +176,31 @@ describe('vouchers collection', () => {
     ).toMatch(/Status/)
   })
 
-  it('lets staff delete pending or expired vouchers only', async () => {
+  it('lets staff delete expired vouchers, but not paid or recently started ones', async () => {
     const user = await staffUser()
+    const expired = await payload.create({
+      collection: 'vouchers',
+      data: voucherData({ status: 'expired' }),
+    })
+    await payload.delete({ collection: 'vouchers', id: expired.id, user, overrideAccess: false })
+    await expect(payload.findByID({ collection: 'vouchers', id: expired.id })).rejects.toThrow()
+
+    // Its Stripe page may still be open: deleting it could lose a payment.
     const pending = await payload.create({ collection: 'vouchers', data: voucherData() })
-    await payload.delete({ collection: 'vouchers', id: pending.id, user, overrideAccess: false })
+    await expect(
+      payload.delete({ collection: 'vouchers', id: pending.id, user, overrideAccess: false }),
+    ).rejects.toThrow()
+    expect((await payload.findByID({ collection: 'vouchers', id: pending.id })).status).toBe(
+      'pending',
+    )
+
+    // After an hour the Stripe page has long expired, so an abandoned pending voucher may go.
+    const old = await payload.create({
+      collection: 'vouchers',
+      data: voucherData({ createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() }),
+    })
+    await payload.delete({ collection: 'vouchers', id: old.id, user, overrideAccess: false })
+    await expect(payload.findByID({ collection: 'vouchers', id: old.id })).rejects.toThrow()
     const paid = await payload.create({
       collection: 'vouchers',
       data: voucherData({ status: 'paid' }),
@@ -327,7 +348,11 @@ describe('stripe webhook', () => {
     expect(after.code).toBeFalsy()
     expect(sent).not.toHaveBeenCalled()
     const messages = logged.mock.calls.map((c) => String(c[0]))
-    expect(messages.some((m) => m.includes(String(v.id)) && m.includes('expired') && m.includes(v.stripeSessionId!))).toBe(true)
+    expect(
+      messages.some(
+        (m) => m.includes(String(v.id)) && m.includes('expired') && m.includes(v.stripeSessionId!),
+      ),
+    ).toBe(true)
     sent.mockRestore()
     logged.mockRestore()
   })

@@ -147,8 +147,8 @@ Spec: `docs/superpowers/specs/2026-10-14-vouchers-design.md`.
   mail fails the voucher stays paid and the restaurant notice carries an "Achtung" line so staff
   pass the code on manually.
 - Staff redeem in the admin by appending redemption rows; earlier rows cannot be changed. Staff
-  can cancel a paid voucher (refund is done in the Stripe dashboard) and delete pending or expired
-  ones.
+  can cancel a paid voucher (refund is done in the Stripe dashboard) and delete expired ones, or
+  pending ones older than one hour (a pending voucher's Stripe page stays payable for 31 minutes).
 - Migration `20261014_172131_vouchers` adds the `vouchers` tables; run `pnpm migrate` (also on
   Turso) before deploying.
 - Privacy text: `scripts/seed.ts` contains a placeholder section "7. Gutscheinkauf und Zahlung (Stripe)",
