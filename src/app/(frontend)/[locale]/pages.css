@@ -179,7 +179,7 @@
   font-size: 0.8rem;
   padding: 0.1rem 0.6rem;
   border-radius: 999px;
-  background: var(--jade-strong);
+  background: var(--tag);
 }
 .tag--state {
   background: var(--ink);
