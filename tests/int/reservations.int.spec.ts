@@ -4,6 +4,7 @@ import config from '@/payload.config'
 import { migrations } from '@/migrations'
 import { readReservationSettings } from '@/lib/reservation-settings'
 import { submitReservation } from '@/lib/reservation-submit'
+import { anonymiseExpiredReservations, isAuthorisedCron } from '@/lib/reservation-cleanup'
 
 let payload: Payload
 
@@ -207,5 +208,42 @@ describe('reservation mails', () => {
     })
     expect(r.id).toBeTruthy()
     sent.mockRestore()
+  })
+})
+
+describe('cleanup', () => {
+  it('removes personal data only from reservations older than the retention period', async () => {
+    const old = await payload.create({
+      collection: 'reservations',
+      data: { ...base, date: '2026-08-01', phone: '0170 1', note: 'Allergie: Erdnüsse' },
+    })
+    const recent = await payload.create({
+      collection: 'reservations',
+      data: { ...base, date: '2026-10-01' },
+    })
+
+    const count = await anonymiseExpiredReservations(payload, new Date('2026-10-14T10:00:00Z'))
+    expect(count).toBeGreaterThanOrEqual(1)
+
+    const o = await payload.findByID({ collection: 'reservations', id: old.id })
+    expect(o).toMatchObject({ name: '', email: '', date: '2026-08-01', partySize: 4 })
+    expect(o.phone ?? null).toBeNull()
+    expect(o.note ?? null).toBeNull()
+    expect(o.anonymisedAt).toBeTruthy()
+
+    const r = await payload.findByID({ collection: 'reservations', id: recent.id })
+    expect(r.name).toBe('Mei Lin')
+  })
+
+  it('is idempotent', async () => {
+    expect(await anonymiseExpiredReservations(payload, new Date('2026-10-14T10:00:00Z'))).toBe(0)
+  })
+
+  it('accepts only the configured secret', () => {
+    expect(isAuthorisedCron('Bearer s3cret', 's3cret')).toBe(true)
+    expect(isAuthorisedCron('Bearer wrong', 's3cret')).toBe(false)
+    expect(isAuthorisedCron(null, 's3cret')).toBe(false)
+    expect(isAuthorisedCron('Bearer ', '')).toBe(false)
+    expect(isAuthorisedCron('Bearer undefined', undefined)).toBe(false)
   })
 })

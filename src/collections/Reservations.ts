@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access'
+import { anonymiseExpiredReservations, isAuthorisedCron } from '@/lib/reservation-cleanup'
 import { mailsFor, sendReservationMails } from '@/lib/reservation-mails'
 import { localToUtc } from '@/lib/reservation-rules'
 
@@ -30,6 +31,20 @@ export const Reservations: CollectionConfig = {
     update: authenticated,
     delete: authenticated,
   },
+  endpoints: [
+    {
+      // Daily job (e.g. Vercel Cron): GET /api/reservations/cleanup with "Authorization: Bearer <CRON_SECRET>".
+      path: '/cleanup',
+      method: 'get',
+      handler: async (req) => {
+        if (!isAuthorisedCron(req.headers.get('authorization'), process.env.CRON_SECRET)) {
+          return Response.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+        const anonymised = await anonymiseExpiredReservations(req.payload)
+        return Response.json({ anonymised })
+      },
+    },
+  ],
   hooks: {
     beforeValidate: [
       ({ data }) => {
