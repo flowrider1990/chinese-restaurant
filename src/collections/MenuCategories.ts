@@ -18,6 +18,13 @@ export const MenuCategories: CollectionConfig = {
   fields: [
     { name: 'name', type: 'text', label: 'Name', required: true, localized: true },
     { name: 'description', type: 'textarea', label: 'Beschreibung', localized: true },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Bild (optional)',
+      admin: { description: 'Erscheint breit unter der Kategorie-Überschrift auf der Speisekarte. Querformat, Motiv mittig.' },
+    },
     slugField('name'),
     {
       name: 'items',

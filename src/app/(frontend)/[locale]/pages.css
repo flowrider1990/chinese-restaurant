@@ -67,9 +67,32 @@
 .visit address {
   font-style: normal;
 }
-.visit__payment {
+.payment {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
   color: var(--ink-soft);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+}
+.payment__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+.payment__list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.payment__icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--ink);
 }
 
 /* Rich text */
@@ -347,13 +370,38 @@
 .menu-section__note {
   color: var(--ink-soft);
 }
+.menu-section__image {
+  position: relative;
+  margin: 0.5rem 0 0.75rem;
+}
+.menu-section__image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 1;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+/* "Symbolbild (KI-generiert)": small, but always visible on the image. */
+.menu-section__image figcaption,
+.hero__figure figcaption {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--ink);
+}
 .menu-section__empty {
   display: none;
   color: var(--ink-soft);
 }
 .menu[data-filter='vegetarian'] .dish:not([data-vegetarian]),
 .menu[data-filter='vegan'] .dish:not([data-vegan]),
-.menu[data-filter='mild'] .dish[data-spicy] {
+.menu[data-filter='mild'] .dish[data-spicy],
+.menu[data-filter='spicy'] .dish:not([data-spicy]) {
   display: none;
 }
 .menu[data-filter] .dish {
@@ -361,7 +409,8 @@
 }
 .menu[data-filter='vegetarian'] .menu-section:not(:has(.dish[data-vegetarian])) .menu-section__empty,
 .menu[data-filter='vegan'] .menu-section:not(:has(.dish[data-vegan])) .menu-section__empty,
-.menu[data-filter='mild'] .menu-section:not(:has(.dish:not([data-spicy]))) .menu-section__empty {
+.menu[data-filter='mild'] .menu-section:not(:has(.dish:not([data-spicy]))) .menu-section__empty,
+.menu[data-filter='spicy'] .menu-section:not(:has(.dish[data-spicy])) .menu-section__empty {
   display: block;
 }
 .legend {
@@ -532,6 +581,7 @@
   scroll-snap-align: start;
 }
 .hero__figure {
+  position: relative;
   margin: 0;
 }
 .hero__figure img {
@@ -559,6 +609,9 @@
 }
 
 @media (max-width: 40rem) {
+  .menu-section__image img {
+    aspect-ratio: 16 / 9;
+  }
   .dish {
     grid-template-columns: auto minmax(0, 1fr);
   }

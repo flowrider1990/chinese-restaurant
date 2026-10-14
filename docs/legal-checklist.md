@@ -15,8 +15,9 @@ authoritative sources for Germany/EU at release time, not from this list alone.
 
 - [ ] Lieferando and Wolt logos (`public/brands/`) come from the providers' press kits (newsroom.justeattakeaway.com, press.wolt.com, 2026-10-14), which state no licence ("all rights reserved"). Before launch, confirm the restaurant is a listed partner and use the logos under the partner brand guidelines (or the partner-portal assets).
 - [ ] Uber Eats: the co-marketing asset page could not be read automatically (it loads only in a browser). The logo is not included yet; the site shows the name as text.
-- [ ] Payment method marks (PayPal, Visa, Mastercard): use only the official acceptance marks from the payment providers, under their rules. Currently shown as text only.
+- [ ] Payment method marks (Visa, Mastercard, PayPal): currently one-colour glyphs from Simple Icons (CC0 files, but the marks are the owners' trademarks). Before launch, check them against the acceptance-mark rules of the restaurant's card terminal/payment provider, or replace them with the official marks they supply. girocard and cash use generic icons with text.
 - [ ] Every photo and font needs a recorded licence. Self-host the fonts, with no requests to Google.
+- [ ] AI-generated food images (`docs/image-prompts.md`): label them as symbol images, check the EU AI Act transparency duties (Art. 50) and the generator's commercial licence, and make sure they do not mislead about the real dishes (UWG). Prefer real photos for launch.
 
 ## Consumer information
 

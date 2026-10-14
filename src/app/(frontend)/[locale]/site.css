@@ -56,6 +56,12 @@
 html {
   -webkit-text-size-adjust: 100%;
 }
+@media (prefers-reduced-motion: no-preference) {
+  /* In-page links (menu categories) glide to their target instead of jumping. */
+  html {
+    scroll-behavior: smooth;
+  }
+}
 
 body {
   margin: 0;

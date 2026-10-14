@@ -2,6 +2,7 @@ import type { Dictionary } from '@/i18n/dictionary'
 import { weeklySummary } from '@/lib/opening-hours'
 import type { RestaurantInfo } from '@/lib/queries'
 import { formatDays, formatSlots } from './hours-text'
+import { PaymentMethods } from './PaymentMethods'
 
 /** Address, opening hours and phone as one block, used on the home and restaurant pages. */
 export function VisitInfo({ info, t, headingLevel = 'h2' }: { info: RestaurantInfo; t: Dictionary; headingLevel?: 'h2' | 'h3' }) {
@@ -38,11 +39,7 @@ export function VisitInfo({ info, t, headingLevel = 'h2' }: { info: RestaurantIn
             </>
           )}
         </p>
-        {info.paymentMethods.length > 0 && (
-          <p className="visit__payment">
-            {t.payment}: {info.paymentMethods.map((m) => t.paymentMethods[m]).join(', ')}
-          </p>
-        )}
+        <PaymentMethods methods={info.paymentMethods} t={t} />
       </div>
     </div>
   )

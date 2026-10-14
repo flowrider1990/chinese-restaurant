@@ -123,6 +123,10 @@ the Local API, then prints the target and versions.
   The restaurant's own menu replaces it in the same format.
 - To rebuild the dev database: `pnpm payload migrate:fresh --forceAcceptWarning`, then `pnpm seed`.
   This drops all data; only for dev databases.
+- `pnpm images:import` loads the placeholder photos from `data/images-incoming/` (git-ignored) into
+  the media library: `hero-*.jpg` become the home slider, `<category-slug>.jpg` the category image.
+  Alt texts come from `ALT-TEXTE.txt` (German) and the script (English); every image is captioned
+  "Symbolbild (KI-generiert)". Re-running reuses files already in the library.
 - `pnpm test` runs unit tests (including a consistency check of `menu.json`) and integration
   tests. Integration tests use a throwaway `data/test.db` and never touch the dev or Turso
   database.

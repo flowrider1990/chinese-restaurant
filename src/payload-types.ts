@@ -194,6 +194,10 @@ export interface MenuCategory {
   name: string;
   description?: string | null;
   /**
+   * Erscheint breit unter der Kategorie-Überschrift auf der Speisekarte. Querformat, Motiv mittig.
+   */
+  image?: (number | null) | Media;
+  /**
    * Wird automatisch aus dem Titel erzeugt, wenn leer.
    */
   slug?: string | null;
@@ -478,6 +482,7 @@ export interface MenuCategoriesSelect<T extends boolean = true> {
   _order?: T;
   name?: T;
   description?: T;
+  image?: T;
   slug?: T;
   items?: T;
   updatedAt?: T;

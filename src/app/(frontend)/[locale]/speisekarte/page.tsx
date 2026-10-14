@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { CategoryNav } from '@/components/site/CategoryNav'
 import { Dish } from '@/components/site/Dish'
+import { MediaImage } from '@/components/site/MediaImage'
 import { MenuFilter } from '@/components/site/MenuFilter'
 import { dictionaries } from '@/i18n/dictionary'
 import { absolute, jsonLdScript, pageMetadata } from '@/lib/seo'
@@ -61,16 +62,23 @@ export default async function MenuPage() {
                 all: t.menu.filterAll,
                 vegetarian: t.menu.filterVegetarian,
                 vegan: t.menu.filterVegan,
+                spicy: t.menu.filterSpicy,
                 mild: t.menu.filterMild,
               }}
             />
           </div>
 
           <div id="menu" className="menu">
-            {sections.map((s) => (
+            {sections.map((s, index) => (
               <section key={s.id} id={s.slug} className="menu-section" aria-labelledby={`${s.slug}-title`}>
                 <h2 id={`${s.slug}-title`}>{s.name}</h2>
                 {s.description && <p className="menu-section__note">{s.description}</p>}
+                {s.image && (
+                  <figure className="menu-section__image">
+                    <MediaImage media={s.image} sizes="(max-width: 72rem) 100vw, 72rem" priority={index === 0} />
+                    {s.image.caption && <figcaption>{s.image.caption}</figcaption>}
+                  </figure>
+                )}
                 <ul className="dishes">
                   {s.items.map((item) => (
                     <Dish key={item.id} item={item} t={t} />

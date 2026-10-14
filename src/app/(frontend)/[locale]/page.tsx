@@ -48,7 +48,7 @@ export default async function HomePage() {
               content: (
                 <figure className="hero__figure">
                   <MediaImage media={s.image} size="hero" sizes="(max-width: 48rem) 100vw, 50vw" priority={i === 0} />
-                  {s.caption && <figcaption>{s.caption}</figcaption>}
+                  {(s.caption || s.image.caption) && <figcaption>{s.caption ?? s.image.caption}</figcaption>}
                 </figure>
               ),
             }))}

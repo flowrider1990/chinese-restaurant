@@ -4,7 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from 'react'
 
 const noop = () => () => {}
 
-type Filter = 'all' | 'vegetarian' | 'vegan' | 'mild'
+type Filter = 'all' | 'vegetarian' | 'vegan' | 'spicy' | 'mild'
 
 /**
  * Dietary filter. Sets data-filter on the menu element; CSS hides non-matching dishes. Without

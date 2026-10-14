@@ -63,7 +63,15 @@ const publicRead = { overrideAccess: false } as const
 export const getMenu = cache(async (locale: Locale) => {
   const payload = await payloadClient()
   const [categories, items] = await Promise.all([
-    payload.find({ collection: 'menu-categories', locale, sort: '_order', pagination: false, depth: 0, ...publicRead }),
+    payload.find({
+      collection: 'menu-categories',
+      locale,
+      sort: '_order',
+      pagination: false,
+      depth: 1,
+      joins: false,
+      ...publicRead,
+    }),
     payload.find({
       collection: 'menu-items',
       locale,
@@ -80,6 +88,7 @@ export const getMenu = cache(async (locale: Locale) => {
       name: c.name,
       slug: c.slug ?? String(c.id),
       description: c.description ?? null,
+      image: typeof c.image === 'object' ? (c.image ?? null) : null,
       items: items.docs.filter((i) => (typeof i.category === 'object' ? i.category.id : i.category) === c.id),
     }))
     .filter((s) => s.items.length > 0)
