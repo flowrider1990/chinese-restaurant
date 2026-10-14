@@ -124,6 +124,37 @@ Spec: `docs/superpowers/specs/2026-10-14-reservations-design.md`.
 - With mode off or external, `/reservieren` renders the not-found page (noindex); in development
   the status is 200 because `[locale]/loading.tsx` streams the response first.
 
+## Vouchers (2026-10-14)
+
+Spec: `docs/superpowers/specs/2026-10-14-vouchers-design.md`.
+
+- Flow: `/gutscheine` (`/en/vouchers`) form → Server Action creates a pending voucher and a Stripe
+  Checkout Session (amount checked on the server) → redirect to Stripe → success URL
+  `/gutscheine?session_id=…` shows the thank-you state from our own database. The signed webhook
+  marks the voucher paid exactly once, sets code and validity, and sends the mails.
+- Units: `src/lib/voucher-rules.ts` (pure checks), `voucher-code.ts` (`XC-XXXX-XXXX`),
+  `stripe.ts` (client), `voucher-checkout.ts`, `voucher-webhook.ts`, `voucher-fulfilment.ts`,
+  `voucher-pdf.ts`, `voucher-mails.ts`; collection `src/collections/Vouchers.ts`.
+- Units of money: integer cents, like prices. Amounts 10-300 EUR, whole euros. Valid until 31
+  December of the third year after purchase (Europe/Berlin).
+- Webhook: `POST /api/vouchers/stripe-webhook` (collection endpoint, raw body, signature checked).
+  Locally run `stripe listen --events checkout.session.completed,checkout.session.expired,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed --forward-to localhost:3000/api/vouchers/stripe-webhook`
+  (the CLI requires `--events`), and put the printed secret (`stripe listen --print-secret`) into
+  `STRIPE_WEBHOOK_SECRET`. Without the secret the endpoint answers 500; a bad signature gives 400.
+- Test keys only: `src/lib/stripe.ts` refuses a key that does not start with `sk_test_`.
+- Env vars (server only, never `NEXT_PUBLIC_`): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`.
+- Mails: buyer mail with PDF, plus a notice to the restaurant's notification address. If the buyer
+  mail fails the voucher stays paid and the restaurant notice carries an "Achtung" line so staff
+  pass the code on manually.
+- Staff redeem in the admin by appending redemption rows; earlier rows cannot be changed. Staff
+  can cancel a paid voucher (refund is done in the Stripe dashboard) and delete pending or expired
+  ones.
+- Migration `20261014_172131_vouchers` adds the `vouchers` tables; run `pnpm migrate` (also on
+  Turso) before deploying.
+- Verified end to end on 2026-10-14 with the Stripe CLI in test mode: purchase, webhook `[200]`,
+  voucher paid with code and validity 31 Dec 2029, thank-you state, cancel via the Stripe back
+  link leaves a pending voucher.
+
 ## Content model (Phase 2)
 
 | Admin group | Type | Purpose |
