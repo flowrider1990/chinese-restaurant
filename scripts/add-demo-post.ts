@@ -1,7 +1,7 @@
 /**
  * Adds a second demo post ("Dim Sum am Wochenende") with a title image and one image inside the
  * text, and a title image for the first seeded post. Uses the placeholder photos already in the media library (pnpm images:import), so run that
- * first. Safe to re-run: an existing post with the same slug is left alone.
+ * first. Safe to re-run: an existing post with the same slug only gets its title image updated.
  *
  * Usage: pnpm demo:post
  */
@@ -37,9 +37,23 @@ async function giveFirstPostAnImage() {
   }
 }
 
+// Title image of the dim sum post: the category image of "Warme Vorspeisen & Dim Sum".
+const HERO = 'warme-vorspeisen-dim-sum'
+
 if (existing.totalDocs > 0) {
   await giveFirstPostAnImage()
-  console.log('Demo post already exists.')
+  // Keep an existing post's title image in line with HERO.
+  const post = await payload.find({
+    collection: 'posts',
+    where: { slug: { equals: SLUG_DE } },
+    locale: 'de',
+    limit: 1,
+    depth: 0,
+  })
+  const heroId = await mediaId(HERO)
+  if (post.docs[0] && post.docs[0].heroImage !== heroId)
+    await payload.update({ collection: 'posts', id: post.docs[0].id, data: { heroImage: heroId } })
+  console.log('Demo post already exists; title image checked.')
   process.exit(0)
 }
 
@@ -53,7 +67,7 @@ async function mediaId(name: string) {
     throw new Error(`Image "${name}" is not in the media library. Run pnpm images:import first.`)
   return res.docs[0].id
 }
-const hero = await mediaId('hero-wok')
+const hero = await mediaId(HERO)
 const inline = await mediaId('restaurant')
 
 const text = (value: string) => ({
