@@ -528,6 +528,30 @@ a.provider:hover {
   display: none;
 }
 
+/* Five menu items plus language, theme and phone do not fit on narrow desktops: the phone button
+   shrinks to its icon first, then the menu moves into the menu button. */
+@media (max-width: 75rem) {
+  .site-header__call {
+    padding-inline: 0.75rem;
+  }
+  .site-header__call span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+@media (max-width: 62rem) {
+  .site-nav {
+    display: none;
+  }
+  .mobile-nav {
+    display: block;
+  }
+}
+
 @media (min-width: 48.01rem) {
   /* The header has the phone button on desktop; the hero repeats it only on phones. */
   .hero__call {
