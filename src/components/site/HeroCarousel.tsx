@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, type ReactNode } from 'react'
+import { Icon } from './Icon'
 
 /**
  * Scroll-snap carousel. Arrows and dots sit on the image; no autoplay. Swiping, the buttons and the
@@ -57,7 +58,7 @@ export function HeroCarousel({
             onClick={() => go(index - 1)}
             aria-label={labels.prev}
           >
-            <span aria-hidden="true">‹</span>
+            <Icon name="chevronLeft" size={26} />
           </button>
           <button
             type="button"
@@ -65,7 +66,7 @@ export function HeroCarousel({
             onClick={() => go(index + 1)}
             aria-label={labels.next}
           >
-            <span aria-hidden="true">›</span>
+            <Icon name="chevronRight" size={26} />
           </button>
           <div className="carousel__dots">
             {slides.map((s, i) => (
