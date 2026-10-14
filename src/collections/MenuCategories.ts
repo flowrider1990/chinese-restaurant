@@ -1,3 +1,4 @@
+import { collectionRevalidation } from '@/lib/revalidate'
 import type { CollectionConfig } from 'payload'
 import { anyone, editorWrite } from '@/access'
 import { slugField } from '@/fields/slug'
@@ -13,6 +14,7 @@ export const MenuCategories: CollectionConfig = {
     description: 'Reihenfolge per Drag & Drop in der Liste ändern.',
   },
   access: { read: anyone, ...editorWrite },
+  hooks: collectionRevalidation,
   fields: [
     { name: 'name', type: 'text', label: 'Name', required: true, localized: true },
     { name: 'description', type: 'textarea', label: 'Beschreibung', localized: true },

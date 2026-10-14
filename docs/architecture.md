@@ -75,6 +75,24 @@ the Local API, then prints the target and versions.
   Instrument Sans, both OFL) are self-hosted through `next/font`; Chinese text uses system fonts.
 - `pnpm typecheck` runs `next typegen` first, because route types (`LayoutProps`) are generated.
 
+## SEO and caching (Phase 5)
+
+- Public pages are prerendered. Every save or delete in the CMS (collections and globals) calls
+  `revalidatePath('/(frontend)/[locale]', 'layout')` (`src/lib/revalidate.ts`), so changes are live
+  on the next visit. The path must be the route file path including the route group; the public
+  URL does not work because of the proxy rewrite. Verified 2026-10-14 against a production build:
+  a price edit through the API appeared on `/speisekarte` and `/en/menu` on the next visit.
+- `src/lib/seo.ts`: canonical URLs, hreflang (de, en, x-default), Open Graph/Twitter cards,
+  `Restaurant` JSON-LD from the same `getRestaurantInfo()` object as the visible pages. The menu
+  page adds `Menu` JSON-LD, posts add `NewsArticle`.
+- Default social image: `/og-image` and `/en/og-image` (route handler). A "Standard-Vorschaubild"
+  in the site settings or a post's hero image replaces it.
+- `sitemap.xml` (all pages in both languages, published posts) and `robots.txt` (blocks `/admin`
+  and `/api`). Base URL from `NEXT_PUBLIC_SITE_URL`.
+- Deferred by decision (2026-10-14, no hosting chosen yet): the Vercel Blob storage adapter for
+  images. Uploads are stored on the local disk until hosting is decided. Required before any
+  serverless deployment, because serverless functions have no persistent disk.
+
 ## Content model (Phase 2)
 
 | Admin group | Type | Purpose |

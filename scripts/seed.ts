@@ -155,6 +155,7 @@ await payload.updateGlobal({
     name: 'Xiao Chu',
     nameNative: '小厨',
     tagline: 'Chinesische Küche aus Wok und Dampfkorb in Friedrichshain.',
+    cuisine: 'Chinesisch, Sichuan, Dim Sum',
     // Fictional number from the range reserved for film/TV use in Germany (030 23125 xxx).
     phone: '030 23125 456',
     phoneE164: '+493023125456',
@@ -177,6 +178,7 @@ await payload.updateGlobal({
   locale: 'en',
   data: {
     tagline: 'Chinese cooking from wok and steamer basket in Friedrichshain.',
+    cuisine: 'Chinese, Sichuan, Dim sum',
     // Keep row ids so English labels attach to the same rows.
     orderLinks: settings.orderLinks?.map((row) => ({
       ...row,

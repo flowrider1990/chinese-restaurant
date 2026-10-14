@@ -654,6 +654,10 @@ export interface SiteSetting {
    * Ein Satz, z. B. für die Startseite und Suchmaschinen.
    */
   tagline?: string | null;
+  /**
+   * Z. B. „Chinesisch“ oder „Sichuan“. Mehrere durch Komma trennen.
+   */
+  cuisine?: string | null;
   phone: string;
   phoneE164: string;
   email?: string | null;
@@ -870,6 +874,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   name?: T;
   nameNative?: T;
   tagline?: T;
+  cuisine?: T;
   phone?: T;
   phoneE164?: T;
   email?: T;

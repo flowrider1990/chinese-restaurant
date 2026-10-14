@@ -11,6 +11,7 @@ import { locales } from '@/i18n/locales'
 import { href } from '@/i18n/routes'
 import { isLocale } from '@/i18n/server'
 import { getRestaurantInfo } from '@/lib/queries'
+import { siteUrl } from '@/lib/seo'
 import './site.css'
 import './pages.css'
 
@@ -31,7 +32,12 @@ export async function generateMetadata({ params }: LayoutProps<'/[locale]'>): Pr
   const { locale } = await params
   if (!isLocale(locale)) return {}
   const info = await getRestaurantInfo(locale)
-  return { title: { default: info.name, template: `%s · ${info.name}` }, description: info.tagline ?? undefined }
+  return {
+    metadataBase: new URL(siteUrl),
+    title: { default: info.name, template: `%s · ${info.name}` },
+    description: info.seoDescription ?? info.tagline ?? undefined,
+    applicationName: info.name,
+  }
 }
 
 export default async function SiteLayout({ children, params }: LayoutProps<'/[locale]'>) {

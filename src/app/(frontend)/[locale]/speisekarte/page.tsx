@@ -3,12 +3,14 @@ import { CategoryNav } from '@/components/site/CategoryNav'
 import { Dish } from '@/components/site/Dish'
 import { MenuFilter } from '@/components/site/MenuFilter'
 import { dictionaries } from '@/i18n/dictionary'
+import { absolute, jsonLdScript, pageMetadata } from '@/lib/seo'
+import { href } from '@/i18n/routes'
 import { getLocale, isLocale } from '@/i18n/server'
 import { getMenu } from '@/lib/queries'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/speisekarte'>): Promise<Metadata> {
   const { locale } = await params
-  return isLocale(locale) ? { title: dictionaries[locale].menu.title } : {}
+  return isLocale(locale) ? pageMetadata({ key: 'menu', locale, title: dictionaries[locale].menu.title }) : {}
 }
 
 export default async function MenuPage() {
@@ -16,9 +18,27 @@ export default async function MenuPage() {
   const { sections, legend } = await getMenu(locale)
   const allergens = legend.filter((a) => a.kind === 'allergen')
   const additives = legend.filter((a) => a.kind === 'additive')
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Menu',
+    url: absolute(href('menu', locale)),
+    inLanguage: locale,
+    hasMenuSection: sections.map((s) => ({
+      '@type': 'MenuSection',
+      name: s.name,
+      ...(s.description && { description: s.description }),
+      hasMenuItem: s.items.map((item) => ({
+        '@type': 'MenuItem',
+        name: item.name,
+        ...(item.description && { description: item.description }),
+        offers: { '@type': 'Offer', price: (item.price / 100).toFixed(2), priceCurrency: 'EUR' },
+      })),
+    })),
+  }
 
   return (
     <div className="menu-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(jsonLd)} />
       <header className="page-head">
         <h1>{t.menu.title}</h1>
         <p>{t.menu.intro}</p>

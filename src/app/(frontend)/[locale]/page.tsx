@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Dish } from '@/components/site/Dish'
 import { HeroCarousel } from '@/components/site/HeroCarousel'
@@ -7,8 +8,14 @@ import { OrderOptions } from '@/components/site/OrderOptions'
 import { RichText } from '@/components/site/RichText'
 import { VisitInfo } from '@/components/site/VisitInfo'
 import { href } from '@/i18n/routes'
-import { getLocale } from '@/i18n/server'
+import { getLocale, isLocale } from '@/i18n/server'
 import { getHome, getPosts, getRestaurantInfo } from '@/lib/queries'
+import { jsonLdScript, pageMetadata, restaurantJsonLd } from '@/lib/seo'
+
+export async function generateMetadata({ params }: PageProps<'/[locale]'>): Promise<Metadata> {
+  const { locale } = await params
+  return isLocale(locale) ? pageMetadata({ key: 'home', locale }) : {}
+}
 
 export default async function HomePage() {
   const { locale, t } = await getLocale()
@@ -18,6 +25,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(restaurantJsonLd(info, locale))} />
       <section className="hero">
         <div className="hero__text">
           <h1>{info.tagline ?? info.name}</h1>

@@ -1,3 +1,4 @@
+import { collectionRevalidation } from '@/lib/revalidate'
 import type { CollectionConfig } from 'payload'
 import { draftsPublishedOrAuthenticated, editorWrite } from '@/access'
 import { slugField } from '@/fields/slug'
@@ -12,6 +13,7 @@ export const Posts: CollectionConfig = {
   },
   defaultSort: '-publishedAt',
   access: { read: draftsPublishedOrAuthenticated, ...editorWrite },
+  hooks: collectionRevalidation,
   versions: {
     drafts: true,
     maxPerDoc: 20,

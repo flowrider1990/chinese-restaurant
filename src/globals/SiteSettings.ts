@@ -1,3 +1,4 @@
+import { revalidateGlobal } from '@/lib/revalidate'
 import type { GlobalConfig } from 'payload'
 import { anyone, authenticated } from '@/access'
 
@@ -10,6 +11,7 @@ export const SiteSettings: GlobalConfig = {
   label: 'Restaurant & Kontakt',
   admin: { group: 'Einstellungen' },
   access: { read: anyone, update: authenticated },
+  hooks: { afterChange: [revalidateGlobal] },
   fields: [
     {
       type: 'tabs',
@@ -20,12 +22,21 @@ export const SiteSettings: GlobalConfig = {
             {
               type: 'row',
               fields: [
-                { name: 'name', type: 'text', label: 'Name des Restaurants', required: true, admin: { width: '60%' } },
+                {
+                  name: 'name',
+                  type: 'text',
+                  label: 'Name des Restaurants',
+                  required: true,
+                  admin: { width: '60%' },
+                },
                 {
                   name: 'nameNative',
                   type: 'text',
                   label: 'Name in Originalschrift (optional)',
-                  admin: { width: '40%', description: 'Z. B. „小厨“. Erscheint klein neben dem Namen.' },
+                  admin: {
+                    width: '40%',
+                    description: 'Z. B. „小厨“. Erscheint klein neben dem Namen.',
+                  },
                 },
               ],
             },
@@ -35,6 +46,13 @@ export const SiteSettings: GlobalConfig = {
               label: 'Kurzbeschreibung / Claim',
               localized: true,
               admin: { description: 'Ein Satz, z. B. für die Startseite und Suchmaschinen.' },
+            },
+            {
+              name: 'cuisine',
+              type: 'text',
+              label: 'Küche (für Suchmaschinen)',
+              localized: true,
+              admin: { description: 'Z. B. „Chinesisch“ oder „Sichuan“. Mehrere durch Komma trennen.' },
             },
           ],
         },
@@ -80,7 +98,13 @@ export const SiteSettings: GlobalConfig = {
                       required: true,
                       admin: { width: '30%' },
                     },
-                    { name: 'city', type: 'text', label: 'Ort', required: true, admin: { width: '70%' } },
+                    {
+                      name: 'city',
+                      type: 'text',
+                      label: 'Ort',
+                      required: true,
+                      admin: { width: '70%' },
+                    },
                   ],
                 },
                 {
@@ -152,7 +176,9 @@ export const SiteSettings: GlobalConfig = {
               type: 'select',
               hasMany: true,
               label: 'Zahlungsarten im Restaurant',
-              admin: { description: 'Wird auf der Restaurant-Seite und in der Fußzeile angezeigt.' },
+              admin: {
+                description: 'Wird auf der Restaurant-Seite und in der Fußzeile angezeigt.',
+              },
               options: [
                 { label: 'Bargeld', value: 'cash' },
                 { label: 'girocard (EC-Karte)', value: 'girocard' },
@@ -178,7 +204,13 @@ export const SiteSettings: GlobalConfig = {
                     { label: 'Sonstige', value: 'other' },
                   ],
                 },
-                { name: 'url', type: 'text', label: 'URL', required: true, validate: validateHttpsUrl },
+                {
+                  name: 'url',
+                  type: 'text',
+                  label: 'URL',
+                  required: true,
+                  validate: validateHttpsUrl,
+                },
               ],
             },
           ],

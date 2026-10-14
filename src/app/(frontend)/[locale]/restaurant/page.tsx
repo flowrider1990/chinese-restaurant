@@ -4,13 +4,14 @@ import { RichText } from '@/components/site/RichText'
 import { StaticMap } from '@/components/site/StaticMap'
 import { VisitInfo } from '@/components/site/VisitInfo'
 import { dictionaries } from '@/i18n/dictionary'
+import { jsonLdScript, pageMetadata, restaurantJsonLd } from '@/lib/seo'
 import { getLocale, isLocale } from '@/i18n/server'
 import type { Media } from '@/payload-types'
 import { getAbout, getRestaurantInfo } from '@/lib/queries'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/restaurant'>): Promise<Metadata> {
   const { locale } = await params
-  return isLocale(locale) ? { title: dictionaries[locale].restaurant.title } : {}
+  return isLocale(locale) ? pageMetadata({ key: 'restaurant', locale, title: dictionaries[locale].restaurant.title }) : {}
 }
 
 const isMedia = (m: unknown): m is Media => typeof m === 'object' && m !== null
@@ -31,6 +32,7 @@ export default async function RestaurantPage() {
 
   return (
     <div className="restaurant-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(restaurantJsonLd(info, locale))} />
       <header className="page-head">
         <h1>
           {info.name}

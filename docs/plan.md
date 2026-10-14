@@ -11,8 +11,8 @@ plans folder.
 | 2 Content model + admin | Done. Dev DB holds the fictional restaurant and a 135-item placeholder menu |
 | 3 Design system + shell | Done. Header, footer, mobile action bar, DE/EN routing, open-now status |
 | 4 Public pages | Done. Home, menu (filter, legend), restaurant (two-click map), news, imprint, privacy |
-| 5 Images, SEO, caching | Next |
-| 6 | Not started |
+| 5 Images, SEO, caching | Done except image storage (Blob adapter deferred until hosting is chosen) |
+| 6 Hardening + preview deploy | Next (needs a hosting decision) |
 
 **Open items**
 - Create the first admin account at `/admin` (the dev DB has 0 users).

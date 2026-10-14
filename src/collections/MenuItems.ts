@@ -1,3 +1,4 @@
+import { collectionRevalidation } from '@/lib/revalidate'
 import type { CollectionConfig } from 'payload'
 import { editorWrite, publishedOrAuthenticated } from '@/access'
 import { priceField } from '@/fields/price'
@@ -13,6 +14,7 @@ export const MenuItems: CollectionConfig = {
     listSearchableFields: ['name', 'menuNumber', 'nameOriginal'],
   },
   access: { read: publishedOrAuthenticated, ...editorWrite },
+  hooks: collectionRevalidation,
   fields: [
     {
       type: 'row',
@@ -37,7 +39,10 @@ export const MenuItems: CollectionConfig = {
       name: 'nameOriginal',
       type: 'text',
       label: 'Originalname (optional)',
-      admin: { description: 'Z. B. der chinesische Name „宫保鸡丁“. Wird in allen Sprachen gleich angezeigt.' },
+      admin: {
+        description:
+          'Z. B. der chinesische Name „宫保鸡丁“. Wird in allen Sprachen gleich angezeigt.',
+      },
     },
     {
       name: 'description',
@@ -102,7 +107,12 @@ export const MenuItems: CollectionConfig = {
               localized: true,
               admin: { width: '60%' },
             },
-            priceField({ name: 'priceDelta', label: 'Aufpreis (€)', allowNegative: true, width: '40%' }),
+            priceField({
+              name: 'priceDelta',
+              label: 'Aufpreis (€)',
+              allowNegative: true,
+              width: '40%',
+            }),
           ],
         },
       ],

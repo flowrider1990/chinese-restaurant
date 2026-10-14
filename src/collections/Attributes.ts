@@ -1,3 +1,4 @@
+import { collectionRevalidation } from '@/lib/revalidate'
 import type { CollectionConfig } from 'payload'
 import { anyone, editorWrite } from '@/access'
 
@@ -11,6 +12,7 @@ export const Attributes: CollectionConfig = {
     defaultColumns: ['name', 'kind', 'code'],
   },
   access: { read: anyone, ...editorWrite },
+  hooks: collectionRevalidation,
   fields: [
     {
       name: 'name',
@@ -43,7 +45,8 @@ export const Attributes: CollectionConfig = {
       label: 'Kürzel (optional)',
       admin: {
         position: 'sidebar',
-        description: 'Nur Darstellungshilfe (z. B. „E“ oder „12“). Ersetzt nie den vollständigen Namen.',
+        description:
+          'Nur Darstellungshilfe (z. B. „E“ oder „12“). Ersetzt nie den vollständigen Namen.',
       },
     },
     { name: 'description', type: 'textarea', label: 'Erläuterung', localized: true },

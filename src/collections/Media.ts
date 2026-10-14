@@ -1,3 +1,4 @@
+import { collectionRevalidation } from '@/lib/revalidate'
 import type { CollectionConfig } from 'payload'
 import { anyone, editorWrite } from '@/access'
 
@@ -6,6 +7,7 @@ export const Media: CollectionConfig = {
   labels: { singular: 'Bild', plural: 'Bilder' },
   admin: { group: 'Inhalte', useAsTitle: 'alt' },
   access: { read: anyone, ...editorWrite },
+  hooks: collectionRevalidation,
   fields: [
     {
       name: 'alt',

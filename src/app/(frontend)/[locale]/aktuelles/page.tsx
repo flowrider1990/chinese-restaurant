@@ -2,13 +2,14 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { MediaImage } from '@/components/site/MediaImage'
 import { dictionaries } from '@/i18n/dictionary'
+import { pageMetadata } from '@/lib/seo'
 import { href } from '@/i18n/routes'
 import { getLocale, isLocale } from '@/i18n/server'
 import { getPosts } from '@/lib/queries'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/aktuelles'>): Promise<Metadata> {
   const { locale } = await params
-  return isLocale(locale) ? { title: dictionaries[locale].news.title } : {}
+  return isLocale(locale) ? pageMetadata({ key: 'news', locale, title: dictionaries[locale].news.title }) : {}
 }
 
 export default async function NewsPage({ searchParams }: PageProps<'/[locale]/aktuelles'>) {

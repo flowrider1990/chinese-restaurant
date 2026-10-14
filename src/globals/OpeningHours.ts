@@ -1,3 +1,4 @@
+import { revalidateGlobal } from '@/lib/revalidate'
 import type { GlobalConfig } from 'payload'
 import { anyone, authenticated } from '@/access'
 import { timeField } from '@/fields/time'
@@ -21,6 +22,7 @@ export const OpeningHours: GlobalConfig = {
   label: 'Öffnungszeiten',
   admin: { group: 'Einstellungen' },
   access: { read: anyone, update: authenticated },
+  hooks: { afterChange: [revalidateGlobal] },
   fields: [
     {
       name: 'weekly',

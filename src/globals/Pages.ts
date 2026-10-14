@@ -1,3 +1,4 @@
+import { revalidateGlobal } from '@/lib/revalidate'
 import type { GlobalConfig } from 'payload'
 import { anyone, authenticated } from '@/access'
 
@@ -8,6 +9,7 @@ export const Home: GlobalConfig = {
   label: 'Startseite',
   admin: { group: 'Seiten' },
   access,
+  hooks: { afterChange: [revalidateGlobal] },
   fields: [
     {
       name: 'heroSlides',
@@ -46,6 +48,7 @@ export const About: GlobalConfig = {
   label: 'Über uns / Restaurant',
   admin: { group: 'Seiten' },
   access,
+  hooks: { afterChange: [revalidateGlobal] },
   fields: [
     { name: 'intro', type: 'richText', label: 'Text', localized: true },
     {
@@ -53,7 +56,9 @@ export const About: GlobalConfig = {
       type: 'array',
       label: 'Bildergalerie (Restaurant & Interieur)',
       labels: { singular: 'Bild', plural: 'Bilder' },
-      fields: [{ name: 'image', type: 'upload', relationTo: 'media', label: 'Bild', required: true }],
+      fields: [
+        { name: 'image', type: 'upload', relationTo: 'media', label: 'Bild', required: true },
+      ],
     },
     {
       name: 'team',
@@ -78,6 +83,7 @@ export const Legal: GlobalConfig = {
       'Platzhalter in [ECKIGEN KLAMMERN] müssen vor der Veröffentlichung durch echte Angaben ersetzt werden.',
   },
   access,
+  hooks: { afterChange: [revalidateGlobal] },
   fields: [
     { name: 'imprint', type: 'richText', label: 'Impressum', localized: true },
     { name: 'privacy', type: 'richText', label: 'Datenschutzerklärung', localized: true },

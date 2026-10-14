@@ -1,7 +1,7 @@
 import { getPayload } from 'payload'
 import { cache } from 'react'
 import config from '@/payload.config'
-import type { Locale } from '@/i18n/locales'
+import { locales, type Locale } from '@/i18n/locales'
 import type { Attribute, Media, MenuItem } from '@/payload-types'
 import type { Hours } from './opening-hours'
 
@@ -15,13 +15,16 @@ export const payloadClient = cache(() => getPayload({ config }))
 export const getRestaurantInfo = cache(async (locale: Locale) => {
   const payload = await payloadClient()
   const [settings, hours] = await Promise.all([
-    payload.findGlobal({ slug: 'site-settings', locale, depth: 0 }),
+    payload.findGlobal({ slug: 'site-settings', locale, depth: 1 }),
     payload.findGlobal({ slug: 'opening-hours', locale, depth: 0 }),
   ])
   return {
     name: settings.name,
     nameNative: settings.nameNative ?? null,
     tagline: settings.tagline ?? null,
+    cuisine: settings.cuisine ?? null,
+    seoDescription: settings.seoDescription ?? null,
+    ogImage: typeof settings.ogImage === 'object' ? (settings.ogImage ?? null) : null,
     phone: settings.phone,
     phoneE164: settings.phoneE164,
     email: settings.email ?? null,
@@ -126,18 +129,37 @@ export const getPosts = cache(async (locale: Locale, page = 1, limit = 12) => {
   })
 })
 
+/**
+ * A published post by its slug in `locale`. If the slug belongs to another language (e.g. after a
+ * language switch), the post is still found and `slugs` tells the page where to redirect.
+ */
 export const getPost = cache(async (locale: Locale, slug: string) => {
   const payload = await payloadClient()
-  const res = await payload.find({
-    collection: 'posts',
-    locale,
-    where: { slug: { equals: slug } },
-    limit: 1,
-    depth: 2,
-    draft: false,
-    ...publicRead,
-  })
-  return res.docs[0] ?? null
+  const find = (l: Locale) =>
+    payload.find({
+      collection: 'posts',
+      locale: l,
+      where: { slug: { equals: slug } },
+      limit: 1,
+      depth: 0,
+      draft: false,
+      ...publicRead,
+    })
+  let match = (await find(locale)).docs[0]
+  if (!match) {
+    for (const l of locales.map((x) => x.code).filter((c) => c !== locale)) {
+      match = (await find(l)).docs[0]
+      if (match) break
+    }
+  }
+  if (!match) return null
+  const versions = await Promise.all(
+    locales.map((l) =>
+      payload.findByID({ collection: 'posts', id: match.id, locale: l.code, depth: 2, draft: false, ...publicRead }),
+    ),
+  )
+  const slugs = Object.fromEntries(locales.map((l, i) => [l.code, versions[i].slug ?? ''])) as Record<Locale, string>
+  return { post: versions[locales.findIndex((l) => l.code === locale)], slugs }
 })
 
 export const getAbout = cache(async (locale: Locale) => {
