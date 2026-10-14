@@ -1,5 +1,6 @@
 import * as migration_20261013_195310_initial from './20261013_195310_initial';
 import * as migration_20261014_085535_menu_details from './20261014_085535_menu_details';
+import * as migration_20261014_093915_site_name_native from './20261014_093915_site_name_native';
 
 export const migrations = [
   {
@@ -10,6 +11,11 @@ export const migrations = [
   {
     up: migration_20261014_085535_menu_details.up,
     down: migration_20261014_085535_menu_details.down,
-    name: '20261014_085535_menu_details'
+    name: '20261014_085535_menu_details',
+  },
+  {
+    up: migration_20261014_093915_site_name_native.up,
+    down: migration_20261014_093915_site_name_native.down,
+    name: '20261014_093915_site_name_native'
   },
 ];

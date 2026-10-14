@@ -17,7 +17,18 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Restaurant',
           fields: [
-            { name: 'name', type: 'text', label: 'Name des Restaurants', required: true },
+            {
+              type: 'row',
+              fields: [
+                { name: 'name', type: 'text', label: 'Name des Restaurants', required: true, admin: { width: '60%' } },
+                {
+                  name: 'nameNative',
+                  type: 'text',
+                  label: 'Name in Originalschrift (optional)',
+                  admin: { width: '40%', description: 'Z. B. „小厨“. Erscheint klein neben dem Namen.' },
+                },
+              ],
+            },
             {
               name: 'tagline',
               type: 'text',

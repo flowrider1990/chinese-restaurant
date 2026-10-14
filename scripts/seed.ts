@@ -153,6 +153,7 @@ await payload.updateGlobal({
   locale: 'de',
   data: {
     name: 'Xiao Chu',
+    nameNative: '小厨',
     tagline: 'Chinesische Küche aus Wok und Dampfkorb in Friedrichshain.',
     // Fictional number from the range reserved for film/TV use in Germany (030 23125 xxx).
     phone: '030 23125 456',

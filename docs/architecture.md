@@ -54,6 +54,23 @@ the Local API, then prints the target and versions.
 - Routing: a `[locale]` segment. German is served without a prefix (`/speisekarte`), English
   under `/en/…` (`/en/menu`), with `hreflang` alternates.
 
+## Public site (Phase 3)
+
+- `src/app/(frontend)/[locale]/` is the site's root layout; the CMS keeps its own root layout in
+  `(payload)`. `src/proxy.ts` rewrites German URLs (no prefix) onto `/de/…` and English URLs
+  (`/en/menu`) onto the German page folders (`/en/speisekarte`); `/de/…` redirects to the
+  unprefixed URL. Localized path segments live in `src/i18n/routes.ts`, interface text in
+  `src/i18n/dictionary.ts`.
+- Header, footer and the mobile action bar read the restaurant's details only through
+  `getRestaurantInfo()` in `src/lib/queries.ts`.
+- "Open now" is computed in the browser from `src/lib/opening-hours.ts`, so cached pages never
+  show a stale status.
+- Order links without a URL are shown as "coming soon" text, never as a link.
+- Design tokens are at the top of `src/app/(frontend)/[locale]/site.css`: enamel white, ink blue,
+  cobalt accent, light jade surface, chili only for spice markers. Fonts (Bricolage Grotesque,
+  Instrument Sans, both OFL) are self-hosted through `next/font`; Chinese text uses system fonts.
+- `pnpm typecheck` runs `next typegen` first, because route types (`LayoutProps`) are generated.
+
 ## Content model (Phase 2)
 
 | Admin group | Type | Purpose |

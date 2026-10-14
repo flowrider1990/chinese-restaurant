@@ -647,6 +647,10 @@ export interface SiteSetting {
   id: number;
   name: string;
   /**
+   * Z. B. „小厨“. Erscheint klein neben dem Namen.
+   */
+  nameNative?: string | null;
+  /**
    * Ein Satz, z. B. für die Startseite und Suchmaschinen.
    */
   tagline?: string | null;
@@ -860,6 +864,7 @@ export interface Legal {
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
   name?: T;
+  nameNative?: T;
   tagline?: T;
   phone?: T;
   phoneE164?: T;

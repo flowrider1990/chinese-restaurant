@@ -9,15 +9,16 @@ plans folder.
 |---|---|
 | 1 Scaffold | Done. Turso connection spike passed (see `docs/architecture.md`) |
 | 2 Content model + admin | Done. Dev DB holds the fictional restaurant and a 135-item placeholder menu |
-| 3 Design system + shell | Next |
-| 4–6 | Not started |
+| 3 Design system + shell | Done. Header, footer, mobile action bar, DE/EN routing, open-now status |
+| 4 Public pages | Next |
+| 5–6 | Not started |
 
 **Open items**
 - Create the first admin account at `/admin` (the dev DB has 0 users).
 - Real restaurant data (name, menu, photos, imprint) replaces the fictional data before launch. See `docs/legal-checklist.md`.
 
 **Decisions (2026-10-14)**
-- Design direction: modern but approachable, warm and friendly. No Chinese clichés.
+- Design direction: modern but approachable, warm and friendly. No Chinese clichés. Approved: enamel white, ink blue, cobalt accent, light jade surface (instead of bamboo).
 - Restaurant: fictional "Xiao Chu", Simon-Dach-Straße 99, 10245 Berlin-Friedrichshain. Placeholder images.
 - Ordering: Lieferando and Wolt are shown, but not functional yet (no URL, no redirect).
 - No hosting yet.
