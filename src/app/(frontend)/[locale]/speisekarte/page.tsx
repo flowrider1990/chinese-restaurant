@@ -112,34 +112,21 @@ export default async function MenuPage() {
             <section className="legend" aria-labelledby="legend-title">
               <h2 id="legend-title">{t.menu.legendTitle}</h2>
               <p>{t.menu.legendNote}</p>
-              <div className="legend__cols">
+              {/* Names only: dishes list their allergens in full, so letter codes would point nowhere. */}
+              <dl className="legend__list">
                 {allergens.length > 0 && (
                   <div>
-                    <h3>{t.menu.allergens}</h3>
-                    <dl>
-                      {allergens.map((a) => (
-                        <div key={a.id}>
-                          <dt>{a.code}</dt>
-                          <dd>{a.name}</dd>
-                        </div>
-                      ))}
-                    </dl>
+                    <dt>{t.menu.allergens}</dt>
+                    <dd>{allergens.map((a) => a.name).join(', ')}</dd>
                   </div>
                 )}
                 {additives.length > 0 && (
                   <div>
-                    <h3>{t.menu.additives}</h3>
-                    <dl>
-                      {additives.map((a) => (
-                        <div key={a.id}>
-                          <dt>{a.code}</dt>
-                          <dd>{a.name}</dd>
-                        </div>
-                      ))}
-                    </dl>
+                    <dt>{t.menu.additives}</dt>
+                    <dd>{additives.map((a) => a.name).join(', ')}</dd>
                   </div>
                 )}
-              </div>
+              </dl>
             </section>
           )}
         </>

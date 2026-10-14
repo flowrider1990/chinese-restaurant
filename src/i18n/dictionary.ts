@@ -92,7 +92,7 @@ const de = {
     unavailable: 'Zurzeit nicht verfügbar',
     spice: { mild: 'Leicht scharf', medium: 'Mittelscharf', hot: 'Scharf' },
     tags: { vegetarian: 'vegetarisch', vegan: 'vegan' },
-    legendTitle: 'Allergene und Zusatzstoffe',
+    legendTitle: 'Allergene und Zusatzstoffe auf dieser Karte',
     legendNote:
       'Die Angaben zu Allergenen und Zusatzstoffen stehen bei jedem Gericht. Bei Fragen zu Unverträglichkeiten sprechen Sie uns bitte an.',
     allergens: 'Allergene',
@@ -245,7 +245,7 @@ const en: typeof de = {
     unavailable: 'Currently unavailable',
     spice: { mild: 'Mildly spicy', medium: 'Medium spicy', hot: 'Spicy' },
     tags: { vegetarian: 'vegetarian', vegan: 'vegan' },
-    legendTitle: 'Allergens and additives',
+    legendTitle: 'Allergens and additives on this menu',
     legendNote:
       'Allergens and additives are listed with every dish. If you have questions about intolerances, please ask us.',
     allergens: 'Allergens',
