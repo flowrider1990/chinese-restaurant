@@ -112,7 +112,7 @@ back to the restaurant e-mail), `retentionDays` (30).
 | Status → confirmed | Guest | Confirmation with details, address, phone; optional message. |
 | Status → declined | Guest | Polite decline; optional message (e.g. alternative time); phone. |
 
-Language follows the guest's site language. Sender: `EMAIL_FROM` (env). Mails are sent after the
+Language follows the guest's site language. Sender: `EMAIL_FROM_ADDRESS` and `EMAIL_FROM_NAME` (env). Mails are sent after the
 document is saved; a failed send is logged with the reservation id and does not undo the save.
 The admin shows the request regardless, so a lost mail never loses a reservation.
 
@@ -158,6 +158,6 @@ guests, reminders, calendar files, guest accounts, external provider APIs.
 
 ## Configuration
 
-New env values (fake placeholders in `.env.example`): `RESEND_API_KEY`, `EMAIL_FROM`,
-`CRON_SECRET`. Without `RESEND_API_KEY` mails are written to the server log. The daily cleanup is
+New env values (fake placeholders in `.env.example`): `RESEND_API_KEY`, `EMAIL_FROM_ADDRESS`,
+`EMAIL_FROM_NAME`, `CRON_SECRET`. Without `RESEND_API_KEY` mails are written to the server log. The daily cleanup is
 scheduled once hosting is chosen (e.g. Vercel Cron); until then `pnpm reservations:cleanup`.
