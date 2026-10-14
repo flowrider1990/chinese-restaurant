@@ -43,7 +43,13 @@ export async function markPaid(payload: Payload, session: SessionLike, now = new
     payload.logger.error(`Stripe session ${session.id}: no voucher found`)
     return 'unknown' as const
   }
-  if (voucher.status !== 'pending') return 'already' as const
+  if (voucher.status !== 'pending') {
+    if (voucher.status !== 'paid')
+      payload.logger.error(
+        `Voucher ${voucher.id} is ${voucher.status} but Stripe session ${session.id} was paid: refund or handle manually`,
+      )
+    return 'already' as const
+  }
   if (typeof session.amount_total === 'number' && session.amount_total !== voucher.amount)
     payload.logger.error(
       `Voucher ${voucher.id}: paid ${session.amount_total} cents, expected ${voucher.amount}`,

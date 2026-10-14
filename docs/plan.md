@@ -12,7 +12,7 @@ plans folder.
 | 3 Design system + shell | Done. Header, footer, mobile action bar, DE/EN routing, open-now status |
 | 4 Public pages | Done. Home, menu (filter, legend), restaurant (two-click map), news, imprint, privacy |
 | 5 Images, SEO, caching | Done except image storage (Blob adapter deferred until hosting is chosen) |
-| Vouchers (extra) | Done on `feature/vouchers`: Stripe test-mode gift vouchers, admin redemption. Verified with the Stripe CLI |
+| Vouchers (extra) | Done on `feature/vouchers`: Stripe test-mode gift vouchers, admin redemption. Verified live with the Stripe CLI: purchase, webhook 200, paid voucher with code and validity, thank-you page, cancel link. Open manual checks: buyer mail with PDF (needs a real recipient address), restaurant notice, partial redemption and staff delete in the admin (needs the first admin account) |
 | 6 Hardening + preview deploy | Next (needs a hosting decision) |
 
 **Open items**

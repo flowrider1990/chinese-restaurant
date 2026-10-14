@@ -54,7 +54,7 @@ importers:
         specifier: 0.35.4
         version: 0.35.4(@types/node@22.19.9)
       stripe:
-        specifier: ^23.0.0
+        specifier: 23.0.0
         version: 23.0.0(@types/node@22.19.9)
     devDependencies:
       '@playwright/test':

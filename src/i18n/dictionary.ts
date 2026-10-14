@@ -199,7 +199,7 @@ const de = {
     reload: 'Seite neu laden',
     unknownTitle: 'Bestellung nicht gefunden',
     unknown:
-      'Wir konnten diese Bestellung nicht finden. Falls Sie bezahlt haben, kommt der Gutschein trotzdem per E-Mail.',
+      'Zu dieser Bestellung liegt keine bestätigte Zahlung vor. Bei Fragen erreichen Sie uns telefonisch oder per E-Mail.',
     back: 'Zurück zu den Gutscheinen',
   },
   dateLocale: 'de-DE',
@@ -390,7 +390,7 @@ const en: typeof de = {
     reload: 'Reload page',
     unknownTitle: 'Order not found',
     unknown:
-      'We could not find this order. If you have paid, your voucher will still arrive by e-mail.',
+      'We have no confirmed payment for this order. If you have questions, please contact us by phone or e-mail.',
     back: 'Back to gift vouchers',
   },
   dateLocale: 'en-GB',

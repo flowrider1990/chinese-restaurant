@@ -40,7 +40,7 @@ authoritative sources for Germany/EU at release time, not from this list alone.
 - [ ] Daily cleanup (`/api/reservations/cleanup`) scheduled on the hosting with a secret `CRON_SECRET`; verified once in production.
 - [ ] Spam: if fake requests appear, add rate limiting at the hosting level.
 - [ ] Vouchers: terms and conditions (AGB) and withdrawal (Widerruf) information for voucher sales, checked against current sources before launch.
-- [ ] Vouchers: privacy policy section for Stripe (recipient, purpose: payment processing, legal basis Art. 6(1)(b) GDPR, voucher records kept as business records), checked against current sources before launch.
+- [ ] Vouchers: privacy policy section for Stripe (recipient, purpose: payment processing, legal basis Art. 6(1)(b) GDPR, voucher records kept as business records), checked against current sources before launch. The seeded placeholder is section 7 of the German privacy text (`scripts/seed.ts`); the seed does not overwrite existing CMS content, so paste this section into the dev/production CMS privacy page manually.
 - [ ] Vouchers: keep the button wording "Zahlungspflichtig bestellen" and show the price including VAT, checked against current sources before launch.
 - [ ] Vouchers: the voucher page must show the validity (31 December of the third year after purchase) and the terms/withdrawal information near the order button before any real sale.
 - [ ] Vouchers: the demo note ("Es wird nichts abgebucht") stays until real launch; remove it only together with switching to live Stripe keys (the code refuses non-test keys today).

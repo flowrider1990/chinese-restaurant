@@ -313,6 +313,25 @@ describe('stripe webhook', () => {
     expect((await payload.findByID({ collection: 'vouchers', id: v.id })).status).toBe('expired')
   })
 
+  it('logs an error and changes nothing when a paid session arrives for an expired voucher', async () => {
+    const sent = vi.spyOn(payload, 'sendEmail').mockResolvedValue(undefined as never)
+    const logged = vi.spyOn(payload.logger, 'error').mockImplementation(() => undefined as never)
+    const v = await payload.create({
+      collection: 'vouchers',
+      data: voucherData({ status: 'expired' }),
+    })
+    const res = await deliver(completed(v.stripeSessionId!))
+    expect(res.status).toBe(200)
+    const after = await payload.findByID({ collection: 'vouchers', id: v.id })
+    expect(after.status).toBe('expired')
+    expect(after.code).toBeFalsy()
+    expect(sent).not.toHaveBeenCalled()
+    const messages = logged.mock.calls.map((c) => String(c[0]))
+    expect(messages.some((m) => m.includes(String(v.id)) && m.includes('expired') && m.includes(v.stripeSessionId!))).toBe(true)
+    sent.mockRestore()
+    logged.mockRestore()
+  })
+
   it('the collection endpoint passes the raw body to signature verification', async () => {
     const endpoint = Vouchers.endpoints
       ? Vouchers.endpoints.find((e) => e.path === '/stripe-webhook')

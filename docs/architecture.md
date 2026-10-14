@@ -151,9 +151,17 @@ Spec: `docs/superpowers/specs/2026-10-14-vouchers-design.md`.
   ones.
 - Migration `20261014_172131_vouchers` adds the `vouchers` tables; run `pnpm migrate` (also on
   Turso) before deploying.
-- Verified end to end on 2026-10-14 with the Stripe CLI in test mode: purchase, webhook `[200]`,
-  voucher paid with code and validity 31 Dec 2029, thank-you state, cancel via the Stripe back
-  link leaves a pending voucher.
+- Privacy text: `scripts/seed.ts` contains a placeholder section "7. Gutscheinkauf und Zahlung (Stripe)",
+  but the seed does not overwrite existing CMS content. The dev/production CMS privacy page needs this
+  section pasted in manually (see `docs/legal-checklist.md`).
+- `src/lib/stripe.ts` deliberately has no `import 'server-only'`: the module is reachable from the Payload
+  config (CLI scripts would break) and is only imported by server modules.
+- Deleting a staff user sets the "by" field of their redemptions to empty (`ON DELETE set null`).
+- Verified live on 2026-10-14 with the Stripe CLI in test mode: purchase, webhook `[200]`, voucher
+  paid with code and validity 31 Dec 2029, thank-you page, cancel via the Stripe back link leaves a
+  pending voucher. Still open as manual checks: buyer mail with PDF arriving (needs a real recipient
+  address), restaurant notice, partial redemption and staff delete in the admin (needs the first admin
+  account; the dev DB has none yet).
 
 ## Content model (Phase 2)
 
