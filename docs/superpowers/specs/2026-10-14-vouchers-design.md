@@ -39,7 +39,7 @@ Buyer ─▶ /gutscheine (/en/vouchers)
           │                                  │
           │ success_url                      │ webhook (signed)
           ▼                                  ▼
-        /gutscheine/danke?session_id=…     POST /api/vouchers/stripe-webhook
+        /gutscheine?session_id=…           POST /api/vouchers/stripe-webhook
           shows status from our DB           handleStripeEvent()
                                                checkout.session.completed → markPaid()
                                                  code, validUntil, PDF, mails
@@ -61,10 +61,13 @@ Admin ─▶ Vouchers collection: search by code, add redemptions, cancel
 | `src/lib/voucher-pdf.ts` | `voucherPdf(voucher, site, locale)` → `Uint8Array`. A5 landscape, built-in Helvetica (covers € and umlauts). | `pdf-lib` |
 | `src/lib/voucher-mails.ts` | Buyer mail (DE/EN, code in text, PDF attached) and a short notice to the restaurant. | Payload `sendEmail` |
 | `src/collections/Vouchers.ts` | Stored vouchers, admin list, access, redemption hooks, webhook endpoint. | rules, webhook |
-| `src/app/(frontend)/[locale]/gutscheine/` | Page, form (client), Server Action, `danke/` page. | checkout |
+| `src/app/(frontend)/[locale]/gutscheine/` | Page, form (client), Server Action; the same page shows the thank-you state when called with `?session_id=`. | checkout |
 
-Route map gets `vouchers: { de: 'gutscheine', en: 'vouchers' }`. The thank-you page is
-`/gutscheine/danke` (`/en/vouchers/thanks`).
+Route map gets `vouchers: { de: 'gutscheine', en: 'vouchers' }`. The thank-you state is the same
+page with `?session_id=…` (the proxy only translates the first path segment, so a nested
+`danke`/`thanks` segment would need extra routing for no benefit).
+
+Copy uses the formal "Sie", like the rest of the site and the reservation mails.
 
 ### Data model: `vouchers`
 
@@ -101,10 +104,10 @@ status `cancelled`) and may delete only `pending` or `expired` vouchers.
   product name "Gutschein Xiao Chu"), `customer_email`, `locale`, `metadata.voucherId`,
   `client_reference_id`, `expires_at` now + 30 minutes, `success_url` with
   `{CHECKOUT_SESSION_ID}`, `cancel_url` back to the form.
-- **Thank-you page**: looks up the voucher by `session_id` in our DB (not in Stripe) and shows one
-  of: paid → "Danke! Dein Gutschein ist per E-Mail unterwegs."; pending → "Zahlung wird bestätigt …"
-  with a reload link; unknown → neutral message with a link back. It never shows the code or
-  personal data. `noindex`.
+- **Thank-you state** (`?session_id=`): looks up the voucher by session id in our DB (not in
+  Stripe) and shows one of: paid → "Vielen Dank! Ihr Gutschein ist per E-Mail unterwegs.";
+  pending → "Zahlung wird bestätigt …" with a reload link; unknown → neutral message with a link
+  back. It never shows the code or personal data. `noindex`.
 - Navigation: link "Gutscheine" in the footer and on the restaurant page; not in the main nav.
 
 ## Webhook
@@ -114,7 +117,8 @@ status `cancelled`) and may delete only `pending` or `expired` vouchers.
   (`req.text()`), with a Next.js route handler outside `/api` as fallback.
 - Signature checked with `stripe.webhooks.constructEvent` and `STRIPE_WEBHOOK_SECRET`. Invalid →
   400, nothing changed.
-- `checkout.session.completed` with `payment_status: 'paid'` → `markPaid`. The state change is
+- `checkout.session.completed` with `payment_status: 'paid'`, and
+  `checkout.session.async_payment_succeeded` (delayed methods), → `markPaid`. The state change is
   conditional (only from `pending`), so a repeated event does nothing and sends no second mail.
 - `checkout.session.expired` → `pending` becomes `expired`.
 - Other events → 200, ignored.
@@ -126,7 +130,7 @@ status `cancelled`) and may delete only `pending` or `expired` vouchers.
 
 ## E-mails and PDF
 
-- **Buyer** (DE/EN by `locale`): subject "Dein Gutschein für Xiao Chu", amount, code, valid until,
+- **Buyer** (DE/EN by `locale`): subject "Ihr Gutschein für Xiao Chu", amount, code, valid until,
   how to redeem (show the code or PDF in the restaurant), PDF attached as
   `gutschein-XC-XXXX-XXXX.pdf`. The plan checks that the Resend adapter passes attachments; if not,
   the mail is sent through the Resend API directly.
