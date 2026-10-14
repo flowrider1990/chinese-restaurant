@@ -108,7 +108,7 @@ status `cancelled`) and may delete only `pending` or `expired` vouchers.
   Stripe) and shows one of: paid → "Vielen Dank! Ihr Gutschein ist per E-Mail unterwegs.";
   pending → "Zahlung wird bestätigt …" with a reload link; unknown → neutral message with a link
   back. It never shows the code or personal data. `noindex`.
-- Navigation: link "Gutscheine" in the footer and on the restaurant page; not in the main nav.
+- Navigation: "Gutscheine" in the main menu (user decision 2026-10-14) and a link on the restaurant page; not in the footer.
 
 ## Webhook
 
