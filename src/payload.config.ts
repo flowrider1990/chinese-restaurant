@@ -12,8 +12,10 @@ import { Media } from './collections/Media'
 import { MenuCategories } from './collections/MenuCategories'
 import { MenuItems } from './collections/MenuItems'
 import { Posts } from './collections/Posts'
+import { Reservations } from './collections/Reservations'
 import { Users } from './collections/Users'
 import { OpeningHours } from './globals/OpeningHours'
+import { ReservationSettings } from './globals/ReservationSettings'
 import { About, Home, Legal } from './globals/Pages'
 import { SiteSettings } from './globals/SiteSettings'
 import { defaultLocale, locales } from './i18n/locales'
@@ -32,8 +34,8 @@ export default buildConfig({
     },
     meta: { titleSuffix: ' – CMS' },
   },
-  collections: [MenuItems, MenuCategories, Attributes, Posts, Media, Users],
-  globals: [SiteSettings, OpeningHours, Home, About, Legal],
+  collections: [MenuItems, MenuCategories, Attributes, Posts, Media, Reservations, Users],
+  globals: [SiteSettings, OpeningHours, ReservationSettings, Home, About, Legal],
   localization: {
     locales: locales.map((l) => ({ code: l.code, label: l.label })),
     defaultLocale,
