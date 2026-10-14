@@ -24,6 +24,11 @@ authoritative sources for Germany/EU at release time, not from this list alone.
 - [ ] Prices include VAT (PAngV). Drink sizes are shown next to their prices.
 - [ ] No unsupported claims (e.g. "ohne Glutamat") unless the restaurant confirms them.
 
+## Deployment security
+
+- [ ] Create the first admin account on the production database before the site is reachable: while `users` is empty, Payload's "create first user" screen at `/admin` is open to anyone.
+- [ ] Before reservation e-mails go live: limit how often the public form can trigger mails (per recipient/IP), because each request mails a receipt to any address typed in.
+
 ## Privacy and consent
 
 - [ ] No third-party requests when viewing any page. The map is a self-hosted drawing from OpenStreetMap data (`pnpm map:generate`); Google Maps is only a link. Check this in the browser's network panel.
