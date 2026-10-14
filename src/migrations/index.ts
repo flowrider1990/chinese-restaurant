@@ -6,6 +6,7 @@ import * as migration_20261014_101615_site_cuisine from './20261014_101615_site_
 import * as migration_20261014_115138_category_image from './20261014_115138_category_image';
 import * as migration_20261014_120130_about_image from './20261014_120130_about_image';
 import * as migration_20261014_130914_reservations from './20261014_130914_reservations';
+import * as migration_20261014_172131_vouchers from './20261014_172131_vouchers';
 
 export const migrations = [
   {
@@ -46,6 +47,11 @@ export const migrations = [
   {
     up: migration_20261014_130914_reservations.up,
     down: migration_20261014_130914_reservations.down,
-    name: '20261014_130914_reservations'
+    name: '20261014_130914_reservations',
+  },
+  {
+    up: migration_20261014_172131_vouchers.up,
+    down: migration_20261014_172131_vouchers.down,
+    name: '20261014_172131_vouchers'
   },
 ];

@@ -14,6 +14,7 @@ import { MenuCategories } from './collections/MenuCategories'
 import { MenuItems } from './collections/MenuItems'
 import { Posts } from './collections/Posts'
 import { Reservations } from './collections/Reservations'
+import { Vouchers } from './collections/Vouchers'
 import { Users } from './collections/Users'
 import { OpeningHours } from './globals/OpeningHours'
 import { ReservationSettings } from './globals/ReservationSettings'
@@ -36,7 +37,7 @@ export default buildConfig({
     },
     meta: { titleSuffix: ' – CMS' },
   },
-  collections: [MenuItems, MenuCategories, Attributes, Posts, Media, Reservations, Users],
+  collections: [MenuItems, MenuCategories, Attributes, Posts, Media, Reservations, Vouchers, Users],
   globals: [SiteSettings, OpeningHours, ReservationSettings, Home, About, Legal],
   localization: {
     locales: locales.map((l) => ({ code: l.code, label: l.label })),
