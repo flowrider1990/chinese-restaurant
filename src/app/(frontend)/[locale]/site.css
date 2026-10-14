@@ -55,6 +55,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Reserve the scrollbar's space on short pages too, so switching pages never shifts the layout sideways. */
+  scrollbar-gutter: stable;
 }
 @media (prefers-reduced-motion: no-preference) {
   /* In-page links (menu categories) glide to their target instead of jumping. */
@@ -75,6 +77,9 @@ body {
 
 main {
   flex: 1;
+  /* The footer always starts below the fold, so short pages and loading states never pull it up
+     into view and push it away again when content arrives (layout shift). */
+  min-height: 100dvh;
   width: 100%;
   max-width: var(--max);
   margin: 0 auto;
