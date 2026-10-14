@@ -9,6 +9,7 @@ export const routes = {
   menu: { de: 'speisekarte', en: 'menu' },
   restaurant: { de: 'restaurant', en: 'restaurant' },
   news: { de: 'aktuelles', en: 'news' },
+  reserve: { de: 'reservieren', en: 'reserve' },
   imprint: { de: 'impressum', en: 'imprint' },
   privacy: { de: 'datenschutz', en: 'privacy' },
 } as const satisfies Record<string, Record<Locale, string>>

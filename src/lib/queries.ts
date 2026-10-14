@@ -4,6 +4,7 @@ import config from '@/payload.config'
 import { locales, type Locale } from '@/i18n/locales'
 import type { Attribute, Media, MenuItem } from '@/payload-types'
 import type { Hours } from './opening-hours'
+import { readReservationSettings } from './reservation-settings'
 
 export const payloadClient = cache(() => getPayload({ config }))
 
@@ -41,7 +42,10 @@ export const getRestaurantInfo = cache(async (locale: Locale) => {
     paymentMethods: settings.paymentMethods ?? [],
     hours: {
       timezone: hours.timezone,
-      weekly: hours.weekly?.map((w) => ({ day: w.day, slots: w.slots.map(({ open, close }) => ({ open, close })) })),
+      weekly: hours.weekly?.map((w) => ({
+        day: w.day,
+        slots: w.slots.map(({ open, close }) => ({ open, close })),
+      })),
       exceptions: hours.exceptions?.map((e) => ({
         from: e.from,
         to: e.to,
@@ -89,14 +93,17 @@ export const getMenu = cache(async (locale: Locale) => {
       slug: c.slug ?? String(c.id),
       description: c.description ?? null,
       image: typeof c.image === 'object' ? (c.image ?? null) : null,
-      items: items.docs.filter((i) => (typeof i.category === 'object' ? i.category.id : i.category) === c.id),
+      items: items.docs.filter(
+        (i) => (typeof i.category === 'object' ? i.category.id : i.category) === c.id,
+      ),
     }))
     .filter((s) => s.items.length > 0)
   // Legend: only the allergens and additives that actually appear on the menu.
   const used = new Map<number, Attribute>()
   for (const item of items.docs)
     for (const a of item.attributes ?? [])
-      if (typeof a === 'object' && (a.kind === 'allergen' || a.kind === 'additive')) used.set(a.id, a)
+      if (typeof a === 'object' && (a.kind === 'allergen' || a.kind === 'additive'))
+        used.set(a.id, a)
   const legend = [...used.values()].sort((a, b) => (a._order ?? '').localeCompare(b._order ?? ''))
   return { sections, legend }
 })
@@ -120,7 +127,9 @@ export const getHome = cache(async (locale: Locale) => {
           ...publicRead,
         })
       ).docs
-  const slides = (home.heroSlides ?? []).filter((s): s is typeof s & { image: Media } => typeof s.image === 'object')
+  const slides = (home.heroSlides ?? []).filter(
+    (s): s is typeof s & { image: Media } => typeof s.image === 'object',
+  )
   return { intro: home.intro ?? null, slides, highlights }
 })
 
@@ -164,10 +173,19 @@ export const getPost = cache(async (locale: Locale, slug: string) => {
   if (!match) return null
   const versions = await Promise.all(
     locales.map((l) =>
-      payload.findByID({ collection: 'posts', id: match.id, locale: l.code, depth: 2, draft: false, ...publicRead }),
+      payload.findByID({
+        collection: 'posts',
+        id: match.id,
+        locale: l.code,
+        depth: 2,
+        draft: false,
+        ...publicRead,
+      }),
     ),
   )
-  const slugs = Object.fromEntries(locales.map((l, i) => [l.code, versions[i].slug ?? ''])) as Record<Locale, string>
+  const slugs = Object.fromEntries(
+    locales.map((l, i) => [l.code, versions[i].slug ?? '']),
+  ) as Record<Locale, string>
   return { post: versions[locales.findIndex((l) => l.code === locale)], slugs }
 })
 
@@ -179,4 +197,13 @@ export const getAbout = cache(async (locale: Locale) => {
 export const getLegal = cache(async (locale: Locale) => {
   const payload = await payloadClient()
   return payload.findGlobal({ slug: 'legal', locale, depth: 1, ...publicRead })
+})
+
+export const getReservationPage = cache(async (locale: Locale) => {
+  const payload = await payloadClient()
+  const [settings, info] = await Promise.all([
+    readReservationSettings(payload),
+    getRestaurantInfo(locale),
+  ])
+  return { settings, info }
 })

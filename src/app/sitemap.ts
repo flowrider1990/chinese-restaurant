@@ -4,15 +4,20 @@ import { href, type RouteKey } from '@/i18n/routes'
 import { payloadClient } from '@/lib/queries'
 import { absolute } from '@/lib/seo'
 
-const pages: RouteKey[] = ['home', 'menu', 'restaurant', 'news', 'imprint', 'privacy']
+const pages: RouteKey[] = ['home', 'menu', 'restaurant', 'news', 'reserve', 'imprint', 'privacy']
 
 /** Every public page in every language, with hreflang alternates; published posts included. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const languages = (key: RouteKey, rest?: Record<string, string>) =>
-    Object.fromEntries(locales.map((l) => [l.code, absolute(href(key, l.code, rest?.[l.code] ?? ''))]))
+    Object.fromEntries(
+      locales.map((l) => [l.code, absolute(href(key, l.code, rest?.[l.code] ?? ''))]),
+    )
 
   const entries: MetadataRoute.Sitemap = pages.flatMap((key) =>
-    locales.map((l) => ({ url: absolute(href(key, l.code)), alternates: { languages: languages(key) } })),
+    locales.map((l) => ({
+      url: absolute(href(key, l.code)),
+      alternates: { languages: languages(key) },
+    })),
   )
 
   const payload = await payloadClient()
@@ -31,7 +36,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   )
   for (const doc of posts[0].docs) {
     const slugs = Object.fromEntries(
-      locales.map((l, i) => [l.code, posts[i].docs.find((d) => d.id === doc.id)?.slug ?? doc.slug ?? '']),
+      locales.map((l, i) => [
+        l.code,
+        posts[i].docs.find((d) => d.id === doc.id)?.slug ?? doc.slug ?? '',
+      ]),
     )
     for (const l of locales) {
       entries.push({
