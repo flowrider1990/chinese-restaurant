@@ -7,6 +7,8 @@ import { Vouchers } from '@/collections/Vouchers'
 import { expireSession, voucherStatusForSession } from '@/lib/voucher-fulfilment'
 import { handleStripeEvent } from '@/lib/voucher-webhook'
 import { CODE_PATTERN } from '@/lib/voucher-code'
+import { startVoucherCheckout } from '@/lib/voucher-checkout'
+import { siteUrl } from '@/lib/seo'
 
 let payload: Payload
 
@@ -362,5 +364,114 @@ describe('stripe webhook', () => {
       secret: undefined,
     })
     expect(res.status).toBe(500)
+  })
+})
+
+describe('startVoucherCheckout', () => {
+  const input = {
+    amount: '50',
+    buyerName: ' Mei Lin ',
+    buyerEmail: 'Checkout@Example.com',
+    recipientName: 'Jonas',
+    message: 'Alles Gute',
+    privacy: true,
+  }
+
+  it('creates a pending voucher and a Stripe session with the server-checked amount', async () => {
+    const create = vi
+      .fn()
+      .mockResolvedValue({
+        id: 'cs_test_checkout_1',
+        url: 'https://checkout.stripe.com/c/pay/cs_test_checkout_1',
+      })
+    const res = await startVoucherCheckout({
+      payload,
+      stripe: () => ({ checkout: { sessions: { create } } }) as never,
+      input,
+      locale: 'en',
+    })
+    expect(res).toEqual({ ok: true, url: 'https://checkout.stripe.com/c/pay/cs_test_checkout_1' })
+
+    const params = create.mock.calls[0][0]
+    expect(params.mode).toBe('payment')
+    expect(params.line_items[0].price_data).toMatchObject({ currency: 'eur', unit_amount: 5000 })
+    expect(params.line_items[0].price_data.product_data.name).toBe('Gift voucher Test')
+    expect(params.customer_email).toBe('checkout@example.com')
+    expect(params.locale).toBe('en')
+    expect(params.success_url).toBe(`${siteUrl}/en/vouchers?session_id={CHECKOUT_SESSION_ID}`)
+    expect(params.cancel_url).toBe(`${siteUrl}/en/vouchers`)
+
+    const stored = await payload.find({
+      collection: 'vouchers',
+      where: { stripeSessionId: { equals: 'cs_test_checkout_1' } },
+    })
+    expect(stored.docs[0]).toMatchObject({
+      status: 'pending',
+      amount: 5000,
+      buyerName: 'Mei Lin',
+      buyerEmail: 'checkout@example.com',
+      locale: 'en',
+    })
+    expect(params.metadata.voucherId).toBe(String(stored.docs[0].id))
+  })
+
+  it('returns problems without calling Stripe', async () => {
+    const create = vi.fn()
+    const res = await startVoucherCheckout({
+      payload,
+      stripe: () => ({ checkout: { sessions: { create } } }) as never,
+      input: { ...input, amount: '25,50' },
+      locale: 'de',
+    })
+    expect(res).toEqual({ ok: false, problems: { amount: 'invalid' } })
+    expect(create).not.toHaveBeenCalled()
+  })
+
+  it('reports Stripe as unavailable and expires the pending voucher when Stripe fails', async () => {
+    const before = await payload.count({
+      collection: 'vouchers',
+      where: { status: { equals: 'pending' } },
+    })
+    const res = await startVoucherCheckout({
+      payload,
+      stripe: () =>
+        ({
+          checkout: { sessions: { create: vi.fn().mockRejectedValue(new Error('network')) } },
+        }) as never,
+      input,
+      locale: 'de',
+    })
+    expect(res).toEqual({ ok: false, problems: {}, unavailable: true })
+    const after = await payload.count({
+      collection: 'vouchers',
+      where: { status: { equals: 'pending' } },
+    })
+    expect(after.totalDocs).toBe(before.totalDocs)
+  })
+
+  it('reports Stripe as unavailable when the key is missing', async () => {
+    const res = await startVoucherCheckout({
+      payload,
+      stripe: () => {
+        throw new Error('STRIPE_SECRET_KEY is not set.')
+      },
+      input,
+      locale: 'de',
+    })
+    expect(res).toEqual({ ok: false, problems: {}, unavailable: true })
+  })
+
+  it('ignores a filled honeypot without creating anything', async () => {
+    const before = await payload.count({ collection: 'vouchers' })
+    const res = await startVoucherCheckout({
+      payload,
+      stripe: () => {
+        throw new Error('must not be called')
+      },
+      input: { ...input, website: 'spam' },
+      locale: 'de',
+    })
+    expect(res.ok).toBe(false)
+    expect((await payload.count({ collection: 'vouchers' })).totalDocs).toBe(before.totalDocs)
   })
 })

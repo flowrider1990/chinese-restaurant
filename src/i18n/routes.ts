@@ -10,6 +10,7 @@ export const routes = {
   restaurant: { de: 'restaurant', en: 'restaurant' },
   news: { de: 'aktuelles', en: 'news' },
   reserve: { de: 'reservieren', en: 'reserve' },
+  vouchers: { de: 'gutscheine', en: 'vouchers' },
   imprint: { de: 'impressum', en: 'imprint' },
   privacy: { de: 'datenschutz', en: 'privacy' },
 } as const satisfies Record<string, Record<Locale, string>>
