@@ -19,6 +19,7 @@ plans folder.
 - Real restaurant data (name, menu, photos, imprint) replaces the fictional data before launch. See `docs/legal-checklist.md`.
 
 **Decisions (2026-10-14)**
+- Reservations: online requests confirmed or declined by staff in the admin, e-mails via Resend, personal data deleted after 30 days (branch `feature/reservations`).
 - Design direction: modern but approachable, warm and friendly. No Chinese clichés. Approved: enamel white, ink blue, cobalt accent, light jade surface (instead of bamboo).
 - Restaurant: fictional "Xiao Chu", Simon-Dach-Straße 99, 10245 Berlin-Friedrichshain. Placeholder images.
 - Ordering: Lieferando and Wolt are shown, but not functional yet (no URL, no redirect).
@@ -207,7 +208,7 @@ Contemporary, warm and relaxed. Food photography carries the look.
 5. **Price variants:** are protein/size choices with different prices needed? Modelled as `options` with `priceDelta`. Confirm the shape.
 6. **Editors:** how many people, and is a single role enough? *Default: single admin role.*
 7. **Hosting:** Vercel (hosting) + Turso (DB) + Vercel Blob (images) + Cloudflare DNS, per the standard baseline. Confirm the accounts and region.
-8. **Out of scope unless requested:** reservations (link or phone only), contact form, newsletter, analytics, menu PDF. Leaving out analytics and forms keeps the privacy policy and consent setup minimal.
+8. **Out of scope unless requested:** contact form, newsletter, analytics, menu PDF. (Reservations were added on 2026-10-14 as requests confirmed by staff; see `docs/superpowers/specs/2026-10-14-reservations-design.md`.) Leaving out analytics and forms keeps the privacy policy and consent setup minimal.
 
 ## 10. Project structure
 

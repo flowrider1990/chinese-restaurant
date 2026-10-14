@@ -93,6 +93,29 @@ the Local API, then prints the target and versions.
   images. Uploads are stored on the local disk until hosting is decided. Required before any
   serverless deployment, because serverless functions have no persistent disk.
 
+## Reservations (2026-10-14)
+
+Spec: `docs/superpowers/specs/2026-10-14-reservations-design.md`.
+
+- Request model: guests send a request on `/reservieren` (`/en/reserve`); staff confirm or decline
+  in the admin (Reservierungen). No capacity or table logic.
+- `src/lib/reservation-rules.ts`: pure rules (bookable dates and times, request checks), shared by
+  the form and the server. The server (`src/lib/reservation-submit.ts`, called by the Server Action)
+  re-checks everything, ignores filled honeypots and duplicates within 10 minutes.
+- Settings in the global "Einstellungen → Reservierungen": mode (form / external link / off), rule
+  numbers, notification address, retention days. Read through `readReservationSettings()`.
+- Mails (`src/lib/reservation-mails.ts`): website request → restaurant + guest receipt; status
+  change to confirmed/declined → guest. Staff entries and saves without a status change send
+  nothing. A failed send is logged and never undoes the save. Resend is used when
+  `RESEND_API_KEY` is set (`EMAIL_FROM_ADDRESS`, `EMAIL_FROM_NAME`); otherwise mails go to the
+  server log.
+- Retention: `anonymiseExpiredReservations()` removes name, e-mail, phone, note and message after
+  `retentionDays` (default 30). Run daily via `GET /api/reservations/cleanup` with
+  `Authorization: Bearer <CRON_SECRET>`, or `pnpm reservations:cleanup`. Scheduling waits for the
+  hosting decision.
+- With mode off or external, `/reservieren` renders the not-found page (noindex); in development
+  the status is 200 because `[locale]/loading.tsx` streams the response first.
+
 ## Content model (Phase 2)
 
 | Admin group | Type | Purpose |
