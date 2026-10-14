@@ -1,6 +1,8 @@
 import { ValidationError, type CollectionConfig } from 'payload'
 import { authenticated } from '@/access'
 import { priceField } from '@/fields/price'
+import { getStripe } from '@/lib/stripe'
+import { handleStripeEvent } from '@/lib/voucher-webhook'
 import { balanceCents, checkRedemptions, type RedemptionRow } from '@/lib/voucher-rules'
 
 const readOnlyForStaff = { update: () => false }
@@ -25,6 +27,32 @@ export const Vouchers: CollectionConfig = {
     // Paid or cancelled vouchers are business records and stay.
     delete: ({ req }) => (req.user ? { status: { in: ['pending', 'expired'] } } : false),
   },
+  endpoints: [
+    {
+      // Stripe → POST /api/vouchers/stripe-webhook. Locally: stripe listen --forward-to localhost:3000/api/vouchers/stripe-webhook
+      path: '/stripe-webhook',
+      method: 'post',
+      handler: async (req) => {
+        // The signature covers the exact bytes Stripe sent, so read the unparsed body.
+        const rawBody = req.text ? await req.text() : ''
+        let stripe
+        try {
+          stripe = getStripe()
+        } catch (error) {
+          req.payload.logger.error(error instanceof Error ? error.message : String(error))
+          return Response.json({ error: 'Stripe not configured' }, { status: 500 })
+        }
+        const result = await handleStripeEvent({
+          payload: req.payload,
+          stripe,
+          rawBody,
+          signature: req.headers.get('stripe-signature'),
+          secret: process.env.STRIPE_WEBHOOK_SECRET,
+        })
+        return Response.json(result.body, { status: result.status })
+      },
+    },
+  ],
   hooks: {
     beforeChange: [
       ({ data, originalDoc, operation, req }) => {

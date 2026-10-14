@@ -1,7 +1,11 @@
 import { getPayload, type Payload } from 'payload'
-import { beforeAll, describe, expect, it } from 'vitest'
+import Stripe from 'stripe'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import config from '@/payload.config'
 import { migrations } from '@/migrations'
+import { expireSession, voucherStatusForSession } from '@/lib/voucher-fulfilment'
+import { handleStripeEvent } from '@/lib/voucher-webhook'
+import { CODE_PATTERN } from '@/lib/voucher-code'
 
 let payload: Payload
 
@@ -14,6 +18,7 @@ beforeAll(async () => {
     data: {
       name: 'Test',
       phone: '030 1',
+      email: 'info@example.com',
       phoneE164: '+49301234567',
       address: { street: 'A 1', postalCode: '10115', city: 'Berlin', country: 'DE' },
     },
@@ -179,5 +184,117 @@ describe('vouchers collection', () => {
     await expect(
       payload.delete({ collection: 'vouchers', id: paid.id, user, overrideAccess: false }),
     ).rejects.toThrow()
+  })
+})
+
+describe('stripe webhook', () => {
+  const stripe = new Stripe('sk_test_dummy') // signatures only; no network calls
+  const secret = 'whsec_test_secret'
+
+  const deliver = (event: object, sig?: string) => {
+    const rawBody = JSON.stringify(event)
+    const signature = sig ?? stripe.webhooks.generateTestHeaderString({ payload: rawBody, secret })
+    return handleStripeEvent({ payload, stripe, rawBody, signature, secret })
+  }
+  const completed = (sessionId: string, type = 'checkout.session.completed') => ({
+    id: `evt_${sessionId}`,
+    object: 'event',
+    type,
+    data: {
+      object: {
+        id: sessionId,
+        object: 'checkout.session',
+        payment_status: 'paid',
+        amount_total: 5000,
+        payment_intent: 'pi_test_1',
+      },
+    },
+  })
+
+  it('marks the voucher paid once, sets code and validity, sends the mails once', async () => {
+    const sent = vi.spyOn(payload, 'sendEmail').mockResolvedValue(undefined as never)
+    const v = await payload.create({ collection: 'vouchers', data: voucherData() })
+    expect(await voucherStatusForSession(payload, v.stripeSessionId!)).toBe('pending')
+
+    const first = await deliver(completed(v.stripeSessionId!))
+    expect(first.status).toBe(200)
+    const paid = await payload.findByID({ collection: 'vouchers', id: v.id })
+    expect(paid.status).toBe('paid')
+    expect(paid.code).toMatch(CODE_PATTERN)
+    expect(paid.validUntil).toMatch(/-12-31T22:59:59/)
+    expect(paid.stripePaymentIntent).toBe('pi_test_1')
+    expect(sent).toHaveBeenCalledTimes(2) // buyer + restaurant
+    const buyerMail = sent.mock.calls[0][0] as { to: string; attachments?: { filename: string }[] }
+    expect(buyerMail.to).toBe(v.buyerEmail)
+    expect(buyerMail.attachments?.[0].filename).toBe(`gutschein-${paid.code}.pdf`)
+
+    await deliver(completed(v.stripeSessionId!))
+    await deliver(completed(v.stripeSessionId!, 'checkout.session.async_payment_succeeded'))
+    expect(sent).toHaveBeenCalledTimes(2)
+    expect((await payload.findByID({ collection: 'vouchers', id: v.id })).code).toBe(paid.code)
+
+    // A late "expired" event never downgrades a paid voucher.
+    await deliver({ ...completed(v.stripeSessionId!), type: 'checkout.session.expired' })
+    expect((await payload.findByID({ collection: 'vouchers', id: v.id })).status).toBe('paid')
+    expect(await voucherStatusForSession(payload, v.stripeSessionId!)).toBe('paid')
+    sent.mockRestore()
+  })
+
+  it('rejects a bad signature without changing anything', async () => {
+    const v = await payload.create({ collection: 'vouchers', data: voucherData() })
+    const res = await deliver(completed(v.stripeSessionId!), 't=1,v1=deadbeef')
+    expect(res.status).toBe(400)
+    expect((await payload.findByID({ collection: 'vouchers', id: v.id })).status).toBe('pending')
+  })
+
+  it('ignores an unpaid completed session and expires on the expired event', async () => {
+    const v = await payload.create({ collection: 'vouchers', data: voucherData() })
+    const unpaid = completed(v.stripeSessionId!)
+    unpaid.data.object.payment_status = 'unpaid'
+    await deliver(unpaid)
+    expect((await payload.findByID({ collection: 'vouchers', id: v.id })).status).toBe('pending')
+    await deliver({ ...completed(v.stripeSessionId!), type: 'checkout.session.expired' })
+    expect((await payload.findByID({ collection: 'vouchers', id: v.id })).status).toBe('expired')
+  })
+
+  it('keeps the voucher paid when the buyer mail fails', async () => {
+    const sent = vi
+      .spyOn(payload, 'sendEmail')
+      .mockRejectedValueOnce(new Error('down'))
+      .mockResolvedValue(undefined as never)
+    const v = await payload.create({ collection: 'vouchers', data: voucherData() })
+    const res = await deliver(completed(v.stripeSessionId!))
+    expect(res.status).toBe(200)
+    expect((await payload.findByID({ collection: 'vouchers', id: v.id })).status).toBe('paid')
+    const notice = sent.mock.calls[1][0] as { text: string }
+    expect(notice.text).toMatch(/Achtung/)
+    sent.mockRestore()
+  })
+
+  it('answers unknown sessions and other events with 200', async () => {
+    expect((await deliver(completed('cs_test_unknown'))).status).toBe(200)
+    expect(
+      (
+        await deliver({
+          id: 'evt_x',
+          object: 'event',
+          type: 'customer.created',
+          data: { object: {} },
+        })
+      ).status,
+    ).toBe(200)
+    expect(await voucherStatusForSession(payload, 'cs_test_unknown')).toBe('unknown')
+    await expireSession(payload, 'cs_test_unknown') // no throw
+  })
+
+  it('refuses to work without a webhook secret', async () => {
+    const res = await handleStripeEvent({
+      payload,
+      stripe,
+      rawBody: '{}',
+      signature: 'x',
+      secret: undefined,
+    })
+    expect(res.status).toBe(500)
   })
 })
