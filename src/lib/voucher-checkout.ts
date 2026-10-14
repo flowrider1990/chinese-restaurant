@@ -13,7 +13,8 @@ export type CheckoutResult =
   | { ok: true; url: string }
   | { ok: false; problems: Partial<Record<keyof VoucherInput, VoucherProblem>>; unavailable?: true }
 
-const SESSION_MINUTES = 30
+// Stripe requires expires_at to be at least 30 minutes after creation; keep a margin.
+const SESSION_MINUTES = 31
 const unavailable = { ok: false, problems: {}, unavailable: true } as const
 
 /**
@@ -66,6 +67,7 @@ export async function startVoucherCheckout({
   })
 
   const page = absolute(href('vouchers', locale))
+  let sessionId: string | undefined
   try {
     const session = await client.checkout.sessions.create({
       mode: 'payment',
@@ -83,11 +85,12 @@ export async function startVoucherCheckout({
       locale,
       client_reference_id: String(voucher.id),
       metadata: { voucherId: String(voucher.id) },
-      expires_at: Math.floor(now.getTime() / 1000) + SESSION_MINUTES * 60,
+      expires_at: Math.floor(Date.now() / 1000) + SESSION_MINUTES * 60,
       // Stripe replaces {CHECKOUT_SESSION_ID}; it must not be URL-encoded.
       success_url: `${page}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: page,
     })
+    sessionId = session.id
     if (!session.url) throw new Error(`Session ${session.id} has no URL`)
     await payload.update({
       collection: 'vouchers',
@@ -97,7 +100,7 @@ export async function startVoucherCheckout({
     return { ok: true, url: session.url }
   } catch (error) {
     payload.logger.error(
-      `Voucher ${voucher.id}: checkout failed: ${error instanceof Error ? error.message : String(error)}`,
+      `Voucher ${voucher.id}${sessionId ? ` (session ${sessionId})` : ''}: checkout failed: ${error instanceof Error ? error.message : String(error)}`,
     )
     await payload.update({ collection: 'vouchers', id: voucher.id, data: { status: 'expired' } })
     return unavailable

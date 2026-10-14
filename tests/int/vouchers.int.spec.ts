@@ -378,12 +378,11 @@ describe('startVoucherCheckout', () => {
   }
 
   it('creates a pending voucher and a Stripe session with the server-checked amount', async () => {
-    const create = vi
-      .fn()
-      .mockResolvedValue({
-        id: 'cs_test_checkout_1',
-        url: 'https://checkout.stripe.com/c/pay/cs_test_checkout_1',
-      })
+    const minExpiry = Math.floor(Date.now() / 1000) + 30 * 60
+    const create = vi.fn().mockResolvedValue({
+      id: 'cs_test_checkout_1',
+      url: 'https://checkout.stripe.com/c/pay/cs_test_checkout_1',
+    })
     const res = await startVoucherCheckout({
       payload,
       stripe: () => ({ checkout: { sessions: { create } } }) as never,
@@ -413,6 +412,8 @@ describe('startVoucherCheckout', () => {
       locale: 'en',
     })
     expect(params.metadata.voucherId).toBe(String(stored.docs[0].id))
+    expect(params.client_reference_id).toBe(String(stored.docs[0].id))
+    expect(params.expires_at).toBeGreaterThanOrEqual(minExpiry)
   })
 
   it('returns problems without calling Stripe', async () => {
@@ -438,10 +439,15 @@ describe('startVoucherCheckout', () => {
         ({
           checkout: { sessions: { create: vi.fn().mockRejectedValue(new Error('network')) } },
         }) as never,
-      input,
+      input: { ...input, buyerEmail: 'stripe-fails@example.com' },
       locale: 'de',
     })
     expect(res).toEqual({ ok: false, problems: {}, unavailable: true })
+    const expired = await payload.find({
+      collection: 'vouchers',
+      where: { buyerEmail: { equals: 'stripe-fails@example.com' } },
+    })
+    expect(expired.docs.map((d) => d.status)).toContain('expired')
     const after = await payload.count({
       collection: 'vouchers',
       where: { status: { equals: 'pending' } },
