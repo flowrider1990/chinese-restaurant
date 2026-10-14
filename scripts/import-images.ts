@@ -1,10 +1,12 @@
 /**
  * Imports the placeholder images from data/images-incoming/ (git-ignored) into the media library
- * and assigns them: hero-*.jpg → home page slider, <category-slug>.jpg → that menu category.
+ * and assigns them: hero-*.jpg → home page slider, restaurant.jpg → restaurant page,
+ * <category-slug>.jpg → that menu category.
  * German alt texts come from ALT-TEXTE.txt in the same folder, English ones from the table below.
  * Every image is captioned as an AI-generated symbol image.
  *
- * Usage: pnpm images:import   (safe to re-run: files already in the library are reused)
+ * Usage: pnpm images:import [name …]   (safe to re-run: files already in the library are reused;
+ *        pass base names such as `desserts` to replace those files in the library)
  */
 import 'dotenv/config'
 import { existsSync, readdirSync, readFileSync } from 'fs'
@@ -20,7 +22,8 @@ const altEn: Record<string, string> = {
   'hero-wok': 'Noodles and vegetables tossed in a wok over an open flame.',
   suppen: 'Hot and sour soup with tofu, wood ear mushrooms and egg in an enamel bowl.',
   'kalte-vorspeisen': 'Cucumber salad, green beans and smoked tofu on three small plates.',
-  'warme-vorspeisen-dim-sum': 'Har gow and xiaolongbao in a bamboo steamer with black vinegar and ginger.',
+  'warme-vorspeisen-dim-sum':
+    'Har gow and xiaolongbao in a bamboo steamer with black vinegar and ginger.',
   huhn: 'Kung pao chicken with peanuts, dried chilies and spring onions.',
   schwein: 'Braised pork belly with bok choy in an enamel bowl.',
   ente: 'Crispy sliced duck with spring onions and a dark sauce.',
@@ -32,7 +35,19 @@ const altEn: Record<string, string> = {
   'softdrinks-saefte': 'Mango and cherry juice in two chilled glasses.',
   'tee-kaffee': 'Jasmine tea in a glass teapot with porcelain cups and an espresso.',
   'bier-wein': 'A pale lager and a white wine next to a bowl of edamame.',
+  restaurant: 'The dining room in the evening: dark wooden tables, green upholstered chairs and a view of the rainy street.',
 }
+
+/**
+ * Focal points (percent from left/top) for images whose subject is not centred. The banners crop
+ * to 3:1, so this decides what stays visible.
+ */
+const focal: Record<string, { x: number; y: number }> = {
+  'bier-wein': { x: 55, y: 28 }, // the glasses, not the edamame
+}
+
+/** Re-import these even if the library already has them (e.g. after fixing a mixed-up file). */
+const replace = new Set(process.argv.slice(2))
 
 if (!existsSync(DIR)) {
   console.error(`${DIR} does not exist. Put the images there first.`)
@@ -53,15 +68,34 @@ const files = readdirSync(DIR).filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f)
 
 async function upload(file: string) {
   const key = path.parse(file).name
-  const existing = await payload.find({ collection: 'media', where: { filename: { equals: file } }, limit: 1 })
-  if (existing.docs[0]) return existing.docs[0].id
+  // The library stores the original as WebP, so match on the base name.
+  const existing = await payload.find({
+    collection: 'media',
+    where: { filename: { in: [file, `${key}.webp`] } },
+    limit: 1,
+  })
+  if (existing.docs[0] && !replace.has(key)) {
+    if (focal[key])
+      await payload.update({
+        collection: 'media',
+        id: existing.docs[0].id,
+        data: { focalX: focal[key].x, focalY: focal[key].y },
+      })
+    return existing.docs[0].id
+  }
+  if (existing.docs[0]) await payload.delete({ collection: 'media', id: existing.docs[0].id })
   const alt = altDe.get(key)
   if (!alt) throw new Error(`No German alt text for ${file} in ALT-TEXTE.txt`)
   const doc = await payload.create({
     collection: 'media',
     locale: 'de',
     filePath: path.join(DIR, file),
-    data: { alt, caption: CAPTION.de, credit: 'KI-generiert (Platzhalter)' },
+    data: {
+      alt,
+      caption: CAPTION.de,
+      credit: 'KI-generiert (Platzhalter)',
+      ...(focal[key] && { focalX: focal[key].x, focalY: focal[key].y }),
+    },
   })
   await payload.update({
     collection: 'media',
@@ -81,6 +115,11 @@ for (const file of files.sort()) {
     heroIds.push(id)
     continue
   }
+  if (key === 'restaurant') {
+    await payload.updateGlobal({ slug: 'about', data: { image: id } })
+    assigned++
+    continue
+  }
   const category = await payload.find({
     collection: 'menu-categories',
     locale: 'de',
@@ -91,15 +130,24 @@ for (const file of files.sort()) {
     console.warn(`No menu category with the slug "${key}" – ${file} stays in the library only.`)
     continue
   }
-  await payload.update({ collection: 'menu-categories', id: category.docs[0].id, data: { image: id } })
+  await payload.update({
+    collection: 'menu-categories',
+    id: category.docs[0].id,
+    data: { image: id },
+  })
   assigned++
 }
 
 if (heroIds.length) {
   // hero-table first: it shows the most dishes.
   heroIds.sort((a, b) => a - b)
-  await payload.updateGlobal({ slug: 'home', data: { heroSlides: heroIds.map((image) => ({ image })) } })
+  await payload.updateGlobal({
+    slug: 'home',
+    data: { heroSlides: heroIds.map((image) => ({ image })) },
+  })
 }
 
-console.log(`Imported ${files.length} images: ${heroIds.length} hero slides, ${assigned} category images.`)
+console.log(
+  `Imported ${files.length} images: ${heroIds.length} hero slides, ${assigned} category images.`,
+)
 process.exit(0)

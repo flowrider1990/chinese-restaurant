@@ -124,7 +124,8 @@ the Local API, then prints the target and versions.
 - To rebuild the dev database: `pnpm payload migrate:fresh --forceAcceptWarning`, then `pnpm seed`.
   This drops all data; only for dev databases.
 - `pnpm images:import` loads the placeholder photos from `data/images-incoming/` (git-ignored) into
-  the media library: `hero-*.jpg` become the home slider, `<category-slug>.jpg` the category image.
+  the media library: `hero-*.jpg` become the home slider, `restaurant.jpg` the restaurant page image,
+  `<category-slug>.jpg` the category image.
   Alt texts come from `ALT-TEXTE.txt` (German) and the script (English); every image is captioned
   "Symbolbild (KI-generiert)". Re-running reuses files already in the library.
 - `pnpm test` runs unit tests (including a consistency check of `menu.json`) and integration
@@ -132,6 +133,12 @@ the Local API, then prints the target and versions.
   database.
 
 ## Known issues
+
+- `pnpm migrate:create` generates `ALTER TABLE … ADD … REFERENCES media(id)` without
+  `ON DELETE set null` when an upload field is added to an existing table. Without it, deleting an
+  image that is still in use fails with a foreign-key error. Add `ON DELETE set null` by hand to
+  every new upload/relationship column (done for the category and restaurant-page images; covered
+  by an integration test).
 
 - Running the initial migration against Turso has failed twice right after a fresh/empty
   database (2026-10-13 and 2026-10-14, at a `users_sessions` index). Re-running

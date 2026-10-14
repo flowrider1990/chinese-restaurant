@@ -265,6 +265,7 @@
   position: relative;
 }
 .menu-nav ul {
+  position: relative; /* offset parent for centring the chosen chip */
   display: flex;
   gap: 0.4rem;
   overflow-x: auto;
@@ -450,6 +451,28 @@
 }
 
 /* Restaurant page */
+.restaurant-page__image {
+  margin: 0 0 1rem;
+  position: relative;
+}
+.restaurant-page__image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+.restaurant-page__image figcaption {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--ink);
+}
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));

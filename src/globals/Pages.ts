@@ -50,6 +50,13 @@ export const About: GlobalConfig = {
   access,
   hooks: { afterChange: [revalidateGlobal] },
   fields: [
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Großes Bild oben (optional)',
+      admin: { description: 'Z. B. der Gastraum. Querformat, wird breit unter der Überschrift gezeigt.' },
+    },
     { name: 'intro', type: 'richText', label: 'Text', localized: true },
     {
       name: 'gallery',

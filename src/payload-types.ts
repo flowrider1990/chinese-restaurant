@@ -798,6 +798,10 @@ export interface Home {
  */
 export interface About {
   id: number;
+  /**
+   * Z. B. der Gastraum. Querformat, wird breit unter der Überschrift gezeigt.
+   */
+  image?: (number | null) | Media;
   intro?: {
     root: {
       type: string;
@@ -977,6 +981,7 @@ export interface HomeSelect<T extends boolean = true> {
  * via the `definition` "about_select".
  */
 export interface AboutSelect<T extends boolean = true> {
+  image?: T;
   intro?: T;
   gallery?:
     | T

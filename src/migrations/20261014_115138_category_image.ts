@@ -1,7 +1,9 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-sqlite'
 
+// ON DELETE set null added by hand: the generator omits it for ALTER TABLE ADD, and without it an
+// image still assigned to a category could not be deleted from the media library.
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
-  await db.run(sql`ALTER TABLE \`menu_categories\` ADD \`image_id\` integer REFERENCES media(id);`)
+  await db.run(sql`ALTER TABLE \`menu_categories\` ADD \`image_id\` integer REFERENCES media(id) ON DELETE set null;`)
   await db.run(sql`CREATE INDEX \`menu_categories_image_idx\` ON \`menu_categories\` (\`image_id\`);`)
 }
 

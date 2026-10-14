@@ -1,4 +1,5 @@
 import { getPayload, type Payload } from 'payload'
+import sharp from 'sharp'
 import { beforeAll, describe, expect, it } from 'vitest'
 import config from '@/payload.config'
 import { migrations } from '@/migrations'
@@ -157,5 +158,30 @@ describe('globals', () => {
     await expect(
       payload.updateGlobal({ slug: 'legal', overrideAccess: false, data: {} }),
     ).rejects.toThrow(/keine Berechtigung/)
+  })
+})
+
+describe('media', () => {
+  it('can delete an image that a category and the restaurant page still use', async () => {
+    const png = await sharp({ create: { width: 8, height: 8, channels: 3, background: '#2b57a0' } }).png().toBuffer()
+    const media = await payload.create({
+      collection: 'media',
+      locale: 'de',
+      data: { alt: 'Testbild' },
+      file: { data: png, mimetype: 'image/png', name: 'fk-test.png', size: png.length },
+    })
+    const category = await payload.create({
+      collection: 'menu-categories',
+      locale: 'de',
+      data: { name: 'Mit Bild', image: media.id },
+    })
+    await payload.updateGlobal({ slug: 'about', data: { image: media.id } })
+
+    await payload.delete({ collection: 'media', id: media.id })
+
+    const after = await payload.findByID({ collection: 'menu-categories', id: category.id, depth: 0 })
+    expect(after.image ?? null).toBeNull()
+    const about = await payload.findGlobal({ slug: 'about', depth: 0 })
+    expect(about.image ?? null).toBeNull()
   })
 })

@@ -30,11 +30,19 @@ export function CategoryNav({ label, items, scrollLabels }: Props) {
     return () => observer.disconnect()
   }, [update])
 
+  const smooth = () => (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth')
+
+  /** Moves the chosen chip to the middle of the row (when the row can scroll at all). */
+  const center = (chip: HTMLElement) => {
+    const el = list.current
+    if (!el || el.scrollWidth <= el.clientWidth) return
+    el.scrollTo({ left: chip.offsetLeft - (el.clientWidth - chip.offsetWidth) / 2, behavior: smooth() })
+  }
+
   const scroll = (direction: 1 | -1) => {
     const el = list.current
     if (!el) return
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    el.scrollBy({ left: direction * el.clientWidth * 0.7, behavior: reduce ? 'auto' : 'smooth' })
+    el.scrollBy({ left: direction * el.clientWidth * 0.7, behavior: smooth() })
   }
 
   return (
@@ -45,7 +53,9 @@ export function CategoryNav({ label, items, scrollLabels }: Props) {
       <ul ref={list} onScroll={update}>
         {items.map((item) => (
           <li key={item.href}>
-            <a href={item.href}>{item.label}</a>
+            <a href={item.href} onClick={(e) => center(e.currentTarget)}>
+              {item.label}
+            </a>
           </li>
         ))}
       </ul>

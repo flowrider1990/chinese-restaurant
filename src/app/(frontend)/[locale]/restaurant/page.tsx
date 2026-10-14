@@ -46,6 +46,13 @@ export default async function RestaurantPage() {
         {info.tagline && <p>{info.tagline}</p>}
       </header>
 
+      {isMedia(about.image) && (
+        <figure className="restaurant-page__image">
+          <MediaImage media={about.image} sizes="(max-width: 72rem) 100vw, 72rem" priority />
+          {about.image.caption && <figcaption>{about.image.caption}</figcaption>}
+        </figure>
+      )}
+
       {about.intro && <RichText data={about.intro} className="section lead-text" />}
 
       {gallery.length > 0 && (

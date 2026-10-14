@@ -4,6 +4,7 @@ import * as migration_20261014_093915_site_name_native from './20261014_093915_s
 import * as migration_20261014_095128_payment_methods from './20261014_095128_payment_methods';
 import * as migration_20261014_101615_site_cuisine from './20261014_101615_site_cuisine';
 import * as migration_20261014_115138_category_image from './20261014_115138_category_image';
+import * as migration_20261014_120130_about_image from './20261014_120130_about_image';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20261014_115138_category_image.up,
     down: migration_20261014_115138_category_image.down,
-    name: '20261014_115138_category_image'
+    name: '20261014_115138_category_image',
+  },
+  {
+    up: migration_20261014_120130_about_image.up,
+    down: migration_20261014_120130_about_image.down,
+    name: '20261014_120130_about_image'
   },
 ];
