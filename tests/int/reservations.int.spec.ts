@@ -1,5 +1,5 @@
 import { getPayload, type Payload } from 'payload'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import config from '@/payload.config'
 import { migrations } from '@/migrations'
 import { readReservationSettings } from '@/lib/reservation-settings'
@@ -154,5 +154,58 @@ describe('submitReservation', () => {
     })
     expect(result).toEqual({ ok: false, problems: {}, closed: true })
     await payload.updateGlobal({ slug: 'reservation-settings', data: { mode: 'form' } })
+  })
+})
+
+describe('reservation mails', () => {
+  beforeAll(async () => {
+    await payload.updateGlobal({
+      slug: 'site-settings',
+      data: {
+        name: 'Testrestaurant',
+        phone: '030 1',
+        phoneE164: '+49301234567',
+        email: 'restaurant@example.com',
+        address: { street: 'Teststraße 1', postalCode: '10115', city: 'Berlin', country: 'DE' },
+      },
+    })
+  })
+  it('mails restaurant and guest for a website request, then the guest on confirmation only once', async () => {
+    const sent = vi.spyOn(payload, 'sendEmail').mockResolvedValue(undefined as never)
+    const r = await payload.create({
+      collection: 'reservations',
+      data: { ...base, date: '2026-11-10', email: 'mail-test@example.com', source: 'website' },
+    })
+    expect(sent.mock.calls.map((c) => (c[0] as { to: string }).to)).toContain(
+      'mail-test@example.com',
+    )
+    expect(sent).toHaveBeenCalledTimes(2)
+
+    sent.mockClear()
+    await payload.update({ collection: 'reservations', id: r.id, data: { status: 'confirmed' } })
+    expect(sent).toHaveBeenCalledTimes(1)
+    await payload.update({ collection: 'reservations', id: r.id, data: { note: 'Fensterplatz' } })
+    expect(sent).toHaveBeenCalledTimes(1)
+    sent.mockRestore()
+  })
+
+  it('sends nothing for a reservation entered in the admin', async () => {
+    const sent = vi.spyOn(payload, 'sendEmail').mockResolvedValue(undefined as never)
+    await payload.create({
+      collection: 'reservations',
+      data: { ...base, date: '2026-11-17', source: 'admin' },
+    })
+    expect(sent).not.toHaveBeenCalled()
+    sent.mockRestore()
+  })
+
+  it('keeps the reservation when sending fails', async () => {
+    const sent = vi.spyOn(payload, 'sendEmail').mockRejectedValue(new Error('SMTP down'))
+    const r = await payload.create({
+      collection: 'reservations',
+      data: { ...base, date: '2026-11-24', email: 'fail@example.com', source: 'website' },
+    })
+    expect(r.id).toBeTruthy()
+    sent.mockRestore()
   })
 })

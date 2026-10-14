@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access'
+import { mailsFor, sendReservationMails } from '@/lib/reservation-mails'
 import { localToUtc } from '@/lib/reservation-rules'
 
 /** Name and e-mail are required, except after the cleanup removed them. */
@@ -36,6 +37,13 @@ export const Reservations: CollectionConfig = {
           data.startsAt = localToUtc(data.date, data.time, 'Europe/Berlin').toISOString()
         if (typeof data?.email === 'string') data.email = data.email.trim().toLowerCase()
         return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        // Sent after the save; a failed mail is logged and never undoes the reservation.
+        await sendReservationMails(req.payload, doc, mailsFor(operation, doc, previousDoc))
+        return doc
       },
     ],
   },

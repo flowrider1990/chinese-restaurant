@@ -1,4 +1,5 @@
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { de } from '@payloadcms/translations/languages/de'
 import { en } from '@payloadcms/translations/languages/en'
@@ -51,6 +52,14 @@ export default buildConfig({
     responseOnLimit: 'Die Datei ist zu groß (maximal 15 MB). Bitte verkleinert hochladen.',
   },
   editor: lexicalEditor(),
+  // Real mails only with a Resend key; otherwise Payload writes them to the server log.
+  ...(process.env.RESEND_API_KEY && {
+    email: resendAdapter({
+      apiKey: process.env.RESEND_API_KEY,
+      defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || 'reservierung@example.com',
+      defaultFromName: process.env.EMAIL_FROM_NAME || 'Restaurant',
+    }),
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
