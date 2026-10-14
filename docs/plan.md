@@ -12,6 +12,7 @@ plans folder.
 | 3 Design system + shell | Done. Header, footer, mobile action bar, DE/EN routing, open-now status |
 | 4 Public pages | Done. Home, menu (filter, legend), restaurant (two-click map), news, imprint, privacy |
 | 5 Images, SEO, caching | Done except image storage (Blob adapter deferred until hosting is chosen) |
+| Vouchers (extra) | Done on `feature/vouchers`: Stripe test-mode gift vouchers, admin redemption. Verified live with the Stripe CLI: purchase, webhook 200, paid voucher with code and validity, thank-you page, cancel link. Open manual checks: buyer mail with PDF (needs a real recipient address), restaurant notice, partial redemption and staff delete in the admin (needs the first admin account) |
 | 6 Hardening + preview deploy | Next (needs a hosting decision) |
 
 **Open items**
@@ -20,6 +21,7 @@ plans folder.
 
 **Decisions (2026-10-14)**
 - Reservations: online requests confirmed or declined by staff in the admin, e-mails via Resend, personal data deleted after 30 days (branch `feature/reservations`).
+- Vouchers: gift vouchers paid via Stripe Checkout (test mode only), delivered by e-mail with PDF, redeemed by staff in the admin (branch `feature/vouchers`).
 - Design direction: modern but approachable, warm and friendly. No Chinese clichés. Approved: enamel white, ink blue, cobalt accent, light jade surface (instead of bamboo).
 - Restaurant: fictional "Xiao Chu", Simon-Dach-Straße 99, 10245 Berlin-Friedrichshain. Placeholder images.
 - Ordering: Lieferando and Wolt are shown, but not functional yet (no URL, no redirect).

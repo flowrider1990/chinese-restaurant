@@ -24,9 +24,10 @@ export function Header({
     href: href(key, locale),
     label: t.nav[key],
   }))
+  const vouchers = { href: href('vouchers', locale), label: t.vouchers.nav }
   const navItems: { href: string; label: string; external?: boolean }[] = reserve
-    ? [...items, { href: reserve.href, label: t.reserve.nav, external: reserve.external }]
-    : items
+    ? [...items, { href: reserve.href, label: t.reserve.nav, external: reserve.external }, vouchers]
+    : [...items, vouchers]
 
   return (
     <header className="site-header">

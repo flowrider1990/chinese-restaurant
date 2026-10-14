@@ -73,6 +73,7 @@ export interface Config {
     posts: Post;
     media: Media;
     reservations: Reservation;
+    vouchers: Voucher;
     users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -91,6 +92,7 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     reservations: ReservationsSelect<false> | ReservationsSelect<true>;
+    vouchers: VouchersSelect<false> | VouchersSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -362,6 +364,43 @@ export interface Reservation {
   createdAt: string;
 }
 /**
+ * Einlösen: unter „Einlösungen" eine Zeile mit dem Betrag hinzufügen und speichern. Frühere Einlösungen bleiben unverändert.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vouchers".
+ */
+export interface Voucher {
+  id: number;
+  code?: string | null;
+  amount: number;
+  balance?: number | null;
+  redemptions?:
+    | {
+        amount: number;
+        note?: string | null;
+        redeemedAt?: string | null;
+        by?: (number | null) | User;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Stornieren nur bei bezahlten Gutscheinen; die Erstattung erfolgt im Stripe-Dashboard.
+   */
+  status: 'pending' | 'paid' | 'expired' | 'cancelled';
+  validUntil?: string | null;
+  paidAt?: string | null;
+  buyerName: string;
+  buyerEmail: string;
+  recipientName?: string | null;
+  message?: string | null;
+  locale: 'de' | 'en';
+  stripeSessionId?: string | null;
+  stripePaymentIntent?: string | null;
+  privacyAcceptedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -435,6 +474,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'reservations';
         value: number | Reservation;
+      } | null)
+    | ({
+        relationTo: 'vouchers';
+        value: number | Voucher;
       } | null)
     | ({
         relationTo: 'users';
@@ -635,6 +678,37 @@ export interface ReservationsSelect<T extends boolean = true> {
   startsAt?: T;
   privacyAcceptedAt?: T;
   anonymisedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vouchers_select".
+ */
+export interface VouchersSelect<T extends boolean = true> {
+  code?: T;
+  amount?: T;
+  balance?: T;
+  redemptions?:
+    | T
+    | {
+        amount?: T;
+        note?: T;
+        redeemedAt?: T;
+        by?: T;
+        id?: T;
+      };
+  status?: T;
+  validUntil?: T;
+  paidAt?: T;
+  buyerName?: T;
+  buyerEmail?: T;
+  recipientName?: T;
+  message?: T;
+  locale?: T;
+  stripeSessionId?: T;
+  stripePaymentIntent?: T;
+  privacyAcceptedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -4,7 +4,16 @@ import { href, type RouteKey } from '@/i18n/routes'
 import { payloadClient } from '@/lib/queries'
 import { absolute } from '@/lib/seo'
 
-const pages: RouteKey[] = ['home', 'menu', 'restaurant', 'news', 'reserve', 'imprint', 'privacy']
+const pages: RouteKey[] = [
+  'home',
+  'menu',
+  'restaurant',
+  'news',
+  'reserve',
+  'vouchers',
+  'imprint',
+  'privacy',
+]
 
 /** Every public page in every language, with hreflang alternates; published posts included. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { MediaImage } from '@/components/site/MediaImage'
 import { RichText } from '@/components/site/RichText'
 import { StaticMap } from '@/components/site/StaticMap'
 import { VisitInfo } from '@/components/site/VisitInfo'
 import { dictionaries } from '@/i18n/dictionary'
+import { href } from '@/i18n/routes'
 import { jsonLdScript, pageMetadata, restaurantJsonLd } from '@/lib/seo'
 import { getLocale, isLocale } from '@/i18n/server'
 import type { Media } from '@/payload-types'
@@ -122,6 +124,9 @@ export default async function RestaurantPage() {
             external: t.externalLink,
           }}
         />
+        <p className="voucher-teaser">
+          <Link href={href('vouchers', locale)}>{t.vouchers.teaser}</Link>
+        </p>
       </section>
     </div>
   )

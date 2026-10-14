@@ -6,16 +6,28 @@ type Options = {
   required?: boolean
   allowNegative?: boolean
   width?: string
+  readOnly?: boolean
+  description?: string
 }
 
 /** Integer cents in the DB; edited as "12,90" via the PriceField admin component. */
-export const priceField = ({ name, label, required, allowNegative, width }: Options): NumberField => ({
+export const priceField = ({
+  name,
+  label,
+  required,
+  allowNegative,
+  width,
+  readOnly,
+  description,
+}: Options): NumberField => ({
   name,
   type: 'number',
   label,
   required,
   admin: {
     width,
+    readOnly,
+    description,
     components: {
       Field: '/components/admin/PriceField#PriceField',
       Cell: '/components/admin/PriceCell#PriceCell',

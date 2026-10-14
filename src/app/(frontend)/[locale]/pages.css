@@ -179,7 +179,7 @@
   font-size: 0.8rem;
   padding: 0.1rem 0.6rem;
   border-radius: 999px;
-  background: var(--jade-strong);
+  background: var(--tag);
 }
 .tag--state {
   background: var(--ink);
@@ -883,6 +883,71 @@
   border-radius: var(--radius);
   background: var(--jade);
   margin-bottom: 3rem;
+}
+
+/* Vouchers: amount choice as chips, reusing the reservation form grid */
+.amount-picks {
+  grid-column: 1 / -1;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.amount-picks legend {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+.amount-picks__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.amount-pick {
+  position: relative;
+}
+/* The native radio stays in the tab order and keeps arrow-key navigation; the chip shows it. */
+.amount-pick input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.amount-pick span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.9rem;
+  padding: 0 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+}
+.amount-pick input:checked + span {
+  background: var(--enamel);
+  border-color: var(--enamel);
+  color: var(--enamel-ink);
+}
+.amount-pick input:focus-visible + span {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.amount-picks__custom {
+  margin-top: 0.75rem;
+  max-width: 14rem;
+  display: grid;
+  gap: 0.3rem;
+}
+/* The thank-you card stands alone on the page: give it the page head's top spacing. */
+.reserve-page > .reserve-success:first-child {
+  margin-top: clamp(2rem, 6vw, 3.5rem);
+}
+.voucher-form__demo {
+  grid-column: 1 / -1;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  border-left: 3px solid var(--enamel);
+  padding-left: 0.75rem;
 }
 
 @media (max-width: 48rem) {
