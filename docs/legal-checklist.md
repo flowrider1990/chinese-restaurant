@@ -25,7 +25,8 @@ authoritative sources for Germany/EU at release time, not from this list alone.
 
 ## Privacy and consent
 
-- [ ] No third-party requests before the map click. Check this in the browser's network panel.
+- [ ] No third-party requests when viewing any page. The map is a self-hosted drawing from OpenStreetMap data (`pnpm map:generate`); Google Maps is only a link. Check this in the browser's network panel.
+- [ ] OpenStreetMap attribution stays visible below the map (ODbL).
 - [ ] Assess whether a consent banner is needed, for the full deployed stack.
 - [ ] Order links lead to third parties. Mention this in the privacy policy.
 

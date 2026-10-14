@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { CategoryNav } from '@/components/site/CategoryNav'
 import { Dish } from '@/components/site/Dish'
 import { MenuFilter } from '@/components/site/MenuFilter'
 import { dictionaries } from '@/i18n/dictionary'
@@ -28,15 +29,11 @@ export default async function MenuPage() {
       ) : (
         <>
           <div className="menu-tools">
-            <nav className="menu-nav" aria-label={t.menu.categories}>
-              <ul>
-                {sections.map((s) => (
-                  <li key={s.id}>
-                    <a href={`#${s.slug}`}>{s.name}</a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+            <CategoryNav
+              label={t.menu.categories}
+              items={sections.map((s) => ({ href: `#${s.slug}`, label: s.name }))}
+              scrollLabels={{ prev: t.menu.scrollPrev, next: t.menu.scrollNext }}
+            />
             <MenuFilter
               target="menu"
               label={t.menu.filter}

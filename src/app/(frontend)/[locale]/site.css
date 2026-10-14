@@ -11,6 +11,7 @@
   --enamel-strong: #214783;
   --enamel-ink: #ffffff;
   --jade: #e8f1ea;
+  --jade-strong: #d2e6d7; /* tags such as "vegetarisch": visible on white and on jade */
   --chili: #c4442a;
   --open: #2e7d4f;
   --line: #d9dce3;
@@ -37,6 +38,7 @@
     --enamel-strong: #b0c8f3;
     --enamel-ink: #10182a;
     --jade: #23362b;
+    --jade-strong: #2e4c39;
     --chili: #f07d62;
     --open: #6fcf97;
     --line: #2f3850;

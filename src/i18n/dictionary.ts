@@ -47,6 +47,8 @@ const de = {
     title: 'Speisekarte',
     intro: 'Alle Preise in Euro inklusive Mehrwertsteuer.',
     categories: 'Kategorien',
+    scrollPrev: 'Vorherige Kategorien',
+    scrollNext: 'Weitere Kategorien',
     filter: 'Anzeigen',
     filterAll: 'Alle Gerichte',
     filterVegetarian: 'Vegetarisch',
@@ -75,12 +77,9 @@ const de = {
     closed: 'geschlossen',
   },
   map: {
-    title: 'Karte',
-    notice:
-      'Die Karte wird von Google Maps geladen. Dabei werden Daten wie Ihre IP-Adresse an Google übertragen. Mehr dazu in der Datenschutzerklärung.',
-    load: 'Karte laden',
     open: 'In Google Maps öffnen',
-    frameTitle: 'Karte mit dem Standort des Restaurants',
+    attribution: 'Kartendaten © OpenStreetMap-Mitwirkende',
+    alt: (name: string, address: string) => `Stadtplan mit dem Standort von ${name}, ${address}`,
   },
   news: {
     title: 'Aktuelles',
@@ -138,6 +137,8 @@ const en: typeof de = {
     title: 'Menu',
     intro: 'All prices in euros, including VAT.',
     categories: 'Categories',
+    scrollPrev: 'Previous categories',
+    scrollNext: 'More categories',
     filter: 'Show',
     filterAll: 'All dishes',
     filterVegetarian: 'Vegetarian',
@@ -166,12 +167,9 @@ const en: typeof de = {
     closed: 'closed',
   },
   map: {
-    title: 'Map',
-    notice:
-      'The map is loaded from Google Maps. This sends data such as your IP address to Google. See the privacy policy for details.',
-    load: 'Load map',
     open: 'Open in Google Maps',
-    frameTitle: 'Map showing the restaurant location',
+    attribution: 'Map data © OpenStreetMap contributors',
+    alt: (name, address) => `Street map showing ${name}, ${address}`,
   },
   news: {
     title: 'News',

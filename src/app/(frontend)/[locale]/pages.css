@@ -161,7 +161,7 @@
   font-size: 0.8rem;
   padding: 0.1rem 0.6rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--enamel) 14%, var(--surface));
+  background: var(--jade-strong);
 }
 .tag--state {
   background: var(--ink);
@@ -238,12 +238,33 @@
 .menu-tools > * {
   min-width: 0;
 }
+.menu-nav {
+  position: relative;
+}
 .menu-nav ul {
   display: flex;
   gap: 0.4rem;
   overflow-x: auto;
-  scrollbar-width: thin;
-  padding-bottom: 0.25rem;
+  scrollbar-width: none;
+  scroll-padding-inline: 2.5rem;
+  --fade-left: 0px;
+  --fade-right: 0px;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade-left),
+    #000 calc(100% - var(--fade-right)),
+    transparent 100%
+  );
+}
+.menu-nav ul::-webkit-scrollbar {
+  display: none;
+}
+.menu-nav[data-more-left] ul {
+  --fade-left: 4rem;
+}
+.menu-nav[data-more-right] ul {
+  --fade-right: 4rem;
 }
 .menu-nav a {
   display: inline-block;
@@ -258,6 +279,35 @@
 }
 .menu-nav a:hover {
   border-color: var(--enamel);
+}
+.menu-nav__arrow {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 1;
+  width: 1.9rem;
+  height: 1.9rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 1.15rem/1 var(--body);
+  cursor: pointer;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ink) 12%, transparent);
+}
+.menu-nav__arrow:hover {
+  border-color: var(--enamel);
+}
+.menu-nav__arrow--left {
+  left: 0;
+}
+.menu-nav__arrow--right {
+  right: 0;
+}
+.menu-nav__arrow[hidden] {
+  display: none;
 }
 .menu-filter {
   display: flex;
@@ -381,35 +431,27 @@
   padding-left: 1.25rem;
 }
 .map {
+  margin: 0;
   width: 100%;
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--surface);
-}
-.map__placeholder {
   display: grid;
-  gap: 1rem;
-  padding: clamp(1.25rem, 4vw, 2.5rem);
-  min-height: 16rem;
-  align-content: center;
-  background: repeating-linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--jade) 85%, var(--ink)) 0 1px,
-    var(--jade) 1px 14px
-  );
+  gap: 0.75rem;
 }
-.map__placeholder p {
-  max-width: 55ch;
-  background: var(--surface);
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-}
-.map iframe {
+.map__image {
   display: block;
   width: 100%;
-  height: 24rem;
-  border: 0;
+  height: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+}
+.map__caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.map__caption small a {
+  color: var(--ink-soft);
 }
 
 /* News */
@@ -513,9 +555,6 @@
   /* On phones the category bar and filter would cover a third of the screen: keep them in the flow. */
   .menu-tools {
     position: static;
-  }
-  .menu-nav ul {
-    scrollbar-width: none;
   }
 }
 

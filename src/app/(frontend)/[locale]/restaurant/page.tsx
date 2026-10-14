@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
-import { MapConsent } from '@/components/site/MapConsent'
 import { MediaImage } from '@/components/site/MediaImage'
 import { RichText } from '@/components/site/RichText'
+import { StaticMap } from '@/components/site/StaticMap'
 import { VisitInfo } from '@/components/site/VisitInfo'
 import { dictionaries } from '@/i18n/dictionary'
 import { getLocale, isLocale } from '@/i18n/server'
@@ -98,10 +98,10 @@ export default async function RestaurantPage() {
             </ul>
           </div>
         )}
-        <MapConsent
-          query={query}
+        <StaticMap
+          alt={t.map.alt(info.name, `${info.address.street}, ${info.address.postalCode} ${info.address.city}`)}
           mapsUrl={mapsUrl}
-          labels={{ ...t.map, external: t.externalLink }}
+          labels={{ open: t.map.open, attribution: t.map.attribution, external: t.externalLink }}
         />
       </section>
     </div>

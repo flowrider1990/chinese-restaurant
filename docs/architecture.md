@@ -66,6 +66,10 @@ the Local API, then prints the target and versions.
 - "Open now" is computed in the browser from `src/lib/opening-hours.ts`, so cached pages never
   show a stale status.
 - Order links without a URL are shown as "coming soon" text, never as a link.
+- The restaurant map is `public/map/restaurant.svg`, drawn by `pnpm map:generate` from OpenStreetMap
+  data (one Overpass query, ODbL, attribution under the map). Viewing it contacts no third party.
+  Re-run the script when the coordinates in the site settings change. Map tiles from
+  tile.openstreetmap.org are not used: their policy forbids offline use.
 - Design tokens are at the top of `src/app/(frontend)/[locale]/site.css`: enamel white, ink blue,
   cobalt accent, light jade surface, chili only for spice markers. Fonts (Bricolage Grotesque,
   Instrument Sans, both OFL) are self-hosted through `next/font`; Chinese text uses system fonts.
