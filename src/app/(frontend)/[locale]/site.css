@@ -539,6 +539,18 @@ a.provider:hover {
   .action-bar__buttons[data-count='2'] {
     grid-template-columns: repeat(2, 1fr);
   }
+  .action-bar__buttons[data-count='4'] {
+    grid-template-columns: repeat(4, 1fr);
+    border-radius: 1.6rem;
+  }
+  .action-bar__buttons[data-count='4'] a,
+  .action-bar__buttons[data-count='4'] button {
+    flex-direction: column;
+    gap: 0.15rem;
+    min-height: 3.2rem;
+    font-size: 0.75rem;
+    border-radius: 1.25rem;
+  }
   .action-bar__buttons a,
   .action-bar__buttons button {
     display: flex;

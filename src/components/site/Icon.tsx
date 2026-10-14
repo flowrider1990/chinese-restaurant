@@ -5,6 +5,7 @@ const paths = {
   bowl: 'M3 11h18a9 9 0 0 1-18 0zm5-4c0-1.5 1-2 1-3.5M12 7c0-1.5 1-2 1-3.5M16 7c0-1.5 1-2 1-3.5',
   menu: 'M4 7h16M4 12h16M4 17h16',
   close: 'M6 6l12 12M18 6L6 18',
+  calendar: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',
   external: 'M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5',
 } as const
 

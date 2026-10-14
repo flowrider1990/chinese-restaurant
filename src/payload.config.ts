@@ -1,4 +1,5 @@
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { de } from '@payloadcms/translations/languages/de'
 import { en } from '@payloadcms/translations/languages/en'
@@ -12,11 +13,14 @@ import { Media } from './collections/Media'
 import { MenuCategories } from './collections/MenuCategories'
 import { MenuItems } from './collections/MenuItems'
 import { Posts } from './collections/Posts'
+import { Reservations } from './collections/Reservations'
 import { Users } from './collections/Users'
 import { OpeningHours } from './globals/OpeningHours'
+import { ReservationSettings } from './globals/ReservationSettings'
 import { About, Home, Legal } from './globals/Pages'
 import { SiteSettings } from './globals/SiteSettings'
 import { defaultLocale, locales } from './i18n/locales'
+import { mailConfigProblem } from './lib/mail-config'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -32,8 +36,8 @@ export default buildConfig({
     },
     meta: { titleSuffix: ' – CMS' },
   },
-  collections: [MenuItems, MenuCategories, Attributes, Posts, Media, Users],
-  globals: [SiteSettings, OpeningHours, Home, About, Legal],
+  collections: [MenuItems, MenuCategories, Attributes, Posts, Media, Reservations, Users],
+  globals: [SiteSettings, OpeningHours, ReservationSettings, Home, About, Legal],
   localization: {
     locales: locales.map((l) => ({ code: l.code, label: l.label })),
     defaultLocale,
@@ -49,6 +53,14 @@ export default buildConfig({
     responseOnLimit: 'Die Datei ist zu groß (maximal 15 MB). Bitte verkleinert hochladen.',
   },
   editor: lexicalEditor(),
+  // Real mails only with a Resend key; otherwise Payload writes them to the server log.
+  ...(process.env.RESEND_API_KEY && {
+    email: resendAdapter({
+      apiKey: process.env.RESEND_API_KEY,
+      defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || 'reservierung@example.com',
+      defaultFromName: process.env.EMAIL_FROM_NAME || 'Restaurant',
+    }),
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
@@ -64,5 +76,9 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, 'migrations'),
   }),
   sharp,
+  onInit: async (payload) => {
+    const problem = mailConfigProblem(process.env)
+    if (problem) payload.logger.error(problem)
+  },
   plugins: [],
 })

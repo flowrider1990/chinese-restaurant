@@ -21,10 +21,12 @@
     "verify": "pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run build",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed.ts",
     "map:generate": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/static-map.ts",
-    "images:import": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/import-images.ts"
+    "images:import": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/import-images.ts",
+    "reservations:cleanup": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/reservations-cleanup.ts"
   },
   "dependencies": {
     "@payloadcms/db-sqlite": "3.90.2",
+    "@payloadcms/email-resend": "3.90.2",
     "@payloadcms/next": "3.90.2",
     "@payloadcms/richtext-lexical": "3.90.2",
     "@payloadcms/translations": "3.90.2",

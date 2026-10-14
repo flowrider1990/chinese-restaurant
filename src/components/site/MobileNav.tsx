@@ -5,10 +5,20 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useId, useState } from 'react'
 import { Icon } from './Icon'
 
-type Item = { href: string; label: string }
+type Item = { href: string; label: string; external?: boolean }
 
 /** Disclosure menu for small screens. Closes on navigation and on Escape. */
-export function MobileNav({ items, openLabel, closeLabel }: { items: Item[]; openLabel: string; closeLabel: string }) {
+export function MobileNav({
+  items,
+  openLabel,
+  closeLabel,
+  externalLabel,
+}: {
+  items: Item[]
+  openLabel: string
+  closeLabel: string
+  externalLabel: string
+}) {
   const pathname = usePathname()
   // Remember the page the menu was opened on, so navigating closes it.
   const [openOn, setOpenOn] = useState<string | null>(null)
@@ -38,9 +48,16 @@ export function MobileNav({ items, openLabel, closeLabel }: { items: Item[]; ope
       <ul id={id} className="mobile-nav__list" hidden={!open}>
         {items.map((item) => (
           <li key={item.href}>
-            <Link href={item.href} aria-current={pathname === item.href ? 'page' : undefined}>
-              {item.label}
-            </Link>
+            {item.external ? (
+              <a href={item.href} target="_blank" rel="noopener noreferrer">
+                {item.label}
+                <span className="visually-hidden"> {externalLabel}</span>
+              </a>
+            ) : (
+              <Link href={item.href} aria-current={pathname === item.href ? 'page' : undefined}>
+                {item.label}
+              </Link>
+            )}
           </li>
         ))}
       </ul>

@@ -624,6 +624,93 @@
   color: var(--ink-soft);
 }
 
+/* Reservation form */
+.reserve-form {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 48rem;
+  padding-bottom: 3rem;
+}
+.reserve-form__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+.field {
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+  min-width: 0;
+}
+.field label {
+  font-weight: 600;
+}
+.field input,
+.field select,
+.field textarea {
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  min-height: 2.75rem;
+  width: 100%;
+}
+.field [aria-invalid='true'] {
+  border-color: var(--chili);
+}
+.field__hint {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+.field__error {
+  color: var(--chili);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.field--check {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: 0.6rem;
+}
+.field--check input {
+  width: 1.25rem;
+  min-height: 1.25rem;
+  margin-top: 0.2rem;
+}
+.field--check label {
+  font-weight: 400;
+}
+.field--check .field__error {
+  grid-column: 2;
+}
+.reserve-form__summary {
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--chili) 12%, var(--surface));
+  font-weight: 600;
+}
+.reserve-form__hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.reserve-form .btn {
+  justify-self: start;
+}
+.reserve-success {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 40rem;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--jade);
+  margin-bottom: 3rem;
+}
+
 @media (max-width: 48rem) {
   /* On phones the category bar and filter would cover a third of the screen: keep them in the flow. */
   .menu-tools {

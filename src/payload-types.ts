@@ -72,6 +72,7 @@ export interface Config {
     attributes: Attribute;
     posts: Post;
     media: Media;
+    reservations: Reservation;
     users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -89,6 +90,7 @@ export interface Config {
     attributes: AttributesSelect<false> | AttributesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    reservations: ReservationsSelect<false> | ReservationsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -102,6 +104,7 @@ export interface Config {
   globals: {
     'site-settings': SiteSetting;
     'opening-hours': OpeningHour;
+    'reservation-settings': ReservationSetting;
     home: Home;
     about: About;
     legal: Legal;
@@ -109,6 +112,7 @@ export interface Config {
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     'opening-hours': OpeningHoursSelect<false> | OpeningHoursSelect<true>;
+    'reservation-settings': ReservationSettingsSelect<false> | ReservationSettingsSelect<true>;
     home: HomeSelect<false> | HomeSelect<true>;
     about: AboutSelect<false> | AboutSelect<true>;
     legal: LegalSelect<false> | LegalSelect<true>;
@@ -330,6 +334,34 @@ export interface Post {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Neue Anfragen stehen oben. Status ändern und speichern: Der Gast bekommt automatisch eine E-Mail.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservations".
+ */
+export interface Reservation {
+  id: number;
+  date: string;
+  time: string;
+  partySize: number;
+  status: 'requested' | 'confirmed' | 'declined';
+  /**
+   * Steht in der Bestätigungs- oder Absage-E-Mail.
+   */
+  messageToGuest?: string | null;
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  note?: string | null;
+  locale: 'de' | 'en';
+  source: 'website' | 'admin';
+  startsAt?: string | null;
+  privacyAcceptedAt?: string | null;
+  anonymisedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -399,6 +431,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'reservations';
+        value: number | Reservation;
       } | null)
     | ({
         relationTo: 'users';
@@ -582,6 +618,28 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservations_select".
+ */
+export interface ReservationsSelect<T extends boolean = true> {
+  date?: T;
+  time?: T;
+  partySize?: T;
+  status?: T;
+  messageToGuest?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  note?: T;
+  locale?: T;
+  source?: T;
+  startsAt?: T;
+  privacyAcceptedAt?: T;
+  anonymisedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -754,6 +812,42 @@ export interface OpeningHour {
       }[]
     | null;
   timezone: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservation-settings".
+ */
+export interface ReservationSetting {
+  id: number;
+  mode: 'form' | 'external' | 'off';
+  externalUrl?: string | null;
+  /**
+   * Abstand der wählbaren Uhrzeiten.
+   */
+  slotMinutes: number;
+  /**
+   * Frühestens so viele Minuten ab jetzt.
+   */
+  leadTimeMinutes: number;
+  /**
+   * Gilt für jedes Zeitfenster (mittags, abends).
+   */
+  lastBookingBeforeCloseMinutes: number;
+  horizonDays: number;
+  /**
+   * Größere Gruppen werden gebeten anzurufen.
+   */
+  maxPartySize: number;
+  /**
+   * Name, E-Mail, Telefon und Anmerkung werden danach entfernt.
+   */
+  retentionDays: number;
+  /**
+   * Leer lassen, um die E-Mail-Adresse des Restaurants zu verwenden.
+   */
+  notificationEmail?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -954,6 +1048,24 @@ export interface OpeningHoursSelect<T extends boolean = true> {
         id?: T;
       };
   timezone?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservation-settings_select".
+ */
+export interface ReservationSettingsSelect<T extends boolean = true> {
+  mode?: T;
+  externalUrl?: T;
+  slotMinutes?: T;
+  leadTimeMinutes?: T;
+  lastBookingBeforeCloseMinutes?: T;
+  horizonDays?: T;
+  maxPartySize?: T;
+  retentionDays?: T;
+  notificationEmail?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

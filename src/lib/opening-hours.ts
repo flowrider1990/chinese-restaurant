@@ -23,7 +23,7 @@ const DEFAULT_TZ = 'Europe/Berlin'
 const minutes = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5))
 
 /** Calendar date ("2026-10-14") and weekday of an instant in the restaurant's time zone. */
-function localParts(date: Date, timeZone: string) {
+export function localParts(date: Date, timeZone: string) {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat('en-GB', {
       timeZone,
@@ -46,7 +46,7 @@ function localParts(date: Date, timeZone: string) {
 }
 
 /** Adds whole days to a "YYYY-MM-DD" date. */
-function addDays(isoDate: string, n: number) {
+export function addDays(isoDate: string, n: number) {
   const d = new Date(`${isoDate}T12:00:00Z`)
   d.setUTCDate(d.getUTCDate() + n)
   return d.toISOString().slice(0, 10)

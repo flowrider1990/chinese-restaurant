@@ -12,6 +12,11 @@ describe('href', () => {
     expect(href('news', 'en', 'opening')).toBe('/en/news/opening')
   })
 
+  it('knows the reservation page', () => {
+    expect(href('reserve', 'de')).toBe('/reservieren')
+    expect(href('reserve', 'en')).toBe('/en/reserve')
+  })
+
   it('maps a localized segment back to its page', () => {
     expect(routeKeyFor('menu', 'en')).toBe('menu')
     expect(routeKeyFor('speisekarte', 'de')).toBe('menu')
@@ -32,6 +37,10 @@ describe('proxy', () => {
     expect(run('/en/news/opening').headers.get('x-middleware-rewrite')).toBe(
       'http://localhost:3000/en/aktuelles/opening',
     )
+  })
+
+  it('rewrites /en/reserve onto the German folder', () => {
+    expect(run('/en/reserve').headers.get('x-middleware-rewrite')).toBe('http://localhost:3000/en/reservieren')
   })
 
   it('redirects /de URLs to the unprefixed version', () => {
