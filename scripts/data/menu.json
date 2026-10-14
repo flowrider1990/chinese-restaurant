@@ -1,0 +1,216 @@
+{
+  "_comment": "DEVELOPMENT PLACEHOLDER MENU. Dishes, numbers and prices follow a real Berlin restaurant's public menu (wei-house.de, retrieved 2026-10-14), used only as realistic test data. Names and descriptions are rewritten; allergen codes are mapped and partly completed by hand and are NOT verified. Replace with the restaurant's own menu before any public launch. Prices in cents. Allergen codes: EU letter scheme A-N (see scripts/seed.ts). Additive codes: see scripts/seed.ts.",
+  "categories": [
+    {
+      "name": { "de": "Suppen", "en": "Soups" },
+      "items": [
+        { "nr": "S1", "nameOriginal": "野菜牛肉汤", "name": { "de": "Suppe mit Gemüse und Rindfleisch", "en": "Soup with vegetables and beef" }, "price": 500, "allergens": [], "additives": ["22"] },
+        { "nr": "S2", "nameOriginal": "素菜粉丝汤", "name": { "de": "Suppe mit Gemüse und Glasnudeln", "en": "Soup with vegetables and glass noodles" }, "price": 500, "allergens": [], "tags": ["vegetarian"] },
+        { "nr": "S3", "nameOriginal": "素馄饨汤", "name": { "de": "Wan-Tan-Suppe mit Gemüsefüllung", "en": "Wonton soup with vegetable filling" }, "price": 500, "allergens": ["B"], "additives": ["22"] },
+        { "nr": "S4", "nameOriginal": "野菜豆腐汤", "name": { "de": "Suppe mit Gemüse und Tofu", "en": "Soup with vegetables and tofu" }, "price": 500, "allergens": ["F"], "additives": ["22"], "tags": ["vegetarian"] },
+        { "nr": "S5", "nameOriginal": "馄饨汤", "name": { "de": "Wan-Tan-Suppe mit Schweinefleisch-Garnelen-Füllung", "en": "Wonton soup with pork and shrimp filling" }, "price": 500, "allergens": ["B"], "additives": ["22"] },
+        { "nr": "S6", "nameOriginal": "酸辣汤", "name": { "de": "Sauer-Scharf-Suppe mit Hühnerfleisch und Gemüse", "en": "Hot and sour soup with chicken and vegetables" }, "price": 500, "allergens": ["A", "B", "C"], "additives": ["22", "23"], "spiciness": "medium", "featured": true }
+      ]
+    },
+    {
+      "name": { "de": "Kalte Vorspeisen", "en": "Cold starters" },
+      "items": [
+        { "nr": "K1", "nameOriginal": "凉拌腐竹", "name": { "de": "Tofuhaut-Salat in leichter Sauce", "en": "Tofu skin salad in a light sauce" }, "price": 650, "allergens": ["F", "J"], "tags": ["vegetarian"] },
+        { "nr": "K2", "nameOriginal": "盐水毛豆", "name": { "de": "Edamame", "en": "Edamame" }, "price": 500, "allergens": ["F"], "tags": ["vegetarian", "vegan"] },
+        { "nr": "K3", "nameOriginal": "姜汁四季豆", "name": { "de": "Grüne Bohnen in Ingwer-Essig-Sauce", "en": "Green beans in ginger vinegar sauce" }, "price": 650, "allergens": ["J"], "tags": ["vegetarian"] },
+        { "nr": "K4", "nameOriginal": "酱牛肉", "name": { "de": "Rindfleisch in Chilisauce", "en": "Beef in chili sauce" }, "price": 800, "allergens": ["J"], "spiciness": "mild" },
+        { "nr": "K5", "nameOriginal": "红油猪耳", "name": { "de": "Schweineohren in Chiliöl", "en": "Pork ears in chili oil" }, "price": 790, "allergens": ["J"], "spiciness": "mild" },
+        { "nr": "K6", "nameOriginal": "蒜泥黄瓜", "name": { "de": "Gurkensalat mit Knoblauch", "en": "Cucumber salad with garlic" }, "price": 690, "allergens": ["J"], "tags": ["vegetarian"] },
+        { "nr": "K7", "nameOriginal": "粉丝空心菜", "name": { "de": "Wasserspinat mit Glasnudeln", "en": "Water spinach with glass noodles" }, "price": 750, "allergens": ["J"], "tags": ["vegetarian"] },
+        { "nr": "K8", "nameOriginal": "辣白菜", "name": { "de": "Kimchi", "en": "Kimchi" }, "price": 600, "allergens": [], "spiciness": "mild" },
+        { "nr": "K9", "nameOriginal": "酸辣木耳", "name": { "de": "Morcheln in Knoblauch-Sesamöl-Sauce", "en": "Morels in garlic and sesame oil sauce" }, "price": 690, "allergens": ["J", "K"], "spiciness": "hot", "tags": ["vegetarian"] },
+        { "nr": "K10", "nameOriginal": "酸辣黄瓜", "name": { "de": "Gurkensalat in Knoblauch-Chili-Sauce", "en": "Cucumber salad in garlic chili sauce" }, "price": 600, "allergens": [], "spiciness": "mild", "tags": ["vegetarian"] },
+        { "nr": "K11", "nameOriginal": "五香豆腐干", "name": { "de": "Geräucherter Tofu mit hausgemachtem Sesamöl", "en": "Smoked tofu with homemade sesame oil" }, "price": 680, "allergens": ["F", "J", "K"], "tags": ["vegetarian"] }
+      ]
+    },
+    {
+      "name": { "de": "Warme Vorspeisen & Dim Sum", "en": "Hot starters & dim sum" },
+      "items": [
+        { "nr": "W1", "nameOriginal": "脆皮大虾", "name": { "de": "Knusprige Garnelen im Teigmantel", "en": "Crispy battered shrimp" }, "price": 800, "allergens": ["A", "B", "I", "J"], "additives": ["22"] },
+        { "nr": "W2", "nameOriginal": "蒜泥白肉", "name": { "de": "Schweinebauch in Knoblauch und Chiliöl", "en": "Pork belly in garlic and chili oil" }, "price": 780, "allergens": ["J"], "spiciness": "mild" },
+        { "nr": "W3", "nameOriginal": "手工春卷鸭肉", "name": { "de": "Hausgemachte Frühlingsrollen mit Ente", "en": "Homemade duck spring rolls" }, "description": { "de": "Mit Ente und Gemüse gefüllt", "en": "Filled with duck and vegetables" }, "price": 600, "allergens": ["A"] },
+        { "nr": "W4", "nameOriginal": "糖醋排骨", "name": { "de": "Schweinerippchen süß-sauer", "en": "Sweet and sour pork ribs" }, "price": 800, "allergens": [] },
+        { "nr": "W5", "nameOriginal": "炸馄饨", "name": { "de": "Knusprige Wan-Tan", "en": "Crispy wontons" }, "description": { "de": "5 Stück, mit Schweinefleisch und Garnelen gefüllt", "en": "5 pieces, filled with pork and shrimp" }, "price": 500, "allergens": ["A", "B"] },
+        { "nr": "W6", "nameOriginal": "紫菜素春卷", "name": { "de": "Frühlingsrollen mit Seetang und Glasnudeln", "en": "Seaweed and glass noodle spring rolls" }, "description": { "de": "Hausgemacht", "en": "Homemade" }, "price": 600, "allergens": ["A"], "tags": ["vegetarian"] },
+        { "nr": "W7", "nameOriginal": "炸虾肉土豆卷", "name": { "de": "Garnelenrollen im Kartoffelmantel", "en": "Shrimp rolls in a potato crust" }, "description": { "de": "Hausgemacht, in dünnen Kartoffelstreifen gebacken", "en": "Homemade, wrapped in fine potato strings" }, "price": 650, "allergens": ["A", "B"] },
+        { "nr": "W8", "nameOriginal": "手工春卷猪肉", "name": { "de": "Hausgemachte Frühlingsrollen mit Schweinefleisch", "en": "Homemade pork spring rolls" }, "description": { "de": "Mit Schweinefleisch und Gemüse gefüllt", "en": "Filled with pork and vegetables" }, "price": 590, "allergens": ["A"] },
+        { "nr": "W9", "nameOriginal": "蒸小笼包", "name": { "de": "Xiaolongbao", "en": "Xiaolongbao" }, "description": { "de": "4 Stück, gedämpfte Teigtaschen mit Schweinefleisch", "en": "4 pieces, steamed pork soup dumplings" }, "price": 650, "allergens": ["A"], "featured": true },
+        { "nr": "W10", "nameOriginal": "虾饺", "name": { "de": "Har Gow", "en": "Har gow" }, "description": { "de": "4 Stück, gedämpfte Reismehl-Teigtaschen mit Garnelen", "en": "4 pieces, steamed rice flour dumplings with shrimp" }, "price": 600, "allergens": ["B"], "additives": ["22"] },
+        { "nr": "W11", "nameOriginal": "牛肉水饺", "name": { "de": "Gekochte Teigtaschen mit Rindfleisch", "en": "Boiled beef dumplings" }, "description": { "de": "4 Stück", "en": "4 pieces" }, "price": 620, "allergens": ["A"] },
+        { "nr": "W12", "nameOriginal": "素煎饺", "name": { "de": "Gebratene Teigtaschen mit Gemüse", "en": "Pan-fried vegetable dumplings" }, "description": { "de": "4 Stück", "en": "4 pieces" }, "price": 580, "allergens": ["A"], "tags": ["vegetarian"] },
+        { "nr": "W13", "nameOriginal": "牛肉锅贴", "name": { "de": "Gebratene Teigtaschen mit Rindfleisch", "en": "Pan-fried beef dumplings" }, "description": { "de": "4 Stück", "en": "4 pieces" }, "price": 620, "allergens": ["A"] },
+        { "nr": "W14", "nameOriginal": "素水饺", "name": { "de": "Gekochte vegetarische Teigtaschen", "en": "Boiled vegetarian dumplings" }, "description": { "de": "4 Stück", "en": "4 pieces" }, "price": 600, "allergens": ["A"], "tags": ["vegetarian"] },
+        { "nr": "W15", "nameOriginal": "素虾饺", "name": { "de": "Gedämpfte Reisteigtaschen mit Gemüse", "en": "Steamed rice flour dumplings with vegetables" }, "description": { "de": "4 Stück", "en": "4 pieces" }, "price": 600, "allergens": [], "additives": ["22"], "tags": ["vegetarian"] },
+        { "nr": "W16", "nameOriginal": "担担面", "name": { "de": "Dan-Dan-Nudeln", "en": "Dan dan noodles" }, "description": { "de": "Warmer Nudelsalat", "en": "Warm noodle salad" }, "price": 700, "allergens": ["A"], "spiciness": "mild" },
+        { "nr": "W17", "nameOriginal": "素点心拼盘", "name": { "de": "Vegetarische Dim-Sum-Auswahl", "en": "Vegetarian dim sum selection" }, "description": { "de": "5 Stück, gedämpft", "en": "5 pieces, steamed" }, "price": 790, "allergens": ["A"], "tags": ["vegetarian"] },
+        { "nr": "W18", "nameOriginal": "鸭包", "name": { "de": "Gedämpfte Brötchen mit Ente", "en": "Steamed duck buns" }, "description": { "de": "Mit Ente und Gemüse", "en": "With duck and vegetables" }, "price": 700, "allergens": ["A"] },
+        { "nr": "W19", "nameOriginal": "红油抄手", "name": { "de": "Wan-Tan in Chiliöl", "en": "Wontons in chili oil" }, "description": { "de": "Gekocht, mit Schweinefleisch gefüllt", "en": "Boiled, filled with pork" }, "price": 600, "allergens": ["A"], "spiciness": "mild" },
+        { "nr": "W20", "nameOriginal": "点心拼盘", "name": { "de": "Dim-Sum-Auswahl mit Fleisch", "en": "Dim sum selection with meat" }, "description": { "de": "6 Stück, gedämpft", "en": "6 pieces, steamed" }, "price": 820, "allergens": ["A"], "additives": ["22"] },
+        { "nr": "W21", "nameOriginal": "小春卷", "name": { "de": "Vegetarische Mini-Frühlingsrollen", "en": "Vegetarian mini spring rolls" }, "description": { "de": "6 Stück", "en": "6 pieces" }, "price": 500, "allergens": ["A"], "additives": ["22"], "tags": ["vegetarian"] },
+        { "nr": "W22", "nameOriginal": "杭州卤鸭", "name": { "de": "Gewürzte Ente nach Hangzhou-Art", "en": "Hangzhou-style spiced duck" }, "price": 800, "allergens": ["F"] },
+        { "nr": "W23", "nameOriginal": "蒸素小笼包", "name": { "de": "Gedämpfte vegetarische Teigtaschen", "en": "Steamed vegetarian dumplings" }, "description": { "de": "4 Stück", "en": "4 pieces" }, "price": 620, "allergens": ["A"], "tags": ["vegetarian"] }
+      ]
+    },
+    {
+      "name": { "de": "Huhn", "en": "Chicken" },
+      "description": { "de": "Zu jeder Hauptspeise gibt es eine Schale Reis.", "en": "Every main course comes with a bowl of rice." },
+      "items": [
+        { "nr": "H1", "nameOriginal": "宫保鸡丁", "name": { "de": "Gongbao-Huhn", "en": "Kung pao chicken" }, "description": { "de": "Hühnerfleischwürfel mit Erdnüssen und Gemüse", "en": "Diced chicken with peanuts and vegetables" }, "price": 1780, "allergens": ["E", "F"], "spiciness": "mild", "featured": true },
+        { "nr": "H2", "nameOriginal": "黑椒鸡柳", "name": { "de": "Hähnchenfilet in Schwarzpfeffersauce", "en": "Chicken fillet in black pepper sauce" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1750, "allergens": ["F"] },
+        { "nr": "H3", "nameOriginal": "辣子鸡", "name": { "de": "Trocken gebratenes Huhn nach Sichuan-Art", "en": "Sichuan dry-fried chicken" }, "price": 1780, "allergens": ["F"], "spiciness": "hot" },
+        { "nr": "H4", "nameOriginal": "咕噜肉鸡丁", "name": { "de": "Knuspriges Huhn süß-sauer", "en": "Crispy sweet and sour chicken" }, "price": 1690, "allergens": ["A", "F"] },
+        { "nr": "H5", "nameOriginal": "荷塘鸡柳", "name": { "de": "Hähnchenfilet mit Lotuswurzel", "en": "Chicken fillet with lotus root" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1790, "allergens": ["F"] },
+        { "nr": "H6", "nameOriginal": "四川鸡柳", "name": { "de": "Hähnchenfilet nach Sichuan-Art", "en": "Sichuan-style chicken fillet" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1780, "allergens": ["F"], "spiciness": "medium" }
+      ]
+    },
+    {
+      "name": { "de": "Schwein", "en": "Pork" },
+      "description": { "de": "Zu jeder Hauptspeise gibt es eine Schale Reis.", "en": "Every main course comes with a bowl of rice." },
+      "items": [
+        { "nr": "T1", "nameOriginal": "鱼香肉丝", "name": { "de": "Schweinefleisch nach Yuxiang-Art", "en": "Yuxiang-style pork" }, "description": { "de": "In süß-saurer Knoblauchsauce", "en": "In a sweet, sour and garlicky sauce" }, "price": 1780, "allergens": ["F"], "spiciness": "mild" },
+        { "nr": "T2", "nameOriginal": "京酱肉丝", "name": { "de": "Schweinefleischstreifen in Hoisinsauce", "en": "Pork strips in hoisin sauce" }, "description": { "de": "Mit Lauch", "en": "With leek" }, "price": 1780, "allergens": ["F"] },
+        { "nr": "T3", "nameOriginal": "四川肉丝", "name": { "de": "Schweinefleischstreifen nach Sichuan-Art", "en": "Sichuan-style pork strips" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1780, "allergens": ["F"], "spiciness": "hot" },
+        { "nr": "T4", "nameOriginal": "水煮肉片", "name": { "de": "Pochiertes Schweinefleisch nach Sichuan-Art", "en": "Sichuan-style poached pork" }, "description": { "de": "Mit Gemüse in würziger Brühe", "en": "With vegetables in a spicy broth" }, "price": 1790, "allergens": [], "spiciness": "medium" },
+        { "nr": "T5", "nameOriginal": "回锅肉", "name": { "de": "Zweimal gebratener Schweinebauch", "en": "Twice-cooked pork belly" }, "description": { "de": "Mit Gemüse und schwarzen Bohnen", "en": "With vegetables and fermented black beans" }, "price": 1790, "allergens": ["F"], "spiciness": "mild" },
+        { "nr": "T6", "nameOriginal": "红烧肉", "name": { "de": "Rot geschmorter Schweinebauch", "en": "Red-braised pork belly" }, "description": { "de": "Lange in Sojasauce und Gewürzen geschmort, mit Gemüse", "en": "Slowly braised in soy sauce and spices, with vegetables" }, "price": 1790, "allergens": ["F"], "featured": true },
+        { "nr": "T7", "nameOriginal": "椒盐排骨", "name": { "de": "Rippchen mit Salz und Pfeffer", "en": "Salt and pepper ribs" }, "price": 1790, "allergens": ["F"] }
+      ]
+    },
+    {
+      "name": { "de": "Ente", "en": "Duck" },
+      "description": { "de": "Zu jeder Hauptspeise gibt es eine Schale Reis.", "en": "Every main course comes with a bowl of rice." },
+      "items": [
+        { "nr": "E1", "nameOriginal": "麻辣鸭", "name": { "de": "Entenbrust mit Sichuanpfeffer", "en": "Duck breast with Sichuan pepper" }, "price": 1880, "allergens": ["A"], "spiciness": "hot" },
+        { "nr": "E2", "nameOriginal": "金葱炸鸭", "name": { "de": "Knusprige Ente mit Frühlingszwiebeln", "en": "Crispy duck with spring onions" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1890, "allergens": ["A"] },
+        { "nr": "E3", "nameOriginal": "八宝鸭", "name": { "de": "Ente „Acht Kostbarkeiten“", "en": "\"Eight treasures\" duck" }, "description": { "de": "Knusprige Entenbrust mit verschiedenen Fleischsorten", "en": "Crispy duck breast with a variety of meats" }, "price": 1900, "allergens": ["A"] },
+        { "nr": "E4", "nameOriginal": "杭州卤鸭", "name": { "de": "Ente nach Hangzhou-Art", "en": "Hangzhou-style duck" }, "description": { "de": "In dunkler Sauce, mit Gemüse", "en": "In a dark sauce, with vegetables" }, "price": 1900, "allergens": ["A", "F"] }
+      ]
+    },
+    {
+      "name": { "de": "Rind", "en": "Beef" },
+      "description": { "de": "Zu jeder Hauptspeise gibt es eine Schale Reis.", "en": "Every main course comes with a bowl of rice." },
+      "items": [
+        { "nr": "R1", "nameOriginal": "黑椒牛柳", "name": { "de": "Rinderfilet in Schwarzpfeffersauce", "en": "Beef fillet in black pepper sauce" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1850, "allergens": ["F"], "spiciness": "mild" },
+        { "nr": "R2", "nameOriginal": "水煮牛", "name": { "de": "Rindfleischtopf nach Sichuan-Art", "en": "Sichuan-style beef pot" }, "description": { "de": "Mit Gemüse in würziger Brühe", "en": "With vegetables in a spicy broth" }, "price": 1890, "allergens": ["F"], "spiciness": "medium" },
+        { "nr": "R3", "nameOriginal": "四川牛柳", "name": { "de": "Rindfleisch nach Sichuan-Art", "en": "Sichuan-style beef" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1850, "allergens": ["F", "K"], "spiciness": "hot" },
+        { "nr": "R4", "nameOriginal": "荷塘牛柳", "name": { "de": "Rinderfilet mit Lotuswurzel", "en": "Beef fillet with lotus root" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1850, "allergens": ["F"] },
+        { "nr": "R5", "nameOriginal": "西兰花牛柳", "name": { "de": "Rindfleisch mit Brokkoli", "en": "Beef with broccoli" }, "price": 1850, "allergens": ["F"] },
+        { "nr": "R6", "nameOriginal": "麻婆豆腐有牛肉", "name": { "de": "Mapo-Tofu mit Rinderhack", "en": "Mapo tofu with minced beef" }, "price": 1750, "allergens": ["F"], "spiciness": "mild" },
+        { "nr": "R7", "nameOriginal": "尖椒牛柳", "name": { "de": "Rinderfilet mit grünen Peperoni", "en": "Beef fillet with green chilies" }, "price": 1850, "allergens": ["F"], "spiciness": "hot" }
+      ]
+    },
+    {
+      "name": { "de": "Fisch & Garnelen", "en": "Fish & shrimp" },
+      "description": { "de": "Zu jeder Hauptspeise gibt es eine Schale Reis.", "en": "Every main course comes with a bowl of rice." },
+      "items": [
+        { "nr": "F1", "nameOriginal": "椒盐鱼条", "name": { "de": "Fischfiletstreifen mit Chili, Salz und Pfeffer", "en": "Fish fillet strips with chili, salt and pepper" }, "description": { "de": "Frittiert", "en": "Deep-fried" }, "price": 1900, "allergens": ["A", "D"], "spiciness": "hot" },
+        { "nr": "F2", "nameOriginal": "鱼香鱼", "name": { "de": "Gebackener Fisch in dunkler Sauce", "en": "Battered fish in a sweet dark sauce" }, "price": 1900, "allergens": ["A", "D", "H"] },
+        { "nr": "F3", "nameOriginal": "松子鱼", "name": { "de": "Knusprige Dorade süß-sauer", "en": "Crispy sweet and sour sea bream" }, "description": { "de": "Im Bierteig goldbraun gebacken", "en": "Golden-fried in beer batter" }, "price": 1900, "allergens": ["A", "D", "H"], "additives": ["22"] },
+        { "nr": "F4", "nameOriginal": "水煮鱼", "name": { "de": "Fischtopf nach Sichuan-Art", "en": "Sichuan-style fish pot" }, "description": { "de": "Mit Gemüse in würziger Brühe", "en": "With vegetables in a spicy broth" }, "price": 1900, "allergens": ["D", "F", "K"], "spiciness": "medium" },
+        { "nr": "G1", "nameOriginal": "椒盐虾", "name": { "de": "Garnelen mit Salz und Sichuanpfeffer", "en": "Salt and Sichuan pepper shrimp" }, "description": { "de": "In der Schale gebraten", "en": "Fried in the shell" }, "price": 1900, "allergens": ["B", "F"] },
+        { "nr": "G2", "nameOriginal": "宫保虾", "name": { "de": "Gongbao-Garnelen", "en": "Kung pao shrimp" }, "description": { "de": "Mit Erdnüssen und Gemüse in pikanter Sauce", "en": "With peanuts and vegetables in a piquant sauce" }, "price": 1900, "allergens": ["B", "E", "F"], "spiciness": "hot" },
+        { "nr": "G3", "nameOriginal": "荷塘虾", "name": { "de": "Garnelen mit Lotuswurzel", "en": "Shrimp with lotus root" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1900, "allergens": ["B", "F"] }
+      ]
+    },
+    {
+      "name": { "de": "Vegetarisch & vegan", "en": "Vegetarian & vegan" },
+      "description": { "de": "Zu jeder Hauptspeise gibt es eine Schale Reis. Fleischersatz auf Sojabasis.", "en": "Every main course comes with a bowl of rice. Meat substitutes are soy-based." },
+      "items": [
+        { "nr": "V1", "nameOriginal": "干锅花菜", "name": { "de": "Blumenkohl aus dem Wok", "en": "Wok-fried cauliflower" }, "description": { "de": "Mit Peperoni und schwarzen Bohnen", "en": "With chilies and fermented black beans" }, "price": 1580, "allergens": ["F", "J"], "spiciness": "mild", "tags": ["vegetarian"] },
+        { "nr": "V2", "nameOriginal": "鱼香茄子", "name": { "de": "Aubergine nach Yuxiang-Art", "en": "Yuxiang-style aubergine" }, "description": { "de": "Mit Knoblauch und Chili", "en": "With garlic and chili" }, "price": 1600, "allergens": ["F"], "spiciness": "mild", "tags": ["vegetarian"], "featured": true },
+        { "nr": "V3", "nameOriginal": "西芹炒香干", "name": { "de": "Räuchertofu mit Sellerie", "en": "Smoked tofu with celery" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1600, "allergens": ["F", "I"], "tags": ["vegetarian"] },
+        { "nr": "V4", "nameOriginal": "宫保素鸡丁", "name": { "de": "Veganes Gongbao", "en": "Vegan kung pao" }, "description": { "de": "Soja-Huhn mit Paprika, Zwiebeln, Chili und Erdnüssen", "en": "Soy chicken with peppers, onions, chili and peanuts" }, "price": 1680, "allergens": ["E", "F"], "spiciness": "mild", "tags": ["vegetarian", "vegan"], "featured": true },
+        { "nr": "V5", "nameOriginal": "回锅素牛肉片", "name": { "de": "Veganes Rind aus dem Wok", "en": "Wok-fried vegan beef" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1750, "allergens": ["F"], "spiciness": "mild", "tags": ["vegetarian", "vegan"] },
+        { "nr": "V6", "nameOriginal": "辣子素鸡丁", "name": { "de": "Veganes Huhn nach Sichuan-Art", "en": "Sichuan-style vegan chicken" }, "description": { "de": "Trocken gebraten", "en": "Dry-fried" }, "price": 1690, "allergens": ["F"], "spiciness": "hot", "tags": ["vegetarian", "vegan"] },
+        { "nr": "V7", "nameOriginal": "辣子素鸭丁", "name": { "de": "Vegane Ente nach Sichuan-Art", "en": "Sichuan-style vegan duck" }, "description": { "de": "Trocken gebraten", "en": "Dry-fried" }, "price": 1700, "allergens": ["F"], "spiciness": "hot", "tags": ["vegetarian", "vegan"] },
+        { "nr": "V8", "nameOriginal": "水煮豆腐", "name": { "de": "Tofutopf mit Gemüse", "en": "Tofu pot with vegetables" }, "price": 1700, "allergens": ["F"], "spiciness": "mild", "tags": ["vegetarian"] },
+        { "nr": "V9", "nameOriginal": "荷塘小炒", "name": { "de": "Lotuswurzel aus dem Wok", "en": "Wok-fried lotus root" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1700, "allergens": ["F"], "tags": ["vegetarian"] },
+        { "nr": "V10", "nameOriginal": "蒜蓉西兰花炒黑木耳", "name": { "de": "Brokkoli mit Morcheln und Knoblauch", "en": "Broccoli with morels and garlic" }, "price": 1600, "allergens": ["J"], "tags": ["vegetarian"] },
+        { "nr": "V11", "nameOriginal": "麻婆豆腐", "name": { "de": "Mapo-Tofu", "en": "Mapo tofu" }, "description": { "de": "Ohne Fleisch", "en": "Without meat" }, "price": 1590, "allergens": ["F"], "spiciness": "hot", "tags": ["vegetarian"] },
+        { "nr": "V12", "nameOriginal": "家常豆腐", "name": { "de": "Gebratener Tofu mit Gemüse", "en": "Fried tofu with vegetables" }, "price": 1590, "allergens": ["F"], "tags": ["vegetarian"] },
+        { "nr": "V13", "nameOriginal": "蒜蓉空心菜", "name": { "de": "Wasserspinat mit Knoblauch", "en": "Water spinach with garlic" }, "price": 1590, "allergens": [], "tags": ["vegetarian"] },
+        { "nr": "V14", "nameOriginal": "粉丝包菜", "name": { "de": "Spitzkohl mit Glasnudeln", "en": "Pointed cabbage with glass noodles" }, "description": { "de": "Mit Knoblauch", "en": "With garlic" }, "price": 1590, "allergens": ["F"], "tags": ["vegetarian"] },
+        { "nr": "V15", "nameOriginal": "蒜蓉上海青", "name": { "de": "Pak Choi mit Knoblauch", "en": "Pak choi with garlic" }, "price": 1590, "allergens": [], "tags": ["vegetarian"] },
+        { "nr": "V16", "nameOriginal": "酸辣土豆丝", "name": { "de": "Sauer-scharfe Kartoffelstreifen", "en": "Hot and sour shredded potatoes" }, "price": 1590, "allergens": [], "spiciness": "mild", "tags": ["vegetarian"] },
+        { "nr": "V17", "nameOriginal": "酱爆包菜", "name": { "de": "Weißkohl in Sojasauce", "en": "White cabbage in soy sauce" }, "price": 1590, "allergens": ["F"], "tags": ["vegetarian"] },
+        { "nr": "V18", "nameOriginal": "宫保豆腐", "name": { "de": "Gongbao-Tofu", "en": "Kung pao tofu" }, "description": { "de": "Mit Erdnüssen und Gemüse", "en": "With peanuts and vegetables" }, "price": 1650, "allergens": ["E", "F"], "spiciness": "mild", "tags": ["vegetarian"] },
+        { "nr": "V19", "nameOriginal": "辣子豆腐", "name": { "de": "Tofu nach Sichuan-Art", "en": "Sichuan-style tofu" }, "price": 1600, "allergens": ["F"], "spiciness": "medium", "tags": ["vegetarian"] },
+        { "nr": "V20", "nameOriginal": "鱼香豆腐", "name": { "de": "Tofu nach Yuxiang-Art", "en": "Yuxiang-style tofu" }, "description": { "de": "Mit Knoblauch und Chili", "en": "With garlic and chili" }, "price": 1650, "allergens": ["F"], "spiciness": "mild", "tags": ["vegetarian"] },
+        { "nr": "V21", "nameOriginal": "风味茄子", "name": { "de": "Karamellisierte Aubergine", "en": "Caramelised aubergine" }, "description": { "de": "In dunkler Sauce", "en": "In a dark sauce" }, "price": 1750, "allergens": ["F"], "tags": ["vegetarian"] },
+        { "nr": "V22", "nameOriginal": "回锅五花素肉片", "name": { "de": "Veganer Schweinebauch aus dem Wok", "en": "Wok-fried vegan pork belly" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1690, "allergens": ["F"], "spiciness": "medium", "tags": ["vegetarian", "vegan"] }
+      ]
+    },
+    {
+      "name": { "de": "Reis & Nudeln", "en": "Rice & noodles" },
+      "items": [
+        { "nr": "L1", "nameOriginal": "鸡肉炒饭", "name": { "de": "Gebratener Eierreis mit Huhn", "en": "Egg fried rice with chicken" }, "description": { "de": "Mit Gemüse", "en": "With vegetables" }, "price": 1290, "allergens": ["C", "F"], "additives": ["23"] },
+        { "nr": "L2", "nameOriginal": "蛋炒饭", "name": { "de": "Gebratener Eierreis mit Gemüse", "en": "Egg fried rice with vegetables" }, "price": 1190, "allergens": ["C", "F"], "additives": ["23"], "tags": ["vegetarian"] },
+        { "nr": "N1", "nameOriginal": "炸鸭炒面", "name": { "de": "Gebratene Nudeln mit knuspriger Ente", "en": "Fried noodles with crispy duck" }, "description": { "de": "Eiernudeln mit Gemüse", "en": "Egg noodles with vegetables" }, "price": 1790, "allergens": ["A", "C", "F"], "additives": ["23"] },
+        { "nr": "N2", "nameOriginal": "鸡肉炒面", "name": { "de": "Gebratene Nudeln mit Huhn", "en": "Fried noodles with chicken" }, "description": { "de": "Eiernudeln mit Gemüse", "en": "Egg noodles with vegetables" }, "price": 1290, "allergens": ["A", "C", "F"], "additives": ["23"] },
+        { "nr": "N3", "nameOriginal": "素炒面", "name": { "de": "Gebratene Nudeln mit Gemüse", "en": "Fried noodles with vegetables" }, "description": { "de": "Eiernudeln", "en": "Egg noodles" }, "price": 1190, "allergens": ["A", "C", "F"], "additives": ["23"], "tags": ["vegetarian"] }
+      ]
+    },
+    {
+      "name": { "de": "Desserts", "en": "Desserts" },
+      "items": [
+        { "nr": "D1", "nameOriginal": "南瓜饼", "name": { "de": "Kürbis-Klebreis-Küchlein", "en": "Pumpkin sticky rice cakes" }, "description": { "de": "Mit Eis", "en": "With ice cream" }, "price": 600, "allergens": ["A", "G"], "additives": ["22"], "tags": ["vegetarian"] },
+        { "nr": "D2", "nameOriginal": "炸苹果", "name": { "de": "Gebackener Apfel", "en": "Fried apple" }, "description": { "de": "Mit Eis", "en": "With ice cream" }, "price": 600, "allergens": ["A", "G"], "additives": ["22"], "tags": ["vegetarian"] },
+        { "nr": "D3", "nameOriginal": "炸香蕉", "name": { "de": "Gebackene Banane", "en": "Fried banana" }, "description": { "de": "Mit Eis", "en": "With ice cream" }, "price": 600, "allergens": ["A", "G"], "additives": ["22"], "tags": ["vegetarian"] },
+        { "nr": "D4", "nameOriginal": "炸汤圆", "name": { "de": "Gebackene Klebreisbällchen", "en": "Fried sticky rice balls" }, "description": { "de": "Mit Erdnussfüllung und Eis", "en": "With peanut filling and ice cream" }, "price": 600, "allergens": ["A", "E", "G"], "additives": ["22"], "tags": ["vegetarian"] },
+        { "nr": "D5", "nameOriginal": "炸苹果加豆沙馅", "name": { "de": "Gebackener Apfel mit roter Bohnenpaste", "en": "Fried apple with red bean paste" }, "description": { "de": "Mit Eis", "en": "With ice cream" }, "price": 600, "allergens": ["A", "G"], "additives": ["22"], "tags": ["vegetarian"] }
+      ]
+    },
+    {
+      "name": { "de": "Softdrinks & Säfte", "en": "Soft drinks & juices" },
+      "items": [
+        { "name": { "de": "Coca-Cola", "en": "Coca-Cola" }, "price": 250, "allergens": [], "additives": ["15"], "options": [{ "label": { "de": "0,2 l", "en": "0.2 l" } }, { "label": { "de": "0,4 l", "en": "0.4 l" }, "priceDelta": 100 }] },
+        { "name": { "de": "Coca-Cola light", "en": "Coca-Cola light" }, "price": 250, "allergens": [], "additives": ["12", "15"], "options": [{ "label": { "de": "0,2 l", "en": "0.2 l" } }, { "label": { "de": "0,4 l", "en": "0.4 l" }, "priceDelta": 100 }] },
+        { "name": { "de": "Fanta", "en": "Fanta" }, "price": 250, "allergens": [], "options": [{ "label": { "de": "0,2 l", "en": "0.2 l" } }, { "label": { "de": "0,4 l", "en": "0.4 l" }, "priceDelta": 100 }] },
+        { "name": { "de": "Sprite", "en": "Sprite" }, "price": 250, "allergens": [], "options": [{ "label": { "de": "0,2 l", "en": "0.2 l" } }, { "label": { "de": "0,4 l", "en": "0.4 l" }, "priceDelta": 100 }] },
+        { "name": { "de": "Spezi", "en": "Spezi (cola & orange)" }, "price": 250, "allergens": [], "additives": ["15"], "options": [{ "label": { "de": "0,2 l", "en": "0.2 l" } }, { "label": { "de": "0,4 l", "en": "0.4 l" }, "priceDelta": 100 }] },
+        { "name": { "de": "Ginger Ale", "en": "Ginger ale" }, "price": 290, "allergens": [], "options": [{ "label": { "de": "0,2 l", "en": "0.2 l" } }, { "label": { "de": "0,4 l", "en": "0.4 l" }, "priceDelta": 100 }] },
+        { "name": { "de": "Bitter Lemon", "en": "Bitter lemon" }, "description": { "de": "0,2 l", "en": "0.2 l" }, "price": 290, "allergens": [], "additives": ["16"] },
+        { "name": { "de": "Tonic Water", "en": "Tonic water" }, "description": { "de": "0,2 l", "en": "0.2 l" }, "price": 290, "allergens": [], "additives": ["16"] },
+        { "name": { "de": "Wasser still / sprudelnd", "en": "Still / sparkling water" }, "price": 260, "allergens": [], "options": [{ "label": { "de": "0,25 l", "en": "0.25 l" } }, { "label": { "de": "0,4 l", "en": "0.4 l" }, "priceDelta": 60 }, { "label": { "de": "0,75 l Flasche", "en": "0.75 l bottle" }, "priceDelta": 290 }] },
+        { "name": { "de": "Apfelsaft", "en": "Apple juice" }, "price": 290, "allergens": [], "options": [{ "label": { "de": "0,2 l", "en": "0.2 l" } }, { "label": { "de": "0,4 l", "en": "0.4 l" }, "priceDelta": 100 }] },
+        { "name": { "de": "Orangensaft", "en": "Orange juice" }, "price": 290, "allergens": [], "options": [{ "label": { "de": "0,2 l", "en": "0.2 l" } }, { "label": { "de": "0,4 l", "en": "0.4 l" }, "priceDelta": 100 }] },
+        { "name": { "de": "Mangosaft", "en": "Mango juice" }, "price": 290, "allergens": [], "options": [{ "label": { "de": "0,2 l", "en": "0.2 l" } }, { "label": { "de": "0,4 l", "en": "0.4 l" }, "priceDelta": 100 }] },
+        { "name": { "de": "Kirschsaft", "en": "Cherry juice" }, "price": 290, "allergens": [], "options": [{ "label": { "de": "0,2 l", "en": "0.2 l" } }, { "label": { "de": "0,4 l", "en": "0.4 l" }, "priceDelta": 100 }] },
+        { "name": { "de": "Saftschorle", "en": "Juice spritzer" }, "description": { "de": "0,4 l", "en": "0.4 l" }, "price": 390, "allergens": [] }
+      ]
+    },
+    {
+      "name": { "de": "Tee & Kaffee", "en": "Tea & coffee" },
+      "items": [
+        { "name": { "de": "Jasmintee", "en": "Jasmine tea" }, "price": 300, "allergens": [] },
+        { "name": { "de": "Grüner Tee", "en": "Green tea" }, "price": 300, "allergens": [] },
+        { "name": { "de": "Ingwertee", "en": "Ginger tea" }, "price": 300, "allergens": [] },
+        { "name": { "de": "Kamillentee", "en": "Chamomile tea" }, "price": 300, "allergens": [] },
+        { "name": { "de": "Pfefferminztee", "en": "Mint tea" }, "price": 300, "allergens": [] },
+        { "name": { "de": "Earl Grey", "en": "Earl Grey" }, "price": 300, "allergens": [] },
+        { "name": { "de": "Tee in der Kanne", "en": "Pot of tea" }, "description": { "de": "Einmal nachfüllbar", "en": "One refill included" }, "price": 300, "allergens": [], "options": [{ "label": { "de": "für 1 Person", "en": "for 1 person" } }, { "label": { "de": "ab 2 Personen", "en": "for 2 or more" }, "priceDelta": 200 }] },
+        { "name": { "de": "Kaffee", "en": "Coffee" }, "price": 350, "allergens": [], "additives": ["15"] },
+        { "name": { "de": "Espresso", "en": "Espresso" }, "price": 250, "allergens": [], "additives": ["15"], "options": [{ "label": { "de": "einfach", "en": "single" } }, { "label": { "de": "doppelt", "en": "double" }, "priceDelta": 50 }] }
+      ]
+    },
+    {
+      "name": { "de": "Bier & Wein", "en": "Beer & wine" },
+      "items": [
+        { "name": { "de": "Tsingtao", "en": "Tsingtao" }, "description": { "de": "0,33 l", "en": "0.33 l" }, "price": 400, "allergens": ["A"] },
+        { "name": { "de": "Kindl Pilsener", "en": "Kindl Pilsener" }, "description": { "de": "0,33 l", "en": "0.33 l" }, "price": 400, "allergens": ["A"] },
+        { "name": { "de": "Büble Bayrisch Hell", "en": "Büble Bavarian lager" }, "description": { "de": "0,5 l", "en": "0.5 l" }, "price": 480, "allergens": ["A"] },
+        { "name": { "de": "Büble Edelweiß", "en": "Büble Edelweiss wheat beer" }, "description": { "de": "0,5 l", "en": "0.5 l" }, "price": 480, "allergens": ["A"] },
+        { "name": { "de": "Büble Edelweiß alkoholfrei", "en": "Büble Edelweiss alcohol-free" }, "description": { "de": "0,5 l", "en": "0.5 l" }, "price": 480, "allergens": ["A"] },
+        { "name": { "de": "Radler", "en": "Radler (beer & lemonade)" }, "description": { "de": "0,5 l", "en": "0.5 l" }, "price": 480, "allergens": ["A"] },
+        { "name": { "de": "Bordeaux, rot", "en": "Bordeaux, red" }, "description": { "de": "0,2 l", "en": "0.2 l" }, "price": 500, "allergens": ["L"] },
+        { "name": { "de": "Pinot Grigio, weiß", "en": "Pinot Grigio, white" }, "description": { "de": "0,2 l", "en": "0.2 l" }, "price": 500, "allergens": ["L"] },
+        { "name": { "de": "Rosé, Pays d’Oc", "en": "Rosé, Pays d’Oc" }, "description": { "de": "0,2 l", "en": "0.2 l" }, "price": 500, "allergens": ["L"] }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { PriceCell as PriceCell_d96a76b8370ca7c1f6af323c4250ccc0 } from '../../../components/admin/PriceCell'
 import { PriceField as PriceField_f2128729126bccd0a97c308c05a8421a } from '../../../components/admin/PriceField'
+import { OptionRowLabel as OptionRowLabel_cae17930267162ffd7ca633c51e3cc34 } from '../../../components/admin/OptionRowLabel'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -29,6 +30,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 export const importMap = {
   "/components/admin/PriceCell#PriceCell": PriceCell_d96a76b8370ca7c1f6af323c4250ccc0,
   "/components/admin/PriceField#PriceField": PriceField_f2128729126bccd0a97c308c05a8421a,
+  "/components/admin/OptionRowLabel#OptionRowLabel": OptionRowLabel_cae17930267162ffd7ca633c51e3cc34,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,

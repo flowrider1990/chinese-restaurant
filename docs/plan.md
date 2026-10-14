@@ -3,27 +3,31 @@
 Approved plan, copied into the repo on 2026-10-13. The original lived only in the Claude Code
 plans folder.
 
-## Status (2026-10-13)
+## Status (2026-10-14)
 
 | Phase | State |
 |---|---|
 | 1 Scaffold | Done. Turso connection spike passed (see `docs/architecture.md`) |
-| 2 Content model + admin | Built. `pnpm verify` passes (typecheck, lint, 17 tests, build). Open items below |
+| 2 Content model + admin | Done. Dev DB holds the fictional restaurant and a 135-item placeholder menu |
 | 3 Design system + shell | Next |
 | 4–6 | Not started |
 
-**Phase 2 open items**
+**Open items**
 - Create the first admin account at `/admin` (the dev DB has 0 users).
-- The real menu JSON from the owner: align `menu-items` (incl. `options` for e.g. chicken/beef/tofu) and replace the seeded example dishes.
-- Price field: the error text only shows as a tooltip on hover. Make it visible directly at the field.
-- Variant rows in the admin show "Option 01", "Option 02" instead of their labels.
-- `scripts/seed.ts` still has Vietnamese example dishes and the claim "Vietnamesische und chinesische Küche".
+- Real restaurant data (name, menu, photos, imprint) replaces the fictional data before launch. See `docs/legal-checklist.md`.
+
+**Decisions (2026-10-14)**
+- Design direction: modern but approachable, warm and friendly. No Chinese clichés.
+- Restaurant: fictional "Xiao Chu", Simon-Dach-Straße 99, 10245 Berlin-Friedrichshain. Placeholder images.
+- Ordering: Lieferando and Wolt are shown, but not functional yet (no URL, no redirect).
+- No hosting yet.
 
 **Changes since approval**
 - The cuisine is now **Chinese**, not Vietnamese/Chinese Asian fusion. Before Phase 3, rework the
   design direction in §8: the herb-green accent was chosen to lean Vietnamese, and the "no red/gold/dragon
   clichés" rule needs a deliberately chosen visual direction for a Chinese restaurant.
 - Make the cuisine type for the `Restaurant` JSON-LD a CMS field, not hard-coded.
+- Menu model additions: original (Chinese) name, spiciness level, additives as an attribute kind, sizes via options.
 - Folder, package and Turso dev DB are renamed to `chinese-restaurant`. Paths below that mention `asia-restaurant` are historical.
 - Nothing is committed yet. Everything is on `feature/foundation`.
 

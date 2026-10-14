@@ -140,6 +140,17 @@ describe('globals', () => {
         },
       }),
     ).rejects.toThrow(/URL/)
+
+    // A provider without a URL is allowed: it is shown as a notice, not as a link.
+    const saved = await payload.updateGlobal({
+      slug: 'site-settings',
+      data: {
+        ...base,
+        phoneE164: '+49301234567',
+        orderLinks: [{ provider: 'wolt', label: 'Bei Wolt bestellen' }],
+      },
+    })
+    expect(saved.orderLinks?.[0]).toMatchObject({ provider: 'wolt', url: null })
   })
 
   it('does not let anonymous users update globals', async () => {

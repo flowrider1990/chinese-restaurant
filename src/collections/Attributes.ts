@@ -3,7 +3,7 @@ import { anyone, editorWrite } from '@/access'
 
 export const Attributes: CollectionConfig = {
   slug: 'attributes',
-  labels: { singular: 'Merkmal / Allergen', plural: 'Merkmale & Allergene' },
+  labels: { singular: 'Allergen / Merkmal', plural: 'Allergene, Zusatzstoffe & Merkmale' },
   orderable: true,
   admin: {
     group: 'Speisekarte',
@@ -31,6 +31,7 @@ export const Attributes: CollectionConfig = {
       defaultValue: 'dietary',
       options: [
         { label: 'Allergen (kennzeichnungspflichtig)', value: 'allergen' },
+        { label: 'Zusatzstoff (kennzeichnungspflichtig)', value: 'additive' },
         { label: 'Ernährung (z. B. vegan, vegetarisch)', value: 'dietary' },
         { label: 'Sonstiges (z. B. scharf, neu)', value: 'other' },
       ],
@@ -42,7 +43,7 @@ export const Attributes: CollectionConfig = {
       label: 'Kürzel (optional)',
       admin: {
         position: 'sidebar',
-        description: 'Nur Darstellungshilfe (z. B. „E“). Ersetzt nie den vollständigen Namen.',
+        description: 'Nur Darstellungshilfe (z. B. „E“ oder „12“). Ersetzt nie den vollständigen Namen.',
       },
     },
     { name: 'description', type: 'textarea', label: 'Erläuterung', localized: true },

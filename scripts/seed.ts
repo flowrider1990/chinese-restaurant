@@ -1,15 +1,17 @@
 /**
  * Seeds placeholder content so the site and admin have realistic structure.
- * Everything here is a placeholder: names, dishes, prices, allergen assignments, phone, address
- * and legal texts must be replaced with the restaurant's real data before go-live.
+ * Everything here is fictional or placeholder data: the restaurant, its address, phone, imprint,
+ * and the menu in scripts/data/menu.json. Replace all of it with the real data before go-live.
  *
  * Usage: pnpm seed   (refuses to run if menu categories already exist)
  */
 import 'dotenv/config'
 import { getPayload } from 'payload'
 import config from '../src/payload.config'
+import { additives, allergens, dietaryTags, type MenuData } from './data/attributes'
+import menuJson from './data/menu.json' with { type: 'json' }
 
-type Localized = { de: string; en: string }
+const menu = menuJson as MenuData
 
 const payload = await getPayload({ config })
 
@@ -63,198 +65,66 @@ async function createLocalized<T extends Record<string, unknown>>(
   return doc.id
 }
 
-// --- Allergens (EU Regulation 1169/2011, Annex II) and dietary attributes --------------------
-
-const allergens: [code: string, name: Localized][] = [
-  ['A', { de: 'Glutenhaltiges Getreide', en: 'Cereals containing gluten' }],
-  ['B', { de: 'Krebstiere', en: 'Crustaceans' }],
-  ['C', { de: 'Eier', en: 'Eggs' }],
-  ['D', { de: 'Fisch', en: 'Fish' }],
-  ['E', { de: 'Erdnüsse', en: 'Peanuts' }],
-  ['F', { de: 'Soja', en: 'Soybeans' }],
-  ['G', { de: 'Milch (einschließlich Laktose)', en: 'Milk (including lactose)' }],
-  ['H', { de: 'Schalenfrüchte', en: 'Tree nuts' }],
-  ['I', { de: 'Sellerie', en: 'Celery' }],
-  ['J', { de: 'Senf', en: 'Mustard' }],
-  ['K', { de: 'Sesamsamen', en: 'Sesame seeds' }],
-  ['L', { de: 'Schwefeldioxid und Sulfite', en: 'Sulphur dioxide and sulphites' }],
-  ['M', { de: 'Lupinen', en: 'Lupin' }],
-  ['N', { de: 'Weichtiere', en: 'Molluscs' }],
-]
-const dietary: [kind: 'dietary' | 'other', name: Localized][] = [
-  ['dietary', { de: 'Vegetarisch', en: 'Vegetarian' }],
-  ['dietary', { de: 'Vegan', en: 'Vegan' }],
-  ['other', { de: 'Scharf', en: 'Spicy' }],
-  ['other', { de: 'Neu', en: 'New' }],
-]
+// --- Allergens, additives and dietary tags -----------------------------------------------
 
 const attr: Record<string, number> = {}
 for (const [code, name] of allergens) {
-  attr[code] = await createLocalized(
-    'attributes',
-    { kind: 'allergen', code },
-    { name: name.de },
-    { name: name.en },
+  attr[code] = await createLocalized('attributes', { kind: 'allergen', code }, { name: name.de }, { name: name.en })
+}
+for (const [code, name] of additives) {
+  attr[code] = await createLocalized('attributes', { kind: 'additive', code }, { name: name.de }, { name: name.en })
+}
+for (const [key, name] of Object.entries(dietaryTags)) {
+  attr[key] = await createLocalized('attributes', { kind: 'dietary' }, { name: name.de }, { name: name.en })
+}
+
+// --- Menu (placeholder data from scripts/data/menu.json) -----------------------------------
+
+const ref = (code: string) => {
+  if (!(code in attr)) throw new Error(`Unknown attribute code in menu.json: ${code}`)
+  return attr[code]
+}
+
+let dishCount = 0
+for (const category of menu.categories) {
+  const categoryId = await createLocalized(
+    'menu-categories',
+    {},
+    { name: category.name.de, description: category.description?.de },
+    { name: category.name.en, description: category.description?.en },
   )
-}
-for (const [kind, name] of dietary) {
-  attr[name.en.toLowerCase()] = await createLocalized('attributes', { kind }, { name: name.de }, { name: name.en })
-}
-
-// --- Categories ----------------------------------------------------------------------------
-
-const categories: Record<string, Localized> = {
-  starters: { de: 'Vorspeisen', en: 'Starters' },
-  soups: { de: 'Suppen', en: 'Soups' },
-  mains: { de: 'Hauptgerichte', en: 'Main dishes' },
-  noodles: { de: 'Nudelgerichte', en: 'Noodles' },
-  rice: { de: 'Reisgerichte', en: 'Rice dishes' },
-  sushi: { de: 'Sushi', en: 'Sushi' },
-  desserts: { de: 'Desserts', en: 'Desserts' },
-  drinks: { de: 'Getränke', en: 'Drinks' },
-}
-const cat: Record<string, number> = {}
-for (const [key, name] of Object.entries(categories)) {
-  cat[key] = await createLocalized('menu-categories', {}, { name: name.de }, { name: name.en })
-}
-
-// --- Placeholder dishes (example data only; real menu comes from the restaurant) ------------
-
-type Dish = {
-  nr: string
-  category: string
-  price: number
-  name: Localized
-  description: Localized
-  attributes: string[]
-  options?: { label: Localized; priceDelta?: number }[]
-  featured?: boolean
-}
-
-const dishes: Dish[] = [
-  {
-    nr: '1',
-    category: 'starters',
-    price: 650,
-    name: { de: 'Sommerrollen', en: 'Summer rolls' },
-    description: {
-      de: 'Reispapier, Kräuter, Reisnudeln, Erdnuss-Hoisin-Dip',
-      en: 'Rice paper, herbs, rice noodles, peanut hoisin dip',
-    },
-    attributes: ['E', 'F', 'vegan'],
-    options: [
-      { label: { de: 'mit Tofu', en: 'with tofu' } },
-      { label: { de: 'mit Garnelen', en: 'with prawns' }, priceDelta: 150 },
-    ],
-    featured: true,
-  },
-  {
-    nr: '2',
-    category: 'starters',
-    price: 750,
-    name: { de: 'Gyoza (6 Stück)', en: 'Gyoza (6 pieces)' },
-    description: { de: 'Gebratene Teigtaschen mit Gemüsefüllung', en: 'Pan-fried dumplings, vegetable filling' },
-    attributes: ['A', 'F', 'K', 'vegetarian'],
-  },
-  {
-    nr: '10',
-    category: 'soups',
-    price: 1390,
-    name: { de: 'Phở Bò', en: 'Phở Bò' },
-    description: {
-      de: 'Rinderbrühe, Reisbandnudeln, Rindfleisch, Thai-Basilikum, Limette',
-      en: 'Beef broth, rice noodles, beef, Thai basil, lime',
-    },
-    attributes: ['I'],
-    featured: true,
-  },
-  {
-    nr: '20',
-    category: 'mains',
-    price: 1490,
-    name: { de: 'Gà Xào Sả Ớt', en: 'Lemongrass chili chicken' },
-    description: { de: 'Mit Zitronengras, Chili und Jasminreis', en: 'With lemongrass, chili and jasmine rice' },
-    attributes: ['F', 'spicy'],
-    options: [
-      { label: { de: 'Hähnchen', en: 'Chicken' } },
-      { label: { de: 'Rind', en: 'Beef' }, priceDelta: 200 },
-      { label: { de: 'Tofu', en: 'Tofu' }, priceDelta: -100 },
-    ],
-  },
-  {
-    nr: '30',
-    category: 'noodles',
-    price: 1290,
-    name: { de: 'Bún Chay', en: 'Bún Chay' },
-    description: {
-      de: 'Reisnudeln, knuspriger Tofu, Kräuter, Erdnüsse, Sojadressing',
-      en: 'Rice noodles, crispy tofu, herbs, peanuts, soy dressing',
-    },
-    attributes: ['E', 'F', 'vegan'],
-    featured: true,
-  },
-  {
-    nr: '40',
-    category: 'rice',
-    price: 1350,
-    name: { de: 'Gebratener Reis Yangzhou-Art', en: 'Yangzhou fried rice' },
-    description: { de: 'Mit Ei, Garnelen, Erbsen und Frühlingszwiebeln', en: 'With egg, prawns, peas and spring onions' },
-    attributes: ['B', 'C', 'F'],
-  },
-  {
-    nr: 'S1',
-    category: 'sushi',
-    price: 890,
-    name: { de: 'Avocado-Maki (8 Stück)', en: 'Avocado maki (8 pieces)' },
-    description: { de: 'Mit Sesam', en: 'With sesame' },
-    attributes: ['K', 'vegan'],
-  },
-  {
-    nr: '60',
-    category: 'desserts',
-    price: 650,
-    name: { de: 'Chè Ba Màu', en: 'Chè Ba Màu' },
-    description: { de: 'Bohnen, Pandan-Gelee, Kokosmilch', en: 'Beans, pandan jelly, coconut milk' },
-    attributes: ['vegan'],
-  },
-  {
-    nr: '70',
-    category: 'drinks',
-    price: 450,
-    name: { de: 'Hausgemachte Limonade', en: 'Homemade lemonade' },
-    description: { de: 'Limette, Zitronengras, Minze (0,4 l)', en: 'Lime, lemongrass, mint (0.4 l)' },
-    attributes: ['vegan'],
-  },
-]
-
-for (const d of dishes) {
-  const doc = await payload.create({
-    collection: 'menu-items',
-    locale: 'de',
-    data: {
-      menuNumber: d.nr,
-      name: d.name.de,
-      description: d.description.de,
-      price: d.price,
-      category: cat[d.category],
-      attributes: d.attributes.map((a) => attr[a]),
-      options: d.options?.map((o) => ({ label: o.label.de, priceDelta: o.priceDelta })),
-      published: true,
-      availability: 'available',
-      featured: Boolean(d.featured),
-    },
-  })
-  await payload.update({
-    collection: 'menu-items',
-    id: doc.id,
-    locale: 'en',
-    data: {
-      name: d.name.en,
-      description: d.description.en,
-      // Keep row ids so English labels attach to the same option rows.
-      options: doc.options?.map((row, i) => ({ ...row, label: d.options![i].label.en })),
-    },
-  })
+  for (const d of category.items) {
+    const doc = await payload.create({
+      collection: 'menu-items',
+      locale: 'de',
+      data: {
+        menuNumber: d.nr,
+        nameOriginal: d.nameOriginal,
+        name: d.name.de,
+        description: d.description?.de,
+        price: d.price,
+        category: categoryId,
+        attributes: [...d.allergens, ...(d.additives ?? []), ...(d.tags ?? [])].map(ref),
+        spiciness: d.spiciness,
+        options: d.options?.map((o) => ({ label: o.label.de, priceDelta: o.priceDelta })),
+        published: true,
+        availability: 'available',
+        featured: Boolean(d.featured),
+      },
+    })
+    await payload.update({
+      collection: 'menu-items',
+      id: doc.id,
+      locale: 'en',
+      data: {
+        name: d.name.en,
+        description: d.description?.en,
+        // Keep row ids so English labels attach to the same option rows.
+        options: doc.options?.map((row, i) => ({ ...row, label: d.options![i].label.en })),
+      },
+    })
+    dishCount++
+  }
 }
 
 // --- Posts ---------------------------------------------------------------------------------
@@ -263,55 +133,71 @@ await createLocalized(
   'posts',
   { _status: 'published', publishedAt: new Date().toISOString() },
   {
-    title: 'Wir eröffnen bald',
-    excerpt: 'Platzhalter-Beitrag: Hier steht bald die Ankündigung zur Eröffnung.',
-    content: richText(['Platzhalter-Beitrag. Bitte im CMS durch eine echte Ankündigung ersetzen.']),
+    title: 'Neu in Friedrichshain',
+    excerpt: 'Beispielbeitrag: Wok, Dampfkorb und viel Gemüse – ab sofort an der Simon-Dach-Straße.',
+    content: richText([
+      'Beispielbeitrag mit fiktivem Inhalt. Bitte im CMS durch eine echte Ankündigung ersetzen.',
+    ]),
   },
   {
-    title: 'Opening soon',
-    excerpt: 'Placeholder post: the opening announcement will appear here.',
-    content: richText(['Placeholder post. Replace with a real announcement in the CMS.']),
+    title: 'New in Friedrichshain',
+    excerpt: 'Sample post: wok, steamer baskets and plenty of vegetables – now on Simon-Dach-Straße.',
+    content: richText(['Sample post with fictional content. Replace with a real announcement in the CMS.']),
   },
 )
 
-// --- Globals -------------------------------------------------------------------------------
+// --- Globals (fictional restaurant) ---------------------------------------------------------
 
 await payload.updateGlobal({
   slug: 'site-settings',
   locale: 'de',
   data: {
-    name: '[Restaurantname]',
-    tagline: 'Vietnamesische und chinesische Küche, modern interpretiert.',
+    name: 'Xiao Chu',
+    tagline: 'Chinesische Küche aus Wok und Dampfkorb in Friedrichshain.',
     // Fictional number from the range reserved for film/TV use in Germany (030 23125 xxx).
-    phone: '030 23125 000',
-    phoneE164: '+493023125000',
-    email: 'kontakt@example.com',
-    address: { street: '[Straße Hausnummer]', postalCode: '[PLZ]', city: '[Ort]', country: 'DE' },
+    phone: '030 23125 456',
+    phoneE164: '+493023125456',
+    email: 'hallo@xiaochu.example',
+    // Fictional house number on a real street.
+    address: { street: 'Simon-Dach-Straße 99', postalCode: '10245', city: 'Berlin', country: 'DE' },
+    geo: [13.4567, 52.5097],
+    orderLinks: [
+      { provider: 'lieferando', label: 'Bei Lieferando bestellen' },
+      { provider: 'wolt', label: 'Bei Wolt bestellen' },
+    ],
     seoDescription:
-      'Vietnamesische und chinesische Küche, modern interpretiert. Im Restaurant oder zum Mitnehmen.',
+      'Chinesisches Restaurant in Berlin-Friedrichshain: Dim Sum, Wok-Gerichte und Sichuan-Küche. Im Restaurant, zum Mitnehmen oder geliefert.',
   },
 })
+const settings = await payload.findGlobal({ slug: 'site-settings', locale: 'de' })
 await payload.updateGlobal({
   slug: 'site-settings',
   locale: 'en',
   data: {
-    tagline: 'Vietnamese and Chinese cooking, freshly reinterpreted.',
-    seoDescription: 'Vietnamese and Chinese cooking, freshly reinterpreted. Dine in or take away.',
+    tagline: 'Chinese cooking from wok and steamer basket in Friedrichshain.',
+    // Keep row ids so English labels attach to the same rows.
+    orderLinks: settings.orderLinks?.map((row) => ({
+      ...row,
+      label: row.provider === 'wolt' ? 'Order on Wolt' : 'Order on Lieferando',
+    })),
+    seoDescription:
+      'Chinese restaurant in Berlin-Friedrichshain: dim sum, wok dishes and Sichuan cooking. Dine in, take away or delivered.',
   },
 })
 
-const lunchAndDinner = [
-  { open: '11:30', close: '14:30' },
-  { open: '17:30', close: '22:00' },
+const weekday = [
+  { open: '11:30', close: '15:00' },
+  { open: '17:00', close: '22:30' },
 ]
+const weekend = [{ open: '12:00', close: '22:30' }]
 await payload.updateGlobal({
   slug: 'opening-hours',
   data: {
     timezone: 'Europe/Berlin',
-    weekly: (['tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const).map((day) => ({
-      day,
-      slots: lunchAndDinner,
-    })),
+    weekly: [
+      ...(['tue', 'wed', 'thu', 'fri'] as const).map((day) => ({ day, slots: weekday })),
+      ...(['sat', 'sun'] as const).map((day) => ({ day, slots: weekend })),
+    ],
     exceptions: [],
   },
 })
@@ -321,7 +207,7 @@ await payload.updateGlobal({
   locale: 'de',
   data: {
     intro: richText([
-      'Platzhaltertext: Eine kurze Vorstellung des Restaurants – wer kocht, was die Küche ausmacht und warum man vorbeikommen sollte.',
+      'Beispieltext: Bei Xiao Chu – „kleine Küche“ – kochen wir, was wir selbst am liebsten essen: Dim Sum aus dem Dampfkorb, Gerichte aus dem Wok und Sichuan-Klassiker mit ordentlich Pfeffer. Komm vorbei, bring Freunde mit und teil dir alles.',
     ]),
   },
 })
@@ -330,7 +216,7 @@ await payload.updateGlobal({
   locale: 'en',
   data: {
     intro: richText([
-      'Placeholder text: a short introduction to the restaurant – who cooks, what defines the food and why people should drop by.',
+      'Sample text: at Xiao Chu – "little kitchen" – we cook what we love to eat ourselves: dim sum from the steamer basket, dishes from the wok and Sichuan classics with plenty of pepper. Drop by, bring friends and share everything.',
     ]),
   },
 })
@@ -338,35 +224,42 @@ await payload.updateGlobal({
 await payload.updateGlobal({
   slug: 'about',
   locale: 'de',
-  data: { intro: richText(['Platzhaltertext über das Restaurant, die Geschichte und das Team.']) },
+  data: {
+    intro: richText([
+      'Beispieltext: Xiao Chu ist ein fiktives Restaurant. Hier steht später die Geschichte des Restaurants und des Teams.',
+    ]),
+  },
 })
 await payload.updateGlobal({
   slug: 'about',
   locale: 'en',
-  data: { intro: richText(['Placeholder text about the restaurant, its story and the team.']) },
+  data: {
+    intro: richText([
+      'Sample text: Xiao Chu is a fictional restaurant. The story of the restaurant and its team will go here.',
+    ]),
+  },
 })
 
-// Structural placeholders only. Content must be written/checked for the actual operator.
+// Fictional operator data for development. Must be replaced and legally checked before go-live.
 await payload.updateGlobal({
   slug: 'legal',
   locale: 'de',
   data: {
     imprint: richText([
+      'FIKTIVE BEISPIELDATEN – vor der Veröffentlichung durch die echten Angaben des Betreibers ersetzen und rechtlich prüfen.',
       '## Angaben gemäß § 5 DDG',
-      '[NAME DES BETREIBERS / FIRMA UND RECHTSFORM]',
-      '[STRASSE HAUSNUMMER], [PLZ] [ORT]',
+      'Xiao Chu Gastronomie GmbH',
+      'Simon-Dach-Straße 99, 10245 Berlin',
       '## Vertreten durch',
-      '[VERTRETUNGSBERECHTIGTE PERSON(EN) – nur bei juristischen Personen]',
+      'Geschäftsführerin: Lin Mei',
       '## Kontakt',
-      'Telefon: [TELEFON] · E-Mail: [E-MAIL]',
+      'Telefon: 030 23125 456 · E-Mail: hallo@xiaochu.example',
       '## Registereintrag',
-      '[REGISTERGERICHT UND REGISTERNUMMER – falls vorhanden]',
+      'Amtsgericht Charlottenburg, HRB 000000 B',
       '## Umsatzsteuer-ID',
-      '[USt-IdNr. gemäß § 27a UStG – falls vorhanden]',
-      '## Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV',
-      '[NAME, ANSCHRIFT – rechtlich prüfen, ob erforderlich]',
+      'USt-IdNr. gemäß § 27a UStG: DE000000000',
       '## Verbraucherstreitbeilegung',
-      '[ANGABE GEMÄSS § 36 VSBG – rechtlich prüfen, ob erforderlich]',
+      'Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen. [RECHTLICH PRÜFEN]',
     ]),
     privacy: richText([
       'PLATZHALTER – Diese Datenschutzerklärung muss vor der Veröffentlichung vollständig erstellt und rechtlich geprüft werden.',
@@ -399,6 +292,6 @@ await payload.updateGlobal({
 })
 
 console.log(
-  `Seeded: ${allergens.length + dietary.length} attributes, ${Object.keys(categories).length} categories, ${dishes.length} dishes, 1 post, 5 globals.`,
+  `Seeded: ${Object.keys(attr).length} attributes, ${menu.categories.length} categories, ${dishCount} dishes, 1 post, 5 globals.`,
 )
 process.exit(0)

@@ -10,7 +10,7 @@ export const MenuItems: CollectionConfig = {
     group: 'Speisekarte',
     useAsTitle: 'name',
     defaultColumns: ['name', 'menuNumber', 'category', 'price', 'availability', 'published'],
-    listSearchableFields: ['name', 'menuNumber'],
+    listSearchableFields: ['name', 'menuNumber', 'nameOriginal'],
   },
   access: { read: publishedOrAuthenticated, ...editorWrite },
   fields: [
@@ -32,6 +32,12 @@ export const MenuItems: CollectionConfig = {
           admin: { width: '80%' },
         },
       ],
+    },
+    {
+      name: 'nameOriginal',
+      type: 'text',
+      label: 'Originalname (optional)',
+      admin: { description: 'Z. B. der chinesische Name „宫保鸡丁“. Wird in allen Sprachen gleich angezeigt.' },
     },
     {
       name: 'description',
@@ -60,18 +66,29 @@ export const MenuItems: CollectionConfig = {
       type: 'relationship',
       relationTo: 'attributes',
       hasMany: true,
-      label: 'Allergene & Merkmale',
+      label: 'Allergene, Zusatzstoffe & Merkmale',
     },
     {
-      // Provisional shape; aligned with the real menu data set before go-live.
+      name: 'spiciness',
+      type: 'select',
+      label: 'Schärfe',
+      options: [
+        { label: 'Leicht scharf', value: 'mild' },
+        { label: 'Mittelscharf', value: 'medium' },
+        { label: 'Scharf', value: 'hot' },
+      ],
+      admin: { description: 'Leer lassen, wenn das Gericht nicht scharf ist.' },
+    },
+    {
       name: 'options',
       type: 'array',
       label: 'Auswahl / Varianten',
       labels: { singular: 'Option', plural: 'Optionen' },
       admin: {
         description:
-          'Z. B. Hähnchen / Rind / Tofu. Aufpreis leer lassen, wenn die Option nichts extra kostet.',
+          'Z. B. Hähnchen / Rind / Tofu oder Größen wie 0,2 l / 0,4 l. Der Aufpreis gilt gegenüber dem Grundpreis; leer lassen, wenn die Option nichts extra kostet.',
         initCollapsed: true,
+        components: { RowLabel: '/components/admin/OptionRowLabel#OptionRowLabel' },
       },
       fields: [
         {

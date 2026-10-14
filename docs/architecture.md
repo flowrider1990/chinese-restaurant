@@ -58,13 +58,13 @@ the Local API, then prints the target and versions.
 
 | Admin group | Type | Purpose |
 | --- | --- | --- |
-| Speisekarte | `menu-items` | Dishes: number, name, description, price (cents), category, image, attributes, options (label + surcharge), published, availability, featured. Drag & drop order |
+| Speisekarte | `menu-items` | Dishes: number, name, original (Chinese) name, description, price (cents), category, image, attributes, spiciness (mild/medium/hot), options (label + surcharge, also used for sizes such as 0,2 l / 0,4 l), published, availability, featured. Drag & drop order |
 | Speisekarte | `menu-categories` | Editor-defined categories, drag & drop order, per-language slug |
-| Speisekarte | `attributes` | Reusable allergens/dietary/other tags. `kind` separates legal allergens; the full `name` is authoritative, `code` is optional display shorthand |
+| Speisekarte | `attributes` | Reusable allergens, additives and dietary/other tags. `kind` separates legally required allergens and additives; the full `name` is authoritative, `code` is optional display shorthand |
 | Inhalte | `posts` | News with drafts/published, per-language slug, `publishedAt` auto-set on first publish |
 | Inhalte | `media` | Images (alt text required), WebP size variants, focal point, max 15 MB |
 | Administration | `users` | Single admin role, login lockout after 5 failed attempts (15 min) |
-| Einstellungen | `site-settings` | **Only** source of name, address, phone, order links, socials, default SEO |
+| Einstellungen | `site-settings` | **Only** source of name, address, phone, order links (provider Lieferando/Wolt/other; URL optional, without URL the provider is shown as a notice, not a link), socials, default SEO |
 | Einstellungen | `opening-hours` | **Only** source of weekly hours (multiple slots per day) and exceptions |
 | Seiten | `home`, `about`, `legal` | Page content; legal texts are seeded as marked placeholders |
 
@@ -75,8 +75,22 @@ the Local API, then prints the target and versions.
 
 ## Seed and tests
 
-- `pnpm seed` fills an **empty** database with placeholder content: the 14 EU allergens, 4
-  dietary/other tags, 8 categories, 9 example dishes, 1 post and all globals. Every value is a
-  placeholder; the real menu replaces the example dishes.
-- `pnpm test` runs unit tests and integration tests. Integration tests use a throwaway
-  `data/test.db` and never touch the dev or Turso database.
+- `pnpm seed` fills an **empty** database with fictional data: the restaurant "Xiao Chu" in
+  Berlin-Friedrichshain (fictional address, phone from the film/TV range, fictional imprint),
+  opening hours, one post, and the menu from `scripts/data/menu.json`.
+- `scripts/data/menu.json` is the menu import format (categories → items with DE/EN names,
+  cents, allergen/additive codes, spiciness, dietary tags, options). The placeholder menu follows
+  a real Berlin restaurant's public menu as realistic test data; allergen codes are not verified.
+  The restaurant's own menu replaces it in the same format.
+- To rebuild the dev database: `pnpm payload migrate:fresh --forceAcceptWarning`, then `pnpm seed`.
+  This drops all data; only for dev databases.
+- `pnpm test` runs unit tests (including a consistency check of `menu.json`) and integration
+  tests. Integration tests use a throwaway `data/test.db` and never touch the dev or Turso
+  database.
+
+## Known issues
+
+- Running the initial migration against Turso has failed twice right after a fresh/empty
+  database (2026-10-13 and 2026-10-14, at a `users_sessions` index). Re-running
+  `migrate:fresh` succeeded both times. Not reproduced locally; watch for it when creating the
+  preview and production databases.

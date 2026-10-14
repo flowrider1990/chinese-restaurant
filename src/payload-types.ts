@@ -153,13 +153,21 @@ export interface MenuItem {
    */
   menuNumber?: string | null;
   name: string;
+  /**
+   * Z. B. der chinesische Name „宫保鸡丁“. Wird in allen Sprachen gleich angezeigt.
+   */
+  nameOriginal?: string | null;
   description?: string | null;
   price: number;
   category: number | MenuCategory;
   image?: (number | null) | Media;
   attributes?: (number | Attribute)[] | null;
   /**
-   * Z. B. Hähnchen / Rind / Tofu. Aufpreis leer lassen, wenn die Option nichts extra kostet.
+   * Leer lassen, wenn das Gericht nicht scharf ist.
+   */
+  spiciness?: ('mild' | 'medium' | 'hot') | null;
+  /**
+   * Z. B. Hähnchen / Rind / Tofu oder Größen wie 0,2 l / 0,4 l. Der Aufpreis gilt gegenüber dem Grundpreis; leer lassen, wenn die Option nichts extra kostet.
    */
   options?:
     | {
@@ -269,9 +277,9 @@ export interface Attribute {
    * Vollständige Bezeichnung, z. B. „Erdnüsse“. Bei Allergenen ist dies die maßgebliche Angabe.
    */
   name: string;
-  kind: 'allergen' | 'dietary' | 'other';
+  kind: 'allergen' | 'additive' | 'dietary' | 'other';
   /**
-   * Nur Darstellungshilfe (z. B. „E“). Ersetzt nie den vollständigen Namen.
+   * Nur Darstellungshilfe (z. B. „E“ oder „12“). Ersetzt nie den vollständigen Namen.
    */
   code?: string | null;
   description?: string | null;
@@ -442,11 +450,13 @@ export interface MenuItemsSelect<T extends boolean = true> {
   _order?: T;
   menuNumber?: T;
   name?: T;
+  nameOriginal?: T;
   description?: T;
   price?: T;
   category?: T;
   image?: T;
   attributes?: T;
+  spiciness?: T;
   options?:
     | T
     | {
@@ -659,12 +669,13 @@ export interface SiteSetting {
    */
   mapsUrl?: string | null;
   /**
-   * Externer Lieferdienst oder Bestellseite. Ohne Eintrag zeigt die Website stattdessen „Anrufen“.
+   * Externer Lieferdienst oder Bestellseite. Ohne Eintrag zeigt die Website stattdessen „Anrufen“. Ohne URL erscheint der Dienst nur als Hinweis, nicht als Link.
    */
   orderLinks?:
     | {
+        provider: 'lieferando' | 'wolt' | 'other';
         label: string;
-        url: string;
+        url?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -866,6 +877,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   orderLinks?:
     | T
     | {
+        provider?: T;
         label?: T;
         url?: T;
         id?: T;

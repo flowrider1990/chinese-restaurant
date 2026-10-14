@@ -104,9 +104,21 @@ export const SiteSettings: GlobalConfig = {
               labels: { singular: 'Bestelllink', plural: 'Bestelllinks' },
               admin: {
                 description:
-                  'Externer Lieferdienst oder Bestellseite. Ohne Eintrag zeigt die Website stattdessen „Anrufen“.',
+                  'Externer Lieferdienst oder Bestellseite. Ohne Eintrag zeigt die Website stattdessen „Anrufen“. Ohne URL erscheint der Dienst nur als Hinweis, nicht als Link.',
               },
               fields: [
+                {
+                  name: 'provider',
+                  type: 'select',
+                  label: 'Dienst',
+                  required: true,
+                  defaultValue: 'other',
+                  options: [
+                    { label: 'Lieferando', value: 'lieferando' },
+                    { label: 'Wolt', value: 'wolt' },
+                    { label: 'Eigene Bestellseite / Sonstige', value: 'other' },
+                  ],
+                },
                 {
                   name: 'label',
                   type: 'text',
@@ -115,7 +127,12 @@ export const SiteSettings: GlobalConfig = {
                   localized: true,
                   admin: { placeholder: 'Jetzt bestellen' },
                 },
-                { name: 'url', type: 'text', label: 'URL', required: true, validate: validateHttpsUrl },
+                {
+                  name: 'url',
+                  type: 'text',
+                  label: 'URL (optional)',
+                  validate: (value: string | null | undefined) => !value || validateHttpsUrl(value),
+                },
               ],
             },
             {
