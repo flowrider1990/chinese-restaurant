@@ -77,7 +77,11 @@ export function Footer({ info, locale, t }: { info: RestaurantInfo; locale: Loca
           )}
         </section>
       </div>
-      <nav className="site-footer__legal" aria-label={`${t.nav.imprint}, ${t.nav.privacy}`}>
+      <nav
+        className="site-footer__legal"
+        aria-label={`${t.vouchers.nav}, ${t.nav.imprint}, ${t.nav.privacy}`}
+      >
+        <Link href={href('vouchers', locale)}>{t.vouchers.nav}</Link>
         <Link href={href('imprint', locale)}>{t.nav.imprint}</Link>
         <Link href={href('privacy', locale)}>{t.nav.privacy}</Link>
       </nav>

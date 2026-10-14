@@ -17,6 +17,11 @@ describe('href', () => {
     expect(href('reserve', 'en')).toBe('/en/reserve')
   })
 
+  it('knows the voucher page', () => {
+    expect(href('vouchers', 'de')).toBe('/gutscheine')
+    expect(href('vouchers', 'en')).toBe('/en/vouchers')
+  })
+
   it('maps a localized segment back to its page', () => {
     expect(routeKeyFor('menu', 'en')).toBe('menu')
     expect(routeKeyFor('speisekarte', 'de')).toBe('menu')
@@ -41,6 +46,10 @@ describe('proxy', () => {
 
   it('rewrites /en/reserve onto the German folder', () => {
     expect(run('/en/reserve').headers.get('x-middleware-rewrite')).toBe('http://localhost:3000/en/reservieren')
+  })
+
+  it('rewrites /en/vouchers onto the German folder', () => {
+    expect(run('/en/vouchers').headers.get('x-middleware-rewrite')).toBe('http://localhost:3000/en/gutscheine')
   })
 
   it('redirects /de URLs to the unprefixed version', () => {
