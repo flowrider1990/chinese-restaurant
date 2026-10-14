@@ -2,6 +2,7 @@ import { getPayload } from 'payload'
 import { cache } from 'react'
 import config from '@/payload.config'
 import { locales, type Locale } from '@/i18n/locales'
+import { href } from '@/i18n/routes'
 import type { Attribute, Media, MenuItem } from '@/payload-types'
 import type { Hours } from './opening-hours'
 import { readReservationSettings } from './reservation-settings'
@@ -206,4 +207,13 @@ export const getReservationPage = cache(async (locale: Locale) => {
     getRestaurantInfo(locale),
   ])
   return { settings, info }
+})
+
+/** Where "Book a table" points: our page, the external provider, or nowhere (mode off). */
+export const getReservationLink = cache(async (locale: Locale) => {
+  const payload = await payloadClient()
+  const s = await readReservationSettings(payload)
+  if (s.mode === 'off') return null
+  if (s.mode === 'external') return s.externalUrl ? { href: s.externalUrl, external: true } : null
+  return { href: href('reserve', locale), external: false }
 })

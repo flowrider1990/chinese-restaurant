@@ -9,7 +9,7 @@ import { RichText } from '@/components/site/RichText'
 import { VisitInfo } from '@/components/site/VisitInfo'
 import { href } from '@/i18n/routes'
 import { getLocale, isLocale } from '@/i18n/server'
-import { getHome, getPosts, getRestaurantInfo } from '@/lib/queries'
+import { getHome, getPosts, getReservationLink, getRestaurantInfo } from '@/lib/queries'
 import { jsonLdScript, pageMetadata, restaurantJsonLd } from '@/lib/seo'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]'>): Promise<Metadata> {
@@ -19,13 +19,24 @@ export async function generateMetadata({ params }: PageProps<'/[locale]'>): Prom
 
 export default async function HomePage() {
   const { locale, t } = await getLocale()
-  const [info, home, posts] = await Promise.all([getRestaurantInfo(locale), getHome(locale), getPosts(locale, 1, 1)])
+  const [info, home, posts, reserve] = await Promise.all([
+    getRestaurantInfo(locale),
+    getHome(locale),
+    getPosts(locale, 1, 1),
+    getReservationLink(locale),
+  ])
   const latest = posts.docs[0]
-  const dateFormat = new Intl.DateTimeFormat(t.dateLocale, { dateStyle: 'long', timeZone: 'Europe/Berlin' })
+  const dateFormat = new Intl.DateTimeFormat(t.dateLocale, {
+    dateStyle: 'long',
+    timeZone: 'Europe/Berlin',
+  })
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(restaurantJsonLd(info, locale))} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(restaurantJsonLd(info, locale))}
+      />
       <section className="hero">
         <div className="hero__text">
           <h1>{info.tagline ?? info.name}</h1>
@@ -34,6 +45,22 @@ export default async function HomePage() {
             <Link className="btn btn--primary" href={href('menu', locale)}>
               {t.nav.menu}
             </Link>
+            {reserve &&
+              (reserve.external ? (
+                <a
+                  className="btn btn--outline"
+                  href={reserve.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t.reserve.cta}
+                  <span className="visually-hidden"> {t.externalLink}</span>
+                </a>
+              ) : (
+                <Link className="btn btn--outline" href={reserve.href}>
+                  {t.reserve.cta}
+                </Link>
+              ))}
             <a className="btn btn--outline" href={`tel:${info.phoneE164}`}>
               {t.call}
             </a>
@@ -47,8 +74,15 @@ export default async function HomePage() {
               key: s.id ?? String(i),
               content: (
                 <figure className="hero__figure">
-                  <MediaImage media={s.image} size="hero" sizes="(max-width: 48rem) 100vw, 50vw" priority={i === 0} />
-                  {(s.caption || s.image.caption) && <figcaption>{s.caption ?? s.image.caption}</figcaption>}
+                  <MediaImage
+                    media={s.image}
+                    size="hero"
+                    sizes="(max-width: 48rem) 100vw, 50vw"
+                    priority={i === 0}
+                  />
+                  {(s.caption || s.image.caption) && (
+                    <figcaption>{s.caption ?? s.image.caption}</figcaption>
+                  )}
                 </figure>
               ),
             }))}
@@ -92,7 +126,11 @@ export default async function HomePage() {
             {t.home.latestPost}
           </h2>
           <article className="post-card">
-            {latest.publishedAt && <time dateTime={latest.publishedAt}>{dateFormat.format(new Date(latest.publishedAt))}</time>}
+            {latest.publishedAt && (
+              <time dateTime={latest.publishedAt}>
+                {dateFormat.format(new Date(latest.publishedAt))}
+              </time>
+            )}
             <h3>
               <Link href={href('news', locale, latest.slug ?? '')}>{latest.title}</Link>
             </h3>

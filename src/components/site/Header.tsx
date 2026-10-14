@@ -8,11 +8,24 @@ import { LanguageSwitch } from './LanguageSwitch'
 import { MobileNav } from './MobileNav'
 import { NavLinks } from './NavLinks'
 
-export function Header({ info, locale, t }: { info: RestaurantInfo; locale: Locale; t: Dictionary }) {
+export function Header({
+  info,
+  locale,
+  t,
+  reserve,
+}: {
+  info: RestaurantInfo
+  locale: Locale
+  t: Dictionary
+  reserve: { href: string; external: boolean } | null
+}) {
   const items = (['menu', 'restaurant', 'news'] as const).map((key) => ({
     href: href(key, locale),
     label: t.nav[key],
   }))
+  const navItems: { href: string; label: string; external?: boolean }[] = reserve
+    ? [...items, { href: reserve.href, label: t.reserve.nav, external: reserve.external }]
+    : items
 
   return (
     <header className="site-header">
@@ -25,14 +38,19 @@ export function Header({ info, locale, t }: { info: RestaurantInfo; locale: Loca
             </span>
           )}
         </Link>
-        <NavLinks items={items} label={t.navLabel} />
+        <NavLinks items={navItems} label={t.navLabel} externalLabel={t.externalLink} />
         <div className="site-header__actions">
           <LanguageSwitch locale={locale} label={t.languageLabel} />
           <a className="btn btn--primary site-header__call" href={`tel:${info.phoneE164}`}>
             <Icon name="phone" size={18} />
             <span>{info.phone}</span>
           </a>
-          <MobileNav items={items} openLabel={t.openMenu} closeLabel={t.closeMenu} />
+          <MobileNav
+            items={navItems}
+            openLabel={t.openMenu}
+            closeLabel={t.closeMenu}
+            externalLabel={t.externalLink}
+          />
         </div>
       </div>
     </header>

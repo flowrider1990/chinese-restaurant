@@ -10,7 +10,7 @@ import { dictionaries } from '@/i18n/dictionary'
 import { locales } from '@/i18n/locales'
 import { href } from '@/i18n/routes'
 import { isLocale } from '@/i18n/server'
-import { getRestaurantInfo } from '@/lib/queries'
+import { getReservationLink, getRestaurantInfo } from '@/lib/queries'
 import { siteUrl } from '@/lib/seo'
 import './site.css'
 import './pages.css'
@@ -22,7 +22,11 @@ const display = Bricolage_Grotesque({
   variable: '--font-display',
   display: 'swap',
 })
-const body = Instrument_Sans({ subsets: ['latin', 'latin-ext'], variable: '--font-body', display: 'swap' })
+const body = Instrument_Sans({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-body',
+  display: 'swap',
+})
 
 export function generateStaticParams() {
   return locales.map((l) => ({ locale: l.code }))
@@ -44,7 +48,7 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[lo
   const { locale } = await params
   if (!isLocale(locale)) notFound()
   const t = dictionaries[locale]
-  const info = await getRestaurantInfo(locale)
+  const [info, reserve] = await Promise.all([getRestaurantInfo(locale), getReservationLink(locale)])
 
   return (
     <html lang={locale} className={`${display.variable} ${body.variable}`}>
@@ -52,14 +56,24 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[lo
         <a className="skip-link" href="#main">
           {t.skipToContent}
         </a>
-        <Header info={info} locale={locale} t={t} />
+        <Header info={info} locale={locale} t={t} reserve={reserve} />
         <main id="main">{children as ReactNode}</main>
         <Footer info={info} locale={locale} t={t} />
         <MobileActionBar
           phoneE164={info.phoneE164}
           menuHref={href('menu', locale)}
-          labels={{ call: t.call, menu: t.nav.menu, order: t.order, close: t.close }}
-          orderPanel={info.orderLinks.length > 0 ? <OrderOptions links={info.orderLinks} t={t} /> : null}
+          reserveHref={reserve?.href ?? null}
+          reserveExternal={reserve?.external ?? false}
+          labels={{
+            call: t.call,
+            menu: t.nav.menu,
+            reserve: t.reserve.nav,
+            order: t.order,
+            close: t.close,
+          }}
+          orderPanel={
+            info.orderLinks.length > 0 ? <OrderOptions links={info.orderLinks} t={t} /> : null
+          }
         />
       </body>
     </html>
