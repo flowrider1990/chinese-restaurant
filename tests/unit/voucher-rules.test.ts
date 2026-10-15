@@ -72,10 +72,97 @@ describe('balanceCents', () => {
 describe('checkRedemptions', () => {
   const now = new Date('2027-01-10T12:00:00Z')
   const base = { amountCents: 5000, status: 'paid', validUntil: '2029-12-31T22:59:59.000Z', now }
-  const row = { id: 'a', amount: 2000, note: 'Tisch 4', redeemedAt: '2027-01-05T12:00:00.000Z' }
+  const row = {
+    id: 'a',
+    amount: 2000,
+    note: 'Tisch 4',
+    redeemedAt: '2027-01-05T12:00:00.000Z',
+    by: 1,
+    recordedAt: '2027-01-05T12:01:00.000Z',
+    recordedBy: 1,
+  }
+  /** A new row as the hook passes it: date and staff member filled in. */
+  const add = (over: Record<string, unknown> = {}) => ({
+    amount: 100,
+    redeemedAt: '2027-01-10T11:00:00.000Z',
+    by: 2,
+    ...over,
+  })
 
   it('allows appending within the balance', () => {
-    expect(checkRedemptions({ ...base, previous: [row], next: [row, { amount: 3000 }] })).toBeNull()
+    expect(
+      checkRedemptions({ ...base, previous: [row], next: [row, add({ amount: 3000 })] }),
+    ).toBeNull()
+  })
+  it('compares earlier rows by id, whether the user is populated or not', () => {
+    const populated = { ...row, by: { id: 1, email: 'a@example.com' }, recordedBy: { id: 1 } }
+    expect(checkRedemptions({ ...base, previous: [populated], next: [row] })).toBeNull()
+    expect(checkRedemptions({ ...base, previous: [row], next: [{ ...row, by: '1' }] })).toBeNull()
+  })
+  it('rejects changing the date, staff member or audit stamps of an earlier row', () => {
+    for (const change of [
+      { redeemedAt: '2027-01-04T12:00:00.000Z' },
+      { by: 2 },
+      { by: { id: 2 } },
+      { by: null },
+      { recordedAt: '2027-01-06T12:00:00.000Z' },
+      { recordedBy: 2 },
+    ])
+      expect(checkRedemptions({ ...base, previous: [row], next: [{ ...row, ...change }] })).toMatch(
+        /nicht geändert/,
+      )
+  })
+  it('allows a backdated redemption within the validity, entered later', () => {
+    expect(
+      checkRedemptions({
+        ...base,
+        validUntil: '2029-12-31T22:59:59.000Z',
+        paidAt: '2026-10-14T10:00:00.000Z',
+        now: new Date('2030-02-01T12:00:00Z'),
+        previous: [],
+        next: [add({ redeemedAt: '2029-12-30T19:00:00.000Z' })],
+      }),
+    ).toBeNull()
+  })
+  it('rejects a redemption date after the validity', () => {
+    expect(
+      checkRedemptions({
+        ...base,
+        now: new Date('2030-02-01T12:00:00Z'),
+        previous: [],
+        next: [add({ redeemedAt: '2030-01-05T19:00:00.000Z' })],
+      }),
+    ).toMatch(/abgelaufen/)
+  })
+  it('rejects a redemption date in the future, allowing five minutes of clock skew', () => {
+    const at = (ms: number) => new Date(now.getTime() + ms).toISOString()
+    expect(
+      checkRedemptions({ ...base, previous: [], next: [add({ redeemedAt: at(4 * 60_000) })] }),
+    ).toBeNull()
+    expect(
+      checkRedemptions({ ...base, previous: [], next: [add({ redeemedAt: at(6 * 60_000) })] }),
+    ).toMatch(/Zukunft/)
+  })
+  it('rejects a redemption date before the payment', () => {
+    expect(
+      checkRedemptions({
+        ...base,
+        paidAt: '2027-01-09T10:00:00.000Z',
+        previous: [],
+        next: [add({ redeemedAt: '2027-01-09T09:59:00.000Z' })],
+      }),
+    ).toMatch(/vor dem Kauf/)
+  })
+  it('requires a valid date and a staff member on new rows', () => {
+    expect(checkRedemptions({ ...base, previous: [], next: [add({ redeemedAt: null })] })).toMatch(
+      /Datum/,
+    )
+    expect(
+      checkRedemptions({ ...base, previous: [], next: [add({ redeemedAt: 'nope' })] }),
+    ).toMatch(/Datum/)
+    expect(checkRedemptions({ ...base, previous: [], next: [add({ by: null })] })).toMatch(
+      /wer den Gutschein/,
+    )
   })
   it('allows saving without changes', () => {
     expect(
@@ -83,9 +170,9 @@ describe('checkRedemptions', () => {
     ).toBeNull()
   })
   it('rejects more than the balance', () => {
-    expect(checkRedemptions({ ...base, previous: [row], next: [row, { amount: 3001 }] })).toMatch(
-      /Restbetrag/,
-    )
+    expect(
+      checkRedemptions({ ...base, previous: [row], next: [row, add({ amount: 3001 })] }),
+    ).toMatch(/Restbetrag/)
   })
   it('rejects zero, negative and non-integer cents', () => {
     expect(checkRedemptions({ ...base, previous: [], next: [{ amount: 0 }] })).toMatch(
@@ -116,7 +203,7 @@ describe('checkRedemptions', () => {
         ...base,
         now: new Date('2030-01-01T00:00:00Z'),
         previous: [],
-        next: [{ amount: 100 }],
+        next: [add({ redeemedAt: '2030-01-01T00:00:00.000Z' })],
       }),
     ).toMatch(/abgelaufen/)
   })

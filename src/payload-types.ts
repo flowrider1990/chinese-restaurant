@@ -366,7 +366,7 @@ export interface Reservation {
   createdAt: string;
 }
 /**
- * Einlösen: unter „Einlösungen" eine Zeile mit dem Betrag hinzufügen und speichern. Frühere Einlösungen bleiben unverändert.
+ * Einlösen: unter „Einlösungen" eine Zeile mit dem Betrag hinzufügen, Datum und Mitarbeiter bei Bedarf anpassen und speichern. Gespeicherte Einlösungen können nicht mehr geändert werden.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "vouchers".
@@ -382,6 +382,14 @@ export interface Voucher {
         note?: string | null;
         redeemedAt?: string | null;
         by?: (number | null) | User;
+        /**
+         * Wird beim Speichern automatisch gesetzt.
+         */
+        recordedAt?: string | null;
+        /**
+         * Wird beim Speichern automatisch gesetzt.
+         */
+        recordedBy?: (number | null) | User;
         id?: string | null;
       }[]
     | null;
@@ -700,6 +708,8 @@ export interface VouchersSelect<T extends boolean = true> {
         note?: T;
         redeemedAt?: T;
         by?: T;
+        recordedAt?: T;
+        recordedBy?: T;
         id?: T;
       };
   status?: T;

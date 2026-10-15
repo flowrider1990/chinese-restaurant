@@ -70,9 +70,30 @@ export type RedemptionRow = {
   /** Cents. */
   amount: number
   note?: string | null
+  /** When the guest redeemed it; chosen by staff (default: now). */
   redeemedAt?: string | null
+  /** Staff member who redeemed it; chosen by staff (default: the logged-in user). Id or user. */
   by?: unknown
+  /** Stamped by the server when the row is first saved; never editable. */
+  recordedAt?: string | null
+  /** User who saved the row, stamped by the server (null for server code); never editable. */
+  recordedBy?: unknown
 }
+
+/** Tolerated clock difference between the admin's browser and the server. */
+export const REDEMPTION_CLOCK_SKEW_MS = 5 * 60 * 1000
+
+/** Relationship values arrive as an id or as a populated document; this returns the id. */
+export function relationId(value: unknown): string | number | null {
+  if (value && typeof value === 'object') value = (value as { id?: unknown }).id
+  return typeof value === 'string' || typeof value === 'number' ? value : null
+}
+
+/** ISO string → epoch ms; empty → null; unparseable → NaN. */
+const time = (value?: string | null): number | null => (value ? new Date(value).getTime() : null)
+
+const sameId = (a: unknown, b: unknown) =>
+  String(relationId(a) ?? '') === String(relationId(b) ?? '')
 
 export function balanceCents(amountCents: number, rows: { amount: number }[]): number {
   return amountCents - rows.reduce((sum, r) => sum + r.amount, 0)
@@ -82,15 +103,23 @@ const sameRow = (a: RedemptionRow, b: RedemptionRow) =>
   a.id === b.id &&
   a.amount === b.amount &&
   (a.note ?? '') === (b.note ?? '') &&
-  (a.redeemedAt ?? null) === (b.redeemedAt ?? null)
+  time(a.redeemedAt) === time(b.redeemedAt) &&
+  sameId(a.by, b.by) &&
+  time(a.recordedAt) === time(b.recordedAt) &&
+  sameId(a.recordedBy, b.recordedBy)
 
-/** Redemptions are append-only and never exceed the voucher amount. Returns an admin error or null. */
+/**
+ * Redemptions are append-only and never exceed the voucher amount. A new row needs a staff
+ * member and a redemption date that is not in the future, not before the payment and not after
+ * the validity. Returns an admin error or null.
+ */
 export function checkRedemptions({
   previous,
   next,
   amountCents,
   status,
   validUntil: until,
+  paidAt,
   now,
 }: {
   previous: RedemptionRow[]
@@ -98,6 +127,7 @@ export function checkRedemptions({
   amountCents: number
   status: string
   validUntil?: string | null
+  paidAt?: string | null
   now: Date
 }): string | null {
   if (next.length < previous.length || previous.some((row, i) => !sameRow(row, next[i])))
@@ -106,9 +136,20 @@ export function checkRedemptions({
   if (added.length === 0) return null
   if (status !== 'paid')
     return 'Dieser Gutschein ist nicht einlösbar (nicht bezahlt oder storniert).'
-  if (until && now.getTime() > new Date(until).getTime()) return 'Dieser Gutschein ist abgelaufen.'
   if (added.some((r) => !Number.isInteger(r.amount) || r.amount <= 0))
     return 'Der eingelöste Betrag muss größer als 0 sein.'
+  const paid = time(paidAt)
+  for (const row of added) {
+    const at = time(row.redeemedAt)
+    if (at === null || Number.isNaN(at)) return 'Bitte das Datum der Einlösung angeben.'
+    if (at > now.getTime() + REDEMPTION_CLOCK_SKEW_MS)
+      return 'Das Datum der Einlösung darf nicht in der Zukunft liegen.'
+    if (paid !== null && at < paid)
+      return 'Das Datum der Einlösung liegt vor dem Kauf des Gutscheins.'
+    if (until && at > new Date(until).getTime())
+      return 'Dieser Gutschein war am Datum der Einlösung bereits abgelaufen.'
+    if (relationId(row.by) === null) return 'Bitte angeben, wer den Gutschein eingelöst hat.'
+  }
   if (balanceCents(amountCents, next) < 0) return 'Der Betrag ist höher als der Restbetrag.'
   return null
 }

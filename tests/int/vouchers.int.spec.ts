@@ -29,6 +29,8 @@ beforeAll(async () => {
 })
 
 let n = 0
+const idOf = (value: unknown) =>
+  typeof value === 'object' && value ? (value as { id: number }).id : value
 /** Unique session ids/e-mails: the test DB is shared by all tests in this file. */
 const voucherData = (over: Record<string, unknown> = {}) => ({
   status: 'pending' as const,
@@ -90,9 +92,12 @@ describe('vouchers collection', () => {
       data: { redemptions: [{ amount: 1290, note: 'Tisch 4' }] },
     })
     expect(once.balance).toBe(3710)
-    expect(once.redemptions?.[0].redeemedAt).toBeTruthy()
-    const by = once.redemptions?.[0].by
-    expect(typeof by === 'object' ? by?.id : by).toBe(user.id)
+    // Without a chosen date or staff member: now and the logged-in user; the audit stamps match.
+    const first = once.redemptions![0]
+    expect(Math.abs(Date.parse(first.redeemedAt!) - Date.now())).toBeLessThan(60_000)
+    expect(idOf(first.by)).toBe(user.id)
+    expect(Math.abs(Date.parse(first.recordedAt!) - Date.now())).toBeLessThan(60_000)
+    expect(idOf(first.recordedBy)).toBe(user.id)
 
     expect(
       await fieldErrors(
@@ -119,32 +124,98 @@ describe('vouchers collection', () => {
     ).toMatch(/nicht geändert/)
   })
 
-  it('keeps who made an earlier redemption when another staff member saves', async () => {
-    const first = await staffUser()
-    const second = await staffUser()
+  it('stores a chosen date and staff member, stamped with when and by whom it was entered', async () => {
+    const recorder = await staffUser()
+    const colleague = await staffUser()
     const v = await payload.create({
       collection: 'vouchers',
-      data: voucherData({ status: 'paid', validUntil: '2099-12-31T22:59:59.000Z' }),
+      data: voucherData({
+        status: 'paid',
+        paidAt: '2026-10-01T10:00:00.000Z',
+        validUntil: '2099-12-31T22:59:59.000Z',
+      }),
     })
-    const once = await payload.update({
+    const redeemedAt = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+    const saved = await payload.update({
       collection: 'vouchers',
       id: v.id,
-      user: first,
+      user: recorder,
       overrideAccess: false,
-      data: { redemptions: [{ amount: 1000 }] },
+      data: {
+        redemptions: [
+          {
+            amount: 1000,
+            redeemedAt,
+            by: colleague.id,
+            // Sent by a tampering client; the server stamps its own values.
+            recordedAt: '2020-01-01T00:00:00.000Z',
+            recordedBy: colleague.id,
+          },
+        ],
+      },
     })
-    const row = once.redemptions![0]
+    const row = saved.redemptions![0]
+    expect(row.redeemedAt).toBe(redeemedAt)
+    expect(idOf(row.by)).toBe(colleague.id)
+    expect(Math.abs(Date.parse(row.recordedAt!) - Date.now())).toBeLessThan(60_000)
+    expect(idOf(row.recordedBy)).toBe(recorder.id)
+
+    // Another staff member appends a row; the earlier one stays as it was.
     const twice = await payload.update({
       collection: 'vouchers',
       id: v.id,
-      user: second,
+      user: colleague,
       overrideAccess: false,
-      data: { redemptions: [{ ...row, by: second.id }, { amount: 500 }] },
+      data: { redemptions: [row, { amount: 500 }] },
     })
-    const idOf = (b: unknown) => (typeof b === 'object' && b ? (b as { id: number }).id : b)
-    expect(idOf(twice.redemptions![0].by)).toBe(first.id)
-    expect(idOf(twice.redemptions![1].by)).toBe(second.id)
+    expect(idOf(twice.redemptions![0].by)).toBe(colleague.id)
+    expect(idOf(twice.redemptions![0].recordedBy)).toBe(recorder.id)
+    expect(idOf(twice.redemptions![1].by)).toBe(colleague.id)
     expect(twice.balance).toBe(3500)
+
+    const change = (over: Record<string, unknown>) =>
+      fieldErrors(
+        payload.update({
+          collection: 'vouchers',
+          id: v.id,
+          user: recorder,
+          overrideAccess: false,
+          data: { redemptions: [{ ...twice.redemptions![0], ...over }, twice.redemptions![1]] },
+        }),
+      )
+    expect(await change({ redeemedAt: '2026-10-05T10:00:00.000Z' })).toMatch(/nicht geändert/)
+    expect(await change({ by: recorder.id })).toMatch(/nicht geändert/)
+    expect(await change({ recordedBy: colleague.id })).toMatch(/nicht geändert/)
+    const stored = await payload.findByID({ collection: 'vouchers', id: v.id })
+    expect(stored.redemptions?.[0].redeemedAt).toBe(redeemedAt)
+    expect(idOf(stored.redemptions?.[0].by)).toBe(colleague.id)
+  })
+
+  it('rejects new rows dated in the future, before payment, or for an unknown user', async () => {
+    const user = await staffUser()
+    const v = await payload.create({
+      collection: 'vouchers',
+      data: voucherData({
+        status: 'paid',
+        paidAt: '2026-10-01T10:00:00.000Z',
+        validUntil: '2099-12-31T22:59:59.000Z',
+      }),
+    })
+    const add = (row: Record<string, unknown>) =>
+      fieldErrors(
+        payload.update({
+          collection: 'vouchers',
+          id: v.id,
+          user,
+          overrideAccess: false,
+          data: { redemptions: [{ amount: 100, ...row }] },
+        }),
+      )
+    expect(await add({ redeemedAt: new Date(Date.now() + 60 * 60_000).toISOString() })).toMatch(
+      /Zukunft/,
+    )
+    expect(await add({ redeemedAt: '2026-09-30T10:00:00.000Z' })).toMatch(/vor dem Kauf/)
+    expect(await add({ by: 999_999 })).toMatch(/existiert nicht/)
   })
 
   it('lets staff cancel a paid voucher but not change other statuses', async () => {
