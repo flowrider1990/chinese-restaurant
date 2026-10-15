@@ -195,6 +195,7 @@ a:hover {
 .site-header,
 .hero__text,
 .site-footer {
+  --surface: color-mix(in srgb, #ffffff 15%, transparent); /* hovers and pills on green */
   --ink: #ffffff;
   --ink-soft: #e8f1ea;
   --accent: #ffffff;
@@ -205,6 +206,7 @@ a:hover {
   --open: #8fd6a8;
 }
 .mobile-nav__list {
+  --surface: #ffffff;
   --ink: #1d2621;
   --ink-soft: #55625a;
   --accent: #1f5c3f;
@@ -322,6 +324,7 @@ a:hover {
 
 /* Home hero (Phase 3 shell) */
 .hero {
+  --focus: #ffffff; /* the carousel keeps light tokens but sits on the green band */
   /* Full-bleed green band (::before) with a wavy lower edge (::after); html clips the overflow
      sideways, so the page never scrolls horizontally. */
   position: relative;
@@ -769,4 +772,9 @@ a.provider:hover {
   .retro--hero .retro__ring { top: 1rem; right: -0.75rem; }
   .retro--hero .retro__half { bottom: auto; top: 46%; right: -0.75rem; }
   .retro--footer .retro__squiggle { top: 0.75rem; right: 4%; }
+  .retro--footer .retro__ring { display: none; } /* would cross the stacked footer columns */
+}
+@media (min-width: 48.01rem) and (max-width: 68rem) {
+  /* Two columns but a narrow gutter: the zigzag would touch the headline. */
+  .retro--hero .retro__zigzag { display: none; }
 }
