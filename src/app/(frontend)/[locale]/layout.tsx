@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { Footer } from '@/components/site/Footer'
 import { Header } from '@/components/site/Header'
+import { LanguageAlternatesProvider } from '@/components/site/LanguageSwitch'
 import { MobileActionBar } from '@/components/site/MobileActionBar'
 import { OrderOptions } from '@/components/site/OrderOptions'
 import { dictionaries } from '@/i18n/dictionary'
@@ -63,28 +64,30 @@ export default async function SiteLayout({ children, params }: LayoutProps<'/[lo
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>
-        <a className="skip-link" href="#main">
-          {t.skipToContent}
-        </a>
-        <Header info={info} locale={locale} t={t} reserve={reserve} />
-        <main id="main">{children as ReactNode}</main>
-        <Footer info={info} locale={locale} t={t} />
-        <MobileActionBar
-          phoneE164={info.phoneE164}
-          menuHref={href('menu', locale)}
-          reserveHref={reserve?.href ?? null}
-          reserveExternal={reserve?.external ?? false}
-          labels={{
-            call: t.call,
-            menu: t.nav.menu,
-            reserve: t.reserve.nav,
-            order: t.order,
-            close: t.close,
-          }}
-          orderPanel={
-            info.orderLinks.length > 0 ? <OrderOptions links={info.orderLinks} t={t} /> : null
-          }
-        />
+        <LanguageAlternatesProvider>
+          <a className="skip-link" href="#main">
+            {t.skipToContent}
+          </a>
+          <Header info={info} locale={locale} t={t} reserve={reserve} />
+          <main id="main">{children as ReactNode}</main>
+          <Footer info={info} locale={locale} t={t} />
+          <MobileActionBar
+            phoneE164={info.phoneE164}
+            menuHref={href('menu', locale)}
+            reserveHref={reserve?.href ?? null}
+            reserveExternal={reserve?.external ?? false}
+            labels={{
+              call: t.call,
+              menu: t.nav.menu,
+              reserve: t.reserve.nav,
+              order: t.order,
+              close: t.close,
+            }}
+            orderPanel={
+              info.orderLinks.length > 0 ? <OrderOptions links={info.orderLinks} t={t} /> : null
+            }
+          />
+        </LanguageAlternatesProvider>
       </body>
     </html>
   )

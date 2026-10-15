@@ -122,7 +122,8 @@
 /* Dishes: the plate badge is the site's signature element */
 .plate {
   --s: 2.5rem;
-  --plate-ink: color-mix(in srgb, var(--enamel) 55%, var(--porcelain));
+  /* 90% enamel: at least 4.5:1 (WCAG AA) on porcelain, surface and jade, in both themes. */
+  --plate-ink: color-mix(in srgb, var(--enamel) 90%, var(--porcelain));
   width: var(--s);
   height: var(--s);
   flex: none;
@@ -984,24 +985,4 @@
   .post-card {
     grid-template-columns: minmax(0, 1fr);
   }
-}
-
-/* Loading skeleton */
-.loading {
-  display: grid;
-  gap: 1rem;
-  padding-block: clamp(2rem, 6vw, 3.5rem);
-}
-.loading__bar {
-  height: 1.1rem;
-  width: min(36rem, 100%);
-  border-radius: 999px;
-  background: var(--jade);
-}
-.loading__bar--title {
-  height: 3rem;
-  width: min(22rem, 80%);
-}
-.loading__bar--short {
-  width: min(18rem, 60%);
 }

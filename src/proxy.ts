@@ -23,6 +23,12 @@ export function proxy(request: NextRequest) {
   if (otherLocales.includes(first)) {
     const locale = first as keyof (typeof routes)['home']
     const entry = Object.values(routes).find((r) => r[locale] === second)
+    // A German segment under another language ("/en/speisekarte"): redirect to that language's own.
+    const german = entry ? undefined : Object.values(routes).find((r) => r.de === second && second)
+    if (german) {
+      url.pathname = '/' + [first, german[locale], ...rest].filter(Boolean).join('/')
+      return NextResponse.redirect(url, 308)
+    }
     url.pathname = '/' + [first, entry ? entry.de : second, ...rest].filter(Boolean).join('/')
   } else {
     url.pathname = '/' + [defaultLocale, first, second, ...rest].filter(Boolean).join('/')

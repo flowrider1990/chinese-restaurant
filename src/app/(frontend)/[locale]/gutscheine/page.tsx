@@ -8,6 +8,12 @@ import { pageMetadata } from '@/lib/seo'
 import { voucherStatusForSession } from '@/lib/voucher-fulfilment'
 import { VoucherForm } from './VoucherForm'
 
+/** The Stripe session of the thank-you state (`?session_id=…`), or null for the order form. */
+function thankYouSession(searchParams: Record<string, string | string[] | undefined>) {
+  const id = searchParams.session_id
+  return typeof id === 'string' && id !== '' ? id : null
+}
+
 export async function generateMetadata({
   params,
   searchParams,
@@ -18,19 +24,20 @@ export async function generateMetadata({
     key: 'vouchers',
     locale,
     title: dictionaries[locale].vouchers.title,
+    description: dictionaries[locale].seo.description.vouchers,
   })
-  // The thank-you state is per order and must not be indexed.
-  return (await searchParams).session_id
-    ? { ...meta, robots: { index: false, follow: false } }
-    : meta
+  if (!thankYouSession(await searchParams)) return meta
+  // The thank-you state is per order: not indexed, and without canonical or language alternates.
+  const { alternates: _alternates, ...rest } = meta
+  return { ...rest, robots: { index: false, follow: false } }
 }
 
 export default async function VouchersPage({ searchParams }: PageProps<'/[locale]/gutscheine'>) {
   const { locale, t } = await getLocale()
-  const sessionId = (await searchParams).session_id
+  const sessionId = thankYouSession(await searchParams)
   const v = t.vouchers
 
-  if (typeof sessionId === 'string') {
+  if (sessionId) {
     const status = await voucherStatusForSession(await payloadClient(), sessionId)
     const [title, text] =
       status === 'paid'

@@ -1,5 +1,6 @@
 import type { Day } from '@/lib/opening-hours'
 import type { Locale } from './locales'
+import type { RouteKey } from './routes'
 
 /** Interface text that is not editable in the CMS. */
 const de = {
@@ -202,6 +203,29 @@ const de = {
       'Zu dieser Bestellung liegt keine bestätigte Zahlung vor. Bei Fragen erreichen Sie uns telefonisch oder per E-Mail.',
     back: 'Zurück zu den Gutscheinen',
   },
+  seo: {
+    /** Home page title after the restaurant name: "<name> – …". */
+    homeTitle: 'Chinesisches Restaurant in Berlin-Friedrichshain',
+    /** Meta description per page (search result snippet), about 120 to 155 characters. */
+    description: {
+      home: (name: string) =>
+        `${name} in Berlin-Friedrichshain: Dim Sum, Wok-Gerichte und Sichuan-Küche. Speisekarte, Öffnungszeiten und Tischreservierung auf einen Blick.`,
+      menu: (name: string) =>
+        `Die Speisekarte des ${name}: Dim Sum, Suppen, Wok- und Sichuan-Gerichte mit Preisen, vegetarischen und veganen Optionen und allen Allergenen.`,
+      restaurant: (name: string) =>
+        `So finden Sie das ${name} in Berlin-Friedrichshain: Adresse, Anfahrt mit Karte, Öffnungszeiten und Bilder aus dem Restaurant.`,
+      news: (name: string) =>
+        `Neuigkeiten aus dem ${name} in Berlin-Friedrichshain: neue Gerichte, Dim Sum am Wochenende und geänderte Öffnungszeiten.`,
+      reserve: (name: string) =>
+        `Reservieren Sie online einen Tisch im ${name} in Berlin-Friedrichshain. Wir bestätigen Ihre Anfrage per E-Mail, meist innerhalb weniger Stunden.`,
+      vouchers: (name: string) =>
+        `Gutscheine für das ${name} online kaufen: Wunschbetrag wählen, bezahlen und den Gutschein sofort per E-Mail erhalten, als Code und als PDF.`,
+      imprint: (name: string) =>
+        `Impressum des ${name}, chinesisches Restaurant in Berlin-Friedrichshain: Angaben zum Anbieter, Kontakt und verantwortliche Person.`,
+      privacy: (name: string) =>
+        `Datenschutzerklärung des ${name}: welche Daten wir bei Reservierungen, Gutscheinkäufen und Website-Besuchen verarbeiten und welche Rechte Sie haben.`,
+    } satisfies Record<RouteKey, (name: string) => string>,
+  },
   dateLocale: 'de-DE',
 }
 
@@ -392,6 +416,27 @@ const en: typeof de = {
     unknown:
       'We have no confirmed payment for this order. If you have questions, please contact us by phone or e-mail.',
     back: 'Back to gift vouchers',
+  },
+  seo: {
+    homeTitle: 'Chinese restaurant in Berlin-Friedrichshain',
+    description: {
+      home: (name) =>
+        `${name} in Berlin-Friedrichshain: dim sum, wok dishes and Sichuan cooking. Menu, opening hours and table booking at a glance.`,
+      menu: (name) =>
+        `The ${name} menu: dim sum, soups, wok and Sichuan dishes with prices, vegetarian and vegan options, and every allergen listed.`,
+      restaurant: (name) =>
+        `How to find ${name} in Berlin-Friedrichshain: address, directions with a map, opening hours and photos from the restaurant.`,
+      news: (name) =>
+        `News from ${name} in Berlin-Friedrichshain: new dishes on the menu, dim sum at the weekend and changes to our opening hours.`,
+      reserve: (name) =>
+        `Book a table at ${name} in Berlin-Friedrichshain online. We confirm your request by e-mail, usually within a few hours.`,
+      vouchers: (name) =>
+        `Buy a ${name} gift voucher online: choose your amount, pay and receive the voucher by e-mail straight away, as a code and a PDF.`,
+      imprint: (name) =>
+        `Legal notice of ${name}, Chinese restaurant in Berlin-Friedrichshain: provider details, contact information and responsible person.`,
+      privacy: (name) =>
+        `Privacy policy of ${name}: what data we process for table bookings, gift voucher purchases and website visits, and what rights you have.`,
+    },
   },
   dateLocale: 'en-GB',
 }
