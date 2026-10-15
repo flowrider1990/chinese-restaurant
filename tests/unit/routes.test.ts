@@ -52,6 +52,22 @@ describe('proxy', () => {
     expect(run('/en/vouchers').headers.get('x-middleware-rewrite')).toBe('http://localhost:3000/en/gutscheine')
   })
 
+  it('redirects German segments under /en to the English segment', () => {
+    const menu = run('/en/speisekarte')
+    expect(menu.status).toBe(308)
+    expect(menu.headers.get('location')).toBe('http://localhost:3000/en/menu')
+    const post = run('/en/aktuelles/dim-sum?x=1')
+    expect(post.status).toBe(308)
+    expect(post.headers.get('location')).toBe('http://localhost:3000/en/news/dim-sum?x=1')
+    expect(run('/en/gutscheine').headers.get('location')).toBe('http://localhost:3000/en/vouchers')
+  })
+
+  it('does not redirect segments that are the same in both languages', () => {
+    const res = run('/en/restaurant')
+    expect(res.status).toBe(200)
+    expect(res.headers.get('x-middleware-rewrite')).toBe('http://localhost:3000/en/restaurant')
+  })
+
   it('redirects /de URLs to the unprefixed version', () => {
     const res = run('/de/speisekarte')
     expect(res.status).toBe(308)
