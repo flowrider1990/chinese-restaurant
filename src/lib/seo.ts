@@ -157,9 +157,14 @@ export function restaurantJsonLd(
       addressLocality: info.address.city,
       addressCountry: info.address.country,
     },
-    // Exactly as stored in the CMS: the precision of the coordinates is set there, not here.
+    // Five decimals (about 1 m), as text: a number would drop trailing zeros (52.5097 → "52.50970").
+    // schema.org accepts Number or Text here. Padding only; the CMS value is not changed.
     ...(info.geo && {
-      geo: { '@type': 'GeoCoordinates', latitude: info.geo[1], longitude: info.geo[0] },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: info.geo[1].toFixed(5),
+        longitude: info.geo[0].toFixed(5),
+      },
     }),
     hasMenu: { '@type': 'Menu', '@id': menuId(locale), url: absolute(href('menu', locale)) },
     image,

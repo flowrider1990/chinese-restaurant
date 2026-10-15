@@ -45,13 +45,26 @@ describe('restaurantJsonLd', () => {
     expect(ld.acceptsReservations).toBe(`${siteUrl}/reservieren`)
     expect(ld.image).toBe(`${siteUrl}/og-image`)
     expect(ld.sameAs).toEqual(['https://instagram.example/xiaochu'])
-    expect(ld.geo).toEqual({ '@type': 'GeoCoordinates', latitude: 52.50973, longitude: 13.45671 })
+    expect(ld.geo).toEqual({
+      '@type': 'GeoCoordinates',
+      latitude: '52.50973',
+      longitude: '13.45671',
+    })
     expect(ld.hasMenu).toEqual({
       '@type': 'Menu',
       '@id': menuId('de'),
       url: `${siteUrl}/speisekarte`,
     })
     expect(menuId('en')).toBe(`${siteUrl}/en/menu#menu`)
+  })
+
+  it('pads coordinates to five decimals without changing them', () => {
+    const ld = restaurantJsonLd({ ...info, geo: [13.4567, 52.5097] }, 'de')
+    expect(ld.geo).toEqual({
+      '@type': 'GeoCoordinates',
+      latitude: '52.50970',
+      longitude: '13.45670',
+    })
   })
 
   it('states reservations only when they are possible', () => {
