@@ -122,7 +122,8 @@
 /* Dishes: the plate badge is the site's signature element */
 .plate {
   --s: 2.5rem;
-  --plate-ink: color-mix(in srgb, var(--enamel) 55%, var(--porcelain));
+  /* 90% enamel: at least 4.5:1 (WCAG AA) on porcelain, surface and jade, in both themes. */
+  --plate-ink: color-mix(in srgb, var(--enamel) 90%, var(--porcelain));
   width: var(--s);
   height: var(--s);
   flex: none;

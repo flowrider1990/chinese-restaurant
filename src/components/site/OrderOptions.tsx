@@ -23,14 +23,38 @@ const providers: Record<string, { name: string | null; light: Logo | null; dark:
   other: { name: null, light: null, dark: null },
 }
 
-/** Colour logo on light backgrounds, the provider's official white logo in dark mode. */
-function ProviderMark({ provider, label }: { provider: string; label: string }) {
+/**
+ * Colour logo on light backgrounds, the provider's official white logo in dark mode. Which of the
+ * two is visible is decided by CSS (the theme is not known on the server), so both images are
+ * decorative and the provider's name is given once as text. Inside a link, the link's own label
+ * names the provider (`named={false}`).
+ */
+function ProviderMark({
+  provider,
+  label,
+  named = true,
+}: {
+  provider: string
+  label: string
+  named?: boolean
+}) {
   const p = providers[provider] ?? providers.other
   if (!p.light || !p.dark) return <span className="provider__name">{p.name ?? label}</span>
   return (
     <>
-      <Image className={`provider__logo provider__logo--light provider__logo--${provider}`} {...p.light} alt={p.name ?? label} />
-      <Image className={`provider__logo provider__logo--dark provider__logo--${provider}-dark`} {...p.dark} alt={p.name ?? label} />
+      <Image
+        className={`provider__logo provider__logo--light provider__logo--${provider}`}
+        {...p.light}
+        alt=""
+        aria-hidden="true"
+      />
+      <Image
+        className={`provider__logo provider__logo--dark provider__logo--${provider}-dark`}
+        {...p.dark}
+        alt=""
+        aria-hidden="true"
+      />
+      {named && <span className="visually-hidden">{p.name ?? label}</span>}
     </>
   )
 }
@@ -50,7 +74,7 @@ export function OrderOptions({ links, t }: { links: RestaurantInfo['orderLinks']
           {live.map((l) => (
             <li key={l.provider + l.url}>
               <a className="provider" href={l.url!} target="_blank" rel="noopener noreferrer">
-                <ProviderMark provider={l.provider} label={l.label} />
+                <ProviderMark provider={l.provider} label={l.label} named={false} />
                 <Icon name="external" size={16} />
                 <span className="visually-hidden">
                   {l.label} {t.externalLink}
