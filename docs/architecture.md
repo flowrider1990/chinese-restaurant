@@ -196,6 +196,10 @@ Spec: `docs/superpowers/specs/2026-10-14-vouchers-design.md`.
 - Vercel project `chinese-restaurant` (team scope `fei-cdc2`), linked to the GitHub repository.
   `vercel.json` sets framework `nextjs`, functions region `dub1` (Dublin, next to the Turso
   database in `aws-eu-west-1`) and the build command `pnpm run vercel-build`.
+- **Shared demo, not indexed:** `SITE_NOINDEX=1` (Production env on Vercel, build time) sends
+  `X-Robots-Tag: noindex, nofollow` on every response (`next.config.ts`) and drops the sitemap
+  from robots.txt; crawling stays allowed so the header is seen. Remove the variable and redeploy
+  for a real launch; all SEO metadata, sitemap and JSON-LD are unchanged.
 - **Deployments:** only `main` deploys automatically (`git.deploymentEnabled`: `"**": false`,
   `"main": true`; a branch matching both rules deploys). Other branches get no preview
   deployments. The rule is read from the pushed commit's `vercel.json`, so branches created

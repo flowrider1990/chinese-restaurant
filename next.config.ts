@@ -6,7 +6,18 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
+/**
+ * SITE_NOINDEX=1 (set for the shared demo on Vercel): every response tells search engines not to
+ * index or follow it. The SEO setup (metadata, sitemap, JSON-LD) stays intact for a real launch.
+ */
+const noindex = process.env.SITE_NOINDEX === '1'
+
 const nextConfig: NextConfig = {
+  async headers() {
+    return noindex
+      ? [{ source: '/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] }]
+      : []
+  },
   images: {
     localPatterns: [
       {
