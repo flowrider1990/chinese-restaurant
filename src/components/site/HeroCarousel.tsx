@@ -16,7 +16,8 @@ export function HeroCarousel({
   slides,
   labels,
 }: {
-  slides: { key: string; content: ReactNode }[]
+  /** `copy` renders the loop's copy of a slide (e.g. without image priority); defaults to `content`. */
+  slides: { key: string; content: ReactNode; copy?: ReactNode }[]
   labels: {
     region: string
     prev: string
@@ -79,7 +80,7 @@ export function HeroCarousel({
 
   const copy = (s: (typeof slides)[number], where: string) => (
     <li key={`${s.key}-${where}`} aria-hidden="true" inert>
-      {s.content}
+      {s.copy ?? s.content}
     </li>
   )
 

@@ -1,13 +1,21 @@
 import type { Metadata } from 'next'
 import { LegalPage } from '@/components/site/LegalPage'
 import { dictionaries } from '@/i18n/dictionary'
-import { pageMetadata } from '@/lib/seo'
+import { isPlaceholder, pageMetadata } from '@/lib/seo'
 import { getLocale, isLocale } from '@/i18n/server'
 import { getLegal } from '@/lib/queries'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/impressum'>): Promise<Metadata> {
   const { locale } = await params
-  return isLocale(locale) ? pageMetadata({ key: 'imprint', locale, title: dictionaries[locale].nav.imprint }) : {}
+  if (!isLocale(locale)) return {}
+  const meta = await pageMetadata({
+    key: 'imprint',
+    locale,
+    title: dictionaries[locale].nav.imprint,
+    description: dictionaries[locale].seo.description.imprint,
+  })
+  // Placeholder text (the English version for now, see isPlaceholder): not indexed.
+  return isPlaceholder('imprint', locale) ? { ...meta, robots: { index: false, follow: true } } : meta
 }
 
 export default async function ImprintPage() {

@@ -9,7 +9,14 @@ import { getPosts } from '@/lib/queries'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/aktuelles'>): Promise<Metadata> {
   const { locale } = await params
-  return isLocale(locale) ? pageMetadata({ key: 'news', locale, title: dictionaries[locale].news.title }) : {}
+  return isLocale(locale)
+    ? pageMetadata({
+        key: 'news',
+        locale,
+        title: dictionaries[locale].news.title,
+        description: dictionaries[locale].seo.description.news,
+      })
+    : {}
 }
 
 export default async function NewsPage({ searchParams }: PageProps<'/[locale]/aktuelles'>) {

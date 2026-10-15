@@ -90,13 +90,29 @@ the Local API, then prints the target and versions.
   on the next visit. The path must be the route file path including the route group; the public
   URL does not work because of the proxy rewrite. Verified 2026-10-14 against a production build:
   a price edit through the API appeared on `/speisekarte` and `/en/menu` on the next visit.
+- Posts are prerendered too (`generateStaticParams` per language); posts published later render on
+  their first visit. A page rendered on request streams its metadata into `<body>` instead of
+  `<head>`, so public pages must stay static.
+- No `loading.tsx` under `[locale]` (removed 2026-10-15): a loading boundary sends the response
+  before the page has run, so `notFound()` could only answer with status 200 (soft 404) and the
+  page content ended up after the footer in the raw HTML. Unknown paths and posts now return 404.
 - `src/lib/seo.ts`: canonical URLs, hreflang (de, en, x-default), Open Graph/Twitter cards,
   `Restaurant` JSON-LD from the same `getRestaurantInfo()` object as the visible pages. The menu
-  page adds `Menu` JSON-LD, posts add `NewsArticle`.
+  page adds `Menu` JSON-LD (its `@id` is the restaurant's `hasMenu`), posts add `NewsArticle`
+  (author and publisher: the restaurant).
+- Titles and meta descriptions: per page from the dictionary (`seo` in `src/i18n/dictionary.ts`);
+  the site settings' SEO description is the fallback (posts without a short text). Pages whose
+  text is still a placeholder (English imprint and privacy) are `noindex` and left out of the
+  sitemap (`isPlaceholder` in `src/lib/seo.ts`).
+- Images: only a page's LCP image gets `preload` (`MediaImage`), one per page. Other images that
+  must load at once use `eager`, which also sets `fetchPriority="low"`: React otherwise adds a
+  preload for every non-lazy image.
 - Default social image: `/og-image` and `/en/og-image` (route handler). A "Standard-Vorschaubild"
   in the site settings or a post's hero image replaces it.
-- `sitemap.xml` (all pages in both languages, published posts) and `robots.txt` (blocks `/admin`
-  and `/api`). Base URL from `NEXT_PUBLIC_SITE_URL`.
+- `sitemap.xml` (all pages in both languages, published posts, x-default German, lastModified from
+  the CMS content of each page) and `robots.txt` (blocks `/admin` and `/api`). Base URL from
+  `NEXT_PUBLIC_SITE_URL`.
+- The proxy redirects (308) German segments under `/en` (`/en/speisekarte` → `/en/menu`).
 - Deferred by decision (2026-10-14, no hosting chosen yet): the Vercel Blob storage adapter for
   images. Uploads are stored on the local disk until hosting is decided. Required before any
   serverless deployment, because serverless functions have no persistent disk.
@@ -121,8 +137,7 @@ Spec: `docs/superpowers/specs/2026-10-14-reservations-design.md`.
   `retentionDays` (default 30). Run daily via `GET /api/reservations/cleanup` with
   `Authorization: Bearer <CRON_SECRET>`, or `pnpm reservations:cleanup`. Scheduling waits for the
   hosting decision.
-- With mode off or external, `/reservieren` renders the not-found page (noindex); in development
-  the status is 200 because `[locale]/loading.tsx` streams the response first.
+- With mode off or external, `/reservieren` renders the not-found page (noindex, status 404).
 
 ## Vouchers (2026-10-14)
 

@@ -8,6 +8,7 @@ import { OrderOptions } from '@/components/site/OrderOptions'
 import { PostCard } from '@/components/site/PostCard'
 import { RichText } from '@/components/site/RichText'
 import { VisitInfo } from '@/components/site/VisitInfo'
+import { dictionaries } from '@/i18n/dictionary'
 import { href } from '@/i18n/routes'
 import { getLocale, isLocale } from '@/i18n/server'
 import { getHome, getPosts, getReservationLink, getRestaurantInfo } from '@/lib/queries'
@@ -15,7 +16,15 @@ import { jsonLdScript, pageMetadata, restaurantJsonLd } from '@/lib/seo'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]'>): Promise<Metadata> {
   const { locale } = await params
-  return isLocale(locale) ? pageMetadata({ key: 'home', locale }) : {}
+  if (!isLocale(locale)) return {}
+  const { seo } = dictionaries[locale]
+  const info = await getRestaurantInfo(locale)
+  return pageMetadata({
+    key: 'home',
+    locale,
+    absoluteTitle: `${info.name} – ${seo.homeTitle}`,
+    description: seo.description.home,
+  })
 }
 
 export default async function HomePage() {
@@ -32,7 +41,7 @@ export default async function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={jsonLdScript(restaurantJsonLd(info, locale))}
+        dangerouslySetInnerHTML={jsonLdScript(restaurantJsonLd(info, locale, reserve))}
       />
       <section className="hero">
         <div className="hero__text">
@@ -67,23 +76,30 @@ export default async function HomePage() {
         {home.slides.length > 0 ? (
           <HeroCarousel
             labels={{ region: info.name, ...t.carousel }}
-            slides={home.slides.map((s, i) => ({
-              key: s.id ?? String(i),
-              content: (
+            slides={home.slides.map((s, i) => {
+              const slide = (loading: 'lcp' | 'eager' | 'lazy') => (
                 <figure className="hero__figure">
                   <MediaImage
                     media={s.image}
                     size="hero"
                     sizes="(max-width: 48rem) 100vw, 50vw"
-                    priority={i === 0}
-                    eager
+                    preload={loading === 'lcp'}
+                    eager={loading === 'eager'}
                   />
                   {(s.caption || s.image.caption) && (
                     <figcaption>{s.caption ?? s.image.caption}</figcaption>
                   )}
                 </figure>
-              ),
-            }))}
+              )
+              const last = i === home.slides.length - 1
+              return {
+                key: s.id ?? String(i),
+                // Only the first slide is the LCP image; the others load right away, without priority.
+                content: slide(i === 0 ? 'lcp' : 'eager'),
+                // The loop's copies of the first and last slide: never preloaded, loaded lazily.
+                ...((i === 0 || last) && { copy: slide('lazy') }),
+              }
+            })}
           />
         ) : (
           <div className="hero__media" aria-hidden="true" />

@@ -4,7 +4,7 @@ import { Dish } from '@/components/site/Dish'
 import { MediaImage } from '@/components/site/MediaImage'
 import { MenuFilter } from '@/components/site/MenuFilter'
 import { dictionaries } from '@/i18n/dictionary'
-import { absolute, jsonLdScript, pageMetadata } from '@/lib/seo'
+import { absolute, jsonLdScript, menuId, pageMetadata } from '@/lib/seo'
 import { href } from '@/i18n/routes'
 import { getLocale, isLocale } from '@/i18n/server'
 import { getMenu } from '@/lib/queries'
@@ -14,7 +14,12 @@ export async function generateMetadata({
 }: PageProps<'/[locale]/speisekarte'>): Promise<Metadata> {
   const { locale } = await params
   return isLocale(locale)
-    ? pageMetadata({ key: 'menu', locale, title: dictionaries[locale].menu.title })
+    ? pageMetadata({
+        key: 'menu',
+        locale,
+        title: dictionaries[locale].menu.title,
+        description: dictionaries[locale].seo.description.menu,
+      })
     : {}
 }
 
@@ -26,6 +31,8 @@ export default async function MenuPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Menu',
+    // Referenced by the restaurant's hasMenu (restaurantJsonLd).
+    '@id': menuId(locale),
     url: absolute(href('menu', locale)),
     inLanguage: locale,
     hasMenuSection: sections.map((s) => ({
@@ -92,8 +99,9 @@ export default async function MenuPage() {
                   <figure className="menu-section__image">
                     <MediaImage
                       media={s.image}
-                      sizes="(max-width: 72rem) 100vw, 72rem"
-                      priority={index === 0}
+                      // Full width of the content column: the viewport minus the gutters, at most 68rem.
+                      sizes="(max-width: 72rem) calc(100vw - 2rem), 68rem"
+                      preload={index === 0}
                     />
                     {s.image.caption && <figcaption>{s.image.caption}</figcaption>}
                   </figure>

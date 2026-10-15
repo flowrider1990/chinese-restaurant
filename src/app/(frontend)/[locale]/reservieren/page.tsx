@@ -12,7 +12,12 @@ export async function generateMetadata({
 }: PageProps<'/[locale]/reservieren'>): Promise<Metadata> {
   const { locale } = await params
   return isLocale(locale)
-    ? pageMetadata({ key: 'reserve', locale, title: dictionaries[locale].reserve.title })
+    ? pageMetadata({
+        key: 'reserve',
+        locale,
+        title: dictionaries[locale].reserve.title,
+        description: dictionaries[locale].seo.description.reserve,
+      })
     : {}
 }
 
