@@ -83,9 +83,10 @@ p {
   margin: 0;
 }
 
-/* One link style everywhere: dark green, thin underline that gets stronger on hover. */
+/* One link style everywhere: dark green, semibold, thin underline that gets stronger on hover. */
 a {
   color: var(--accent);
+  font-weight: 600;
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
   text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
