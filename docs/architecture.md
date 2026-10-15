@@ -97,9 +97,7 @@ the Local API, then prints the target and versions.
   in the site settings or a post's hero image replaces it.
 - `sitemap.xml` (all pages in both languages, published posts) and `robots.txt` (blocks `/admin`
   and `/api`). Base URL from `NEXT_PUBLIC_SITE_URL`.
-- Deferred by decision (2026-10-14, no hosting chosen yet): the Vercel Blob storage adapter for
-  images. Uploads are stored on the local disk until hosting is decided. Required before any
-  serverless deployment, because serverless functions have no persistent disk.
+- Image storage on Vercel Blob in production: see "Hosting (Vercel)" below.
 
 ## Reservations (2026-10-14)
 
@@ -119,8 +117,8 @@ Spec: `docs/superpowers/specs/2026-10-14-reservations-design.md`.
   server log.
 - Retention: `anonymiseExpiredReservations()` removes name, e-mail, phone, note and message after
   `retentionDays` (default 30). Run daily via `GET /api/reservations/cleanup` with
-  `Authorization: Bearer <CRON_SECRET>`, or `pnpm reservations:cleanup`. Scheduling waits for the
-  hosting decision.
+  `Authorization: Bearer <CRON_SECRET>`, or `pnpm reservations:cleanup`. Scheduled daily by
+  Vercel Cron (see "Hosting (Vercel)").
 - With mode off or external, `/reservieren` renders the not-found page (noindex); in development
   the status is 200 because `[locale]/loading.tsx` streams the response first.
 
@@ -162,6 +160,52 @@ Spec: `docs/superpowers/specs/2026-10-14-vouchers-design.md`.
   pending voucher. Still open as manual checks: buyer mail with PDF arriving (needs a real recipient
   address), restaurant notice, partial redemption and staff delete in the admin (needs the first admin
   account; the dev DB has none yet).
+
+## Hosting (Vercel)
+
+- Vercel project `chinese-restaurant` (team scope `fei-cdc2`), linked to the GitHub repository.
+  `vercel.json` sets framework `nextjs`, functions region `dub1` (Dublin, next to the Turso
+  database in `aws-eu-west-1`) and the build command `pnpm run vercel-build`.
+- **Deployments:** only `main` deploys automatically (`git.deploymentEnabled`: `"**": false`,
+  `"main": true`; a branch matching both rules deploys). Other branches get no preview
+  deployments. The rule is read from the pushed commit's `vercel.json`, so branches created
+  before it existed still deploy if pushed.
+- **Database:** production uses its own Turso database `chinese-restaurant-demo` (a copy of the
+  dev DB). `vercel-build` runs `payload migrate` against it before `next build`, so schema changes
+  ship with the code. It is a no-op when every migration has run. `payload migrate` only prompts
+  when a dev-mode push left a `batch = -1` row; this project never pushes (`push: false`), and
+  without a TTY the prompt would end the command with exit 0, so check the build log for the
+  "Migrating:" lines after a schema change.
+- **Node and pnpm:** `engines.node` (`>=22.12.0 <23`) makes Vercel build and run on Node 22.x,
+  matching `.nvmrc`, whatever the project setting says. `packageManager` pins pnpm 11.
+- **Media on Vercel Blob** (`@payloadcms/storage-vercel-blob`, public store in `dub1`). The rule
+  (`src/lib/media-storage.ts`): Blob is used when `BLOB_READ_WRITE_TOKEN` is set **and** the
+  code runs on Vercel (`VERCEL`) or `MEDIA_ON_BLOB=1` is set. Local development keeps the
+  `media/` folder even with a token in `.env.local`, so local experiments never write into the
+  demo's store. Integration tests clear the token.
+  - `disablePayloadAccessControl`: media URLs are direct Blob URLs
+    (`https://<store>.public.blob.vercel-storage.com/<file>`), not `/api/media/file/…`, so
+    Open Graph and JSON-LD images are crawlable (`robots.txt` blocks `/api`). Media is public
+    anyway (`read: anyone`). `next.config.ts` allows the Blob host for `next/image`;
+    `absolute()` in `src/lib/seo.ts` leaves absolute URLs unchanged.
+  - `clientUploads`: the admin uploads files from the browser straight to Blob, because Vercel
+    functions accept at most 4.5 MB per request (the media limit is 15 MB).
+  - `alwaysInsertFields`: the `prefix` and `_objectKey` columns exist with and without Blob
+    (migration `20261015_084419_media_storage`), so local and production share one schema.
+  - Existing files: `pnpm media:to-blob [dir] [--dry-run]` uploads a local media folder (default
+    `media/`) to the store under the file name, which is the pathname the adapter expects for rows
+    without `prefix`/`_objectKey`. It skips files already in the store, needs
+    `BLOB_READ_WRITE_TOKEN` (shell, `.env.local` or `.env`) and prints counts only.
+- **Cron:** `vercel.json` calls `GET /api/reservations/cleanup` daily at 03:00 UTC (Hobby plans run
+  it at some point within that hour). Vercel sends `Authorization: Bearer <CRON_SECRET>` when the
+  `CRON_SECRET` env var is set. Crons run on the production deployment only.
+- **Environment variables (Production):** `DATABASE_URL`, `DATABASE_AUTH_TOKEN`, `PAYLOAD_SECRET`,
+  `CRON_SECRET`, `RESEND_API_KEY`, `EMAIL_FROM_ADDRESS`, `EMAIL_FROM_NAME`, `STRIPE_SECRET_KEY`,
+  `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_SITE_URL`, `BLOB_READ_WRITE_TOKEN` (set by the Blob store).
+  `NEXT_PUBLIC_SITE_URL` is inlined at build time: change it, then redeploy. Without it,
+  `siteUrl` falls back to `https://$VERCEL_PROJECT_PRODUCTION_URL`.
+- `public/map/*.svg` is traced into the restaurant page's function (`outputFileTracingIncludes`),
+  because `StaticMap` checks the files on disk when the page is re-rendered after a CMS change.
 
 ## Content model (Phase 2)
 

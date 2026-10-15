@@ -3,7 +3,7 @@
 Approved plan, copied into the repo on 2026-10-13. The original lived only in the Claude Code
 plans folder.
 
-## Status (2026-10-14)
+## Status (2026-10-15)
 
 | Phase | State |
 |---|---|
@@ -11,12 +11,14 @@ plans folder.
 | 2 Content model + admin | Done. Dev DB holds the fictional restaurant and a 135-item placeholder menu |
 | 3 Design system + shell | Done. Header, footer, mobile action bar, DE/EN routing, open-now status |
 | 4 Public pages | Done. Home, menu (filter, legend), restaurant (two-click map), news, imprint, privacy |
-| 5 Images, SEO, caching | Done except image storage (Blob adapter deferred until hosting is chosen) |
+| 5 Images, SEO, caching | Done. Images on Vercel Blob in production (`feature/hosting`) |
 | Vouchers (extra) | Done on `feature/vouchers`: Stripe test-mode gift vouchers, admin redemption. Verified live with the Stripe CLI: purchase, webhook 200, paid voucher with code and validity, thank-you page, cancel link. Open manual checks: buyer mail with PDF (needs a real recipient address), restaurant notice, partial redemption and staff delete in the admin (needs the first admin account) |
-| 6 Hardening + preview deploy | Next (needs a hosting decision) |
+| 6 Hardening + deploy | In progress on `feature/hosting`: Vercel project, Blob media, migrations in the build, daily cleanup cron, only `main` deploys (no preview deployments). See `docs/architecture.md` → Hosting (Vercel) |
 
 **Open items**
 - Create the first admin account at `/admin` (the dev DB has 0 users).
+- After merging `feature/hosting`: run `pnpm migrate` against the dev DB (new media columns), and
+  test a ≥10 MB JPEG upload in the production admin (client upload to Blob).
 - Real restaurant data (name, menu, photos, imprint) replaces the fictional data before launch. See `docs/legal-checklist.md`.
 
 **Decisions (2026-10-14)**
@@ -25,7 +27,7 @@ plans folder.
 - Design direction: modern but approachable, warm and friendly. No Chinese clichés. Approved: enamel white, ink blue, cobalt accent, light jade surface (instead of bamboo).
 - Restaurant: fictional "Xiao Chu", Simon-Dach-Straße 99, 10245 Berlin-Friedrichshain. Placeholder images.
 - Ordering: Lieferando and Wolt are shown, but not functional yet (no URL, no redirect).
-- No hosting yet.
+- Hosting (2026-10-15): Vercel (functions in `dub1`) + Turso (`aws-eu-west-1`) + Vercel Blob. Production DB `chinese-restaurant-demo` is a copy of the dev DB. Only `main` deploys; no preview deployments for now (deliberate deferral of the preview environment in §6).
 - Official Lieferando and Wolt logos from their press kits; Uber Eats as an option (logo pending). Payment methods at the restaurant (cash, girocard, credit card, PayPal) are a CMS field, shown as text until official acceptance marks are sourced.
 - **Open question:** online payment via Stripe was mentioned. The approved scope excludes payments, ordering and checkout. Needs an explicit scope decision before any work.
 
