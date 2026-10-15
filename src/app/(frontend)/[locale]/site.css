@@ -187,13 +187,37 @@ a:hover {
 }
 
 /* Header */
+/* Dark green surfaces (header, home hero, footer): the colour tokens are redefined inside, so
+   text, links, buttons and the focus ring turn light. Light pop-ups inside restore the defaults. */
+.site-header,
+.hero__text,
+.site-footer {
+  --ink: #ffffff;
+  --ink-soft: #e8f1ea;
+  --accent: #ffffff;
+  --accent-strong: #e8f1ea;
+  --accent-ink: #1f5c3f;
+  --line: color-mix(in srgb, #ffffff 25%, transparent);
+  --focus: #ffffff;
+  --open: #8fd6a8;
+}
+.mobile-nav__list {
+  --ink: #1d2621;
+  --ink-soft: #55625a;
+  --accent: #1f5c3f;
+  --line: #d9ddd8;
+  --focus: #c4442a;
+}
 .site-header {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: color-mix(in srgb, var(--porcelain) 92%, transparent);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--line);
+  background: #1f5c3f;
+  color: var(--ink);
+  border-bottom: 1px solid color-mix(in srgb, #000000 15%, #1f5c3f);
+}
+.site-header .icon-btn {
+  background: transparent;
 }
 .site-header__inner {
   max-width: var(--max);
@@ -295,6 +319,11 @@ a:hover {
 
 /* Home hero (Phase 3 shell) */
 .hero {
+  /* Full-bleed green band behind the hero, without widening the page (no horizontal scroll). */
+  background: #1f5c3f;
+  box-shadow: 0 0 0 100vmax #1f5c3f;
+  clip-path: inset(0 -100vmax);
+  color: var(--ink);
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: clamp(1.5rem, 4vw, 3rem);
@@ -308,6 +337,7 @@ a:hover {
   line-height: 1;
 }
 .hero__text {
+  color: var(--ink);
   display: grid;
   gap: 1.25rem;
   justify-items: start;
@@ -402,13 +432,7 @@ a.provider:hover {
 
 /* Footer */
 .site-footer {
-  /* Dark green surface: the colour tokens are redefined for everything inside, so text, links,
-     the wordmark, order options and the focus ring turn light here. */
-  --ink: #ffffff;
-  --ink-soft: #e8f1ea;
-  --accent: #ffffff;
-  --line: color-mix(in srgb, #ffffff 25%, transparent);
-  --focus: #ffffff;
+  /* Dark green surface: light colour tokens, see "Dark green surfaces" above. */
   margin-top: clamp(3rem, 8vw, 5rem);
   background: #1f5c3f; /* the accent, fixed here because --accent is light inside the footer */
   color: var(--ink);
