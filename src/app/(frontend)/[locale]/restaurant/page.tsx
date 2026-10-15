@@ -9,18 +9,29 @@ import { href } from '@/i18n/routes'
 import { jsonLdScript, pageMetadata, restaurantJsonLd } from '@/lib/seo'
 import { getLocale, isLocale } from '@/i18n/server'
 import type { Media } from '@/payload-types'
-import { getAbout, getRestaurantInfo } from '@/lib/queries'
+import { getAbout, getReservationLink, getRestaurantInfo } from '@/lib/queries'
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/restaurant'>): Promise<Metadata> {
   const { locale } = await params
-  return isLocale(locale) ? pageMetadata({ key: 'restaurant', locale, title: dictionaries[locale].restaurant.title }) : {}
+  return isLocale(locale)
+    ? pageMetadata({
+        key: 'restaurant',
+        locale,
+        title: dictionaries[locale].restaurant.title,
+        description: dictionaries[locale].seo.description.restaurant,
+      })
+    : {}
 }
 
 const isMedia = (m: unknown): m is Media => typeof m === 'object' && m !== null
 
 export default async function RestaurantPage() {
   const { locale, t } = await getLocale()
-  const [info, about] = await Promise.all([getRestaurantInfo(locale), getAbout(locale)])
+  const [info, about, reserve] = await Promise.all([
+    getRestaurantInfo(locale),
+    getAbout(locale),
+    getReservationLink(locale),
+  ])
   const gallery = (about.gallery ?? []).map((g) => g.image).filter(isMedia)
   const team = (about.team ?? []).filter((m) => m.name || isMedia(m.image))
   // Coordinates are the most precise map query; the address is the fallback.
@@ -38,7 +49,7 @@ export default async function RestaurantPage() {
 
   return (
     <div className="restaurant-page">
-      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(restaurantJsonLd(info, locale))} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(restaurantJsonLd(info, locale, reserve))} />
       <header className="page-head">
         <h1>
           {info.name}
@@ -54,7 +65,7 @@ export default async function RestaurantPage() {
 
       {isMedia(about.image) && (
         <figure className="restaurant-page__image">
-          <MediaImage media={about.image} sizes="(max-width: 72rem) 100vw, 72rem" priority />
+          <MediaImage media={about.image} sizes="(max-width: 72rem) calc(100vw - 2rem), 68rem" lcp />
           {about.image.caption && <figcaption>{about.image.caption}</figcaption>}
         </figure>
       )}

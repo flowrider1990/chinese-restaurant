@@ -8,15 +8,16 @@ export function MediaImage({
   media,
   size,
   sizes,
-  priority,
+  lcp,
   eager,
   className,
 }: {
   media: Media
   size?: Size
   sizes: string
-  priority?: boolean
-  /** Load immediately without preload priority (e.g. later carousel slides). */
+  /** The page's LCP image: loaded at once with high priority. At most one per page. */
+  lcp?: boolean
+  /** Load immediately, but without high priority or preload (e.g. later carousel slides). */
   eager?: boolean
   className?: string
 }) {
@@ -27,6 +28,14 @@ export function MediaImage({
   if (!src || !width || !height) return null
   const position =
     media.focalX != null && media.focalY != null ? `${media.focalX}% ${media.focalY}%` : undefined
+  // The documented API (image.md: "loading=eager or fetchPriority=high instead of preload"). React
+  // adds a <link rel="preload"> to <head> for every non-lazy image unless its priority is "low":
+  // so the LCP image gets exactly one (with fetchpriority=high), other eager images none.
+  const loading = lcp
+    ? ({ loading: 'eager', fetchPriority: 'high' } as const)
+    : eager
+      ? ({ loading: 'eager', fetchPriority: 'low' } as const)
+      : {}
 
   return (
     <Image
@@ -36,8 +45,7 @@ export function MediaImage({
       width={width}
       height={height}
       sizes={sizes}
-      priority={priority}
-      loading={priority ? undefined : eager ? 'eager' : undefined}
+      {...loading}
       style={position ? { objectPosition: position } : undefined}
     />
   )

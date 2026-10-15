@@ -12,6 +12,8 @@ function revalidateSite(req: PayloadRequest) {
   try {
     // Route file path including the route group; the public URLs are rewritten onto it.
     revalidatePath('/(frontend)/[locale]', 'layout')
+    // The sitemap is outside that layout and cached on its own (it lists posts and lastModified).
+    revalidatePath('/sitemap.xml')
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     // Outside a Next.js request (seed and other CLI scripts) there is no cache to refresh.
