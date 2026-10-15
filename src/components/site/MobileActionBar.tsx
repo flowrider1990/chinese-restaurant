@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useId, useState, type ReactNode } from 'react'
 import { Icon } from './Icon'
 
@@ -15,7 +16,7 @@ type Props = {
   orderPanel: ReactNode | null
 }
 
-/** Sticky bottom bar on small screens: call, menu, order. */
+/** Sticky bottom bar on small screens: call, menu, reserve, order. Marks the current page. */
 export function MobileActionBar({
   phoneE164,
   menuHref,
@@ -26,6 +27,16 @@ export function MobileActionBar({
 }: Props) {
   const [open, setOpen] = useState(false)
   const id = useId()
+  const pathname = usePathname()
+  // Close the order panel when the page changes (e.g. via the menu button in the header).
+  const [shownFor, setShownFor] = useState(pathname)
+  if (shownFor !== pathname) {
+    setShownFor(pathname)
+    setOpen(false)
+  }
+  // Same rule as the header navigation, so both always mark the same page.
+  const current = (href: string) =>
+    pathname === href || pathname.startsWith(href + '/') ? ('page' as const) : undefined
 
   useEffect(() => {
     if (!open) return
@@ -52,7 +63,7 @@ export function MobileActionBar({
           <Icon name="phone" />
           {labels.call}
         </a>
-        <Link href={menuHref} className="action-bar__main">
+        <Link href={menuHref} aria-current={current(menuHref)}>
           <Icon name="bowl" />
           {labels.menu}
         </Link>
@@ -63,7 +74,7 @@ export function MobileActionBar({
               {labels.reserve}
             </a>
           ) : (
-            <Link href={reserveHref}>
+            <Link href={reserveHref} aria-current={current(reserveHref)}>
               <Icon name="calendar" />
               {labels.reserve}
             </Link>

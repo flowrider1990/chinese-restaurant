@@ -635,7 +635,7 @@ a.provider:hover {
     text-decoration: none;
     cursor: pointer;
   }
-  .action-bar__buttons .action-bar__main {
+  .action-bar__buttons [aria-current='page'] {
     background: var(--enamel);
     color: var(--enamel-ink);
   }
