@@ -62,6 +62,14 @@ describe('proxy', () => {
     expect(run('/en/gutscheine').headers.get('location')).toBe('http://localhost:3000/en/vouchers')
   })
 
+  it('does not redirect the English home page to itself', () => {
+    const res = run('/en')
+    expect(res.status).toBe(200)
+    expect(res.headers.get('location')).toBeNull()
+    expect(res.headers.get('x-middleware-rewrite')).toBe('http://localhost:3000/en')
+    expect(run('/en/').headers.get('location')).toBeNull()
+  })
+
   it('does not redirect segments that are the same in both languages', () => {
     const res = run('/en/restaurant')
     expect(res.status).toBe(200)

@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { locales } from '@/i18n/locales'
 import { href, type RouteKey } from '@/i18n/routes'
 import { payloadClient } from '@/lib/queries'
-import { absolute, isPlaceholder } from '@/lib/seo'
+import { absolute, isPlaceholder, languageUrls } from '@/lib/seo'
 
 const pages: RouteKey[] = [
   'home',
@@ -28,13 +28,6 @@ const latest = (...dates: (string | null | undefined)[]) =>
  * content (reservation, vouchers) have none.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const languages = (key: RouteKey, rest?: Record<string, string>) => {
-    const urls = Object.fromEntries(
-      locales.map((l) => [l.code, absolute(href(key, l.code, rest?.[l.code] ?? ''))]),
-    )
-    return { ...urls, 'x-default': urls.de }
-  }
-
   const payload = await payloadClient()
   const newest = (collection: 'menu-items' | 'menu-categories') =>
     payload
@@ -76,7 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .map((l) => ({
         url: absolute(href(key, l.code)),
         ...(modified[key] && { lastModified: modified[key] }),
-        alternates: { languages: languages(key) },
+        alternates: { languages: languageUrls(key) },
       })),
   )
 
@@ -91,7 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       entries.push({
         url: absolute(href('news', l.code, slugs[l.code])),
         lastModified: doc.updatedAt,
-        alternates: { languages: languages('news', slugs) },
+        alternates: { languages: languageUrls('news', slugs) },
       })
     }
   }

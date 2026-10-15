@@ -102,16 +102,19 @@ the Local API, then prints the target and versions.
   (author and publisher: the restaurant).
 - Titles and meta descriptions: per page from the dictionary (`seo` in `src/i18n/dictionary.ts`);
   the site settings' SEO description is the fallback (posts without a short text). Pages whose
-  text is still a placeholder (English imprint and privacy) are `noindex` and left out of the
-  sitemap (`isPlaceholder` in `src/lib/seo.ts`).
-- Images: only a page's LCP image gets `preload` (`MediaImage`), one per page. Other images that
-  must load at once use `eager`, which also sets `fetchPriority="low"`: React otherwise adds a
-  preload for every non-lazy image.
+  text is still a placeholder (English imprint and privacy) are `noindex`, left out of the
+  sitemap and of every page's hreflang alternates (`isPlaceholder` in `src/lib/seo.ts`).
+- Images: only a page's LCP image gets `lcp` (`MediaImage`: `loading="eager"` plus
+  `fetchPriority="high"`, not the `preload` prop, as the next/image docs advise); React turns it
+  into the page's one image preload in `<head>`. Other images that must load at once use `eager`,
+  which also sets `fetchPriority="low"`: React otherwise adds a preload for every non-lazy image.
 - Default social image: `/og-image` and `/en/og-image` (route handler). A "Standard-Vorschaubild"
   in the site settings or a post's hero image replaces it.
 - `sitemap.xml` (all pages in both languages, published posts, x-default German, lastModified from
-  the CMS content of each page) and `robots.txt` (blocks `/admin` and `/api`). Base URL from
-  `NEXT_PUBLIC_SITE_URL`.
+  the CMS content of each page) and `robots.txt` (blocks `/admin` and `/api`, except
+  `/api/media/file/` so images in social cards and JSON-LD stay crawlable). Base URL from
+  `NEXT_PUBLIC_SITE_URL`. The sitemap is cached like a static page; `src/lib/revalidate.ts`
+  refreshes it together with the site on every CMS save.
 - The proxy redirects (308) German segments under `/en` (`/en/speisekarte` → `/en/menu`).
 - Deferred by decision (2026-10-14, no hosting chosen yet): the Vercel Blob storage adapter for
   images. Uploads are stored on the local disk until hosting is decided. Required before any

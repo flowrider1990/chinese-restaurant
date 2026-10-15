@@ -83,7 +83,7 @@ export default async function HomePage() {
                     media={s.image}
                     size="hero"
                     sizes="(max-width: 48rem) 100vw, 50vw"
-                    preload={loading === 'lcp'}
+                    lcp={loading === 'lcp'}
                     eager={loading === 'eager'}
                   />
                   {(s.caption || s.image.caption) && (
@@ -96,7 +96,7 @@ export default async function HomePage() {
                 key: s.id ?? String(i),
                 // Only the first slide is the LCP image; the others load right away, without priority.
                 content: slide(i === 0 ? 'lcp' : 'eager'),
-                // The loop's copies of the first and last slide: never preloaded, loaded lazily.
+                // The loop's copies of the first and last slide: no priority, loaded lazily.
                 ...((i === 0 || last) && { copy: slide('lazy') }),
               }
             })}

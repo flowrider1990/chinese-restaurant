@@ -100,7 +100,7 @@ export default async function PostPage({ params }: PageProps<'/[locale]/aktuelle
           media={hero}
           size="hero"
           sizes="(max-width: 72rem) calc(100vw - 2rem), 68rem"
-          preload
+          lcp
           className="post__image"
         />
       )}

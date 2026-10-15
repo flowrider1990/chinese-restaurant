@@ -65,7 +65,7 @@ export default async function RestaurantPage() {
 
       {isMedia(about.image) && (
         <figure className="restaurant-page__image">
-          <MediaImage media={about.image} sizes="(max-width: 72rem) calc(100vw - 2rem), 68rem" preload />
+          <MediaImage media={about.image} sizes="(max-width: 72rem) calc(100vw - 2rem), 68rem" lcp />
           {about.image.caption && <figcaption>{about.image.caption}</figcaption>}
         </figure>
       )}

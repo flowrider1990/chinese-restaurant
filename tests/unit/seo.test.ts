@@ -6,8 +6,16 @@ vi.mock('@/lib/queries', () => ({ getRestaurantInfo: vi.fn() }))
 import { dictionaries } from '@/i18n/dictionary'
 import { locales } from '@/i18n/locales'
 import { routes, type RouteKey } from '@/i18n/routes'
-import type { RestaurantInfo } from '@/lib/queries'
-import { isPlaceholder, menuId, newsArticleJsonLd, restaurantJsonLd, siteUrl } from '@/lib/seo'
+import { getRestaurantInfo, type RestaurantInfo } from '@/lib/queries'
+import {
+  alternates,
+  isPlaceholder,
+  menuId,
+  newsArticleJsonLd,
+  pageMetadata,
+  restaurantJsonLd,
+  siteUrl,
+} from '@/lib/seo'
 
 const info = {
   name: 'Xiao Chu',
@@ -122,5 +130,62 @@ describe('isPlaceholder', () => {
     expect(isPlaceholder('privacy', 'en')).toBe(true)
     expect(isPlaceholder('imprint', 'de')).toBe(false)
     expect(isPlaceholder('menu', 'en')).toBe(false)
+  })
+})
+
+describe('pageMetadata', () => {
+  vi.mocked(getRestaurantInfo).mockResolvedValue(info)
+
+  it('uses an absolute title without the name template', async () => {
+    const meta = await pageMetadata({
+      key: 'home',
+      locale: 'de',
+      absoluteTitle: 'Xiao Chu – Restaurant',
+    })
+    expect(meta.title).toEqual({ absolute: 'Xiao Chu – Restaurant' })
+    expect(meta.openGraph?.title).toBe('Xiao Chu – Restaurant')
+  })
+
+  it('appends the name to a page title', async () => {
+    const meta = await pageMetadata({ key: 'menu', locale: 'en', title: 'Menu' })
+    expect(meta.title).toBe('Menu')
+    expect(meta.openGraph?.title).toBe('Menu · Xiao Chu')
+  })
+
+  it('takes a description function of the restaurant name', async () => {
+    const meta = await pageMetadata({
+      key: 'menu',
+      locale: 'de',
+      description: (n) => `Karte von ${n}`,
+    })
+    expect(meta.description).toBe('Karte von Xiao Chu')
+  })
+
+  it('falls back to the CMS description for an empty or missing text', async () => {
+    for (const description of ['', null, undefined]) {
+      const meta = await pageMetadata({ key: 'news', locale: 'de', description })
+      expect(meta.description).toBe('SEO description')
+    }
+  })
+})
+
+describe('alternates', () => {
+  it('lists every language plus x-default (German)', () => {
+    expect(alternates('menu', 'en')).toEqual({
+      canonical: `${siteUrl}/en/menu`,
+      languages: {
+        de: `${siteUrl}/speisekarte`,
+        en: `${siteUrl}/en/menu`,
+        'x-default': `${siteUrl}/speisekarte`,
+      },
+    })
+  })
+
+  it('leaves out placeholder languages but keeps the own canonical', () => {
+    expect(alternates('imprint', 'de')).toEqual({
+      canonical: `${siteUrl}/impressum`,
+      languages: { de: `${siteUrl}/impressum`, 'x-default': `${siteUrl}/impressum` },
+    })
+    expect(alternates('imprint', 'en')?.canonical).toBe(`${siteUrl}/en/imprint`)
   })
 })

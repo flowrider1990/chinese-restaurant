@@ -32,19 +32,32 @@ export const restaurantId = `${siteUrl}/#restaurant`
 export const menuId = (locale: Locale) => `${absolute(href('menu', locale))}#menu`
 
 /**
- * Canonical URL plus hreflang alternates for a page. `rest` may differ per language (post slugs).
+ * hreflang URLs of a page in every language, plus x-default (German). Placeholder languages are
+ * left out, so no page points search engines at a noindex version. `rest` may differ per language
+ * (post slugs).
  */
+export function languageUrls(
+  key: RouteKey,
+  rest?: Partial<Record<Locale, string>>,
+): Partial<Record<Locale | 'x-default', string>> {
+  const url = (l: Locale) => absolute(href(key, l, rest?.[l] ?? ''))
+  return {
+    ...Object.fromEntries(
+      locales.filter((l) => !isPlaceholder(key, l.code)).map((l) => [l.code, url(l.code)]),
+    ),
+    'x-default': url('de'),
+  }
+}
+
+/** Canonical URL plus hreflang alternates for a page. */
 export function alternates(
   key: RouteKey,
   locale: Locale,
   rest?: Partial<Record<Locale, string>>,
 ): Metadata['alternates'] {
-  const languages = Object.fromEntries(
-    locales.map((l) => [l.code, absolute(href(key, l.code, rest?.[l.code] ?? ''))]),
-  ) as Record<Locale, string>
   return {
-    canonical: languages[locale],
-    languages: { ...languages, 'x-default': languages.de },
+    canonical: absolute(href(key, locale, rest?.[locale] ?? '')),
+    languages: languageUrls(key, rest),
   }
 }
 

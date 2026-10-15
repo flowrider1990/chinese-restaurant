@@ -101,7 +101,7 @@ export default async function MenuPage() {
                       media={s.image}
                       // Full width of the content column: the viewport minus the gutters, at most 68rem.
                       sizes="(max-width: 72rem) calc(100vw - 2rem), 68rem"
-                      preload={index === 0}
+                      lcp={index === 0}
                     />
                     {s.image.caption && <figcaption>{s.image.caption}</figcaption>}
                   </figure>
