@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
-    "vercel-build": "cross-env NODE_OPTIONS=--no-deprecation payload migrate && pnpm run build",
+    "vercel-build": "pnpm run migrate:deploy && pnpm run build",
+    "migrate:deploy": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/migrate-deploy.ts",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",

@@ -189,11 +189,11 @@ Spec: `docs/superpowers/specs/2026-10-14-vouchers-design.md`.
   deployments. The rule is read from the pushed commit's `vercel.json`, so branches created
   before it existed still deploy if pushed.
 - **Database:** production uses its own Turso database `chinese-restaurant-demo` (a copy of the
-  dev DB). `vercel-build` runs `payload migrate` against it before `next build`, so schema changes
-  ship with the code. It is a no-op when every migration has run. `payload migrate` only prompts
-  when a dev-mode push left a `batch = -1` row; this project never pushes (`push: false`), and
-  without a TTY the prompt would end the command with exit 0, so check the build log for the
-  "Migrating:" lines after a schema change.
+  dev DB). `vercel-build` runs `pnpm migrate:deploy` (scripts/migrate-deploy.ts, the same
+  migration list as the integration tests) before `next build`, so schema changes ship with the
+  code; it logs "Migrations up to date (n recorded, n known)" and fails the build on any error.
+  `payload migrate` is not used there: on the first Vercel build (2026-10-15) it exited 0 without
+  running or logging anything, and the build then failed on a missing column.
 - **Node and pnpm:** `engines.node` (`>=22.12.0 <23`) makes Vercel build and run on Node 22.x,
   matching `.nvmrc`, whatever the project setting says. `packageManager` pins pnpm 11.
 - **Media on Vercel Blob** (`@payloadcms/storage-vercel-blob`, public store in `dub1`). The rule
