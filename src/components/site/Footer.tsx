@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { RetroShapes } from './RetroShapes'
 import type { Dictionary } from '@/i18n/dictionary'
 import type { Locale } from '@/i18n/locales'
 import { href } from '@/i18n/routes'
@@ -13,6 +14,7 @@ export function Footer({ info, locale, t }: { info: RestaurantInfo; locale: Loca
   const { address } = info
   return (
     <footer className="site-footer">
+      <RetroShapes variant="footer" />
       <div className="site-footer__inner">
         <div className="site-footer__brand">
           <p className="wordmark">

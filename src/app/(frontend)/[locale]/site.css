@@ -37,6 +37,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Full-bleed decorations (hero wave) may reach past the edges; never scroll sideways. */
+  overflow-x: clip;
   /* Reserve the scrollbar's space on short pages too, so switching pages never shifts the layout sideways. */
   scrollbar-gutter: stable;
 }
@@ -319,10 +321,11 @@ a:hover {
 
 /* Home hero (Phase 3 shell) */
 .hero {
-  /* Full-bleed green band behind the hero, without widening the page (no horizontal scroll). */
-  background: #1f5c3f;
-  box-shadow: 0 0 0 100vmax #1f5c3f;
-  clip-path: inset(0 -100vmax);
+  /* Full-bleed green band (::before) with a wavy lower edge (::after); html clips the overflow
+     sideways, so the page never scrolls horizontally. */
+  position: relative;
+  isolation: isolate;
+  margin-bottom: calc(1.5rem + clamp(1.75rem, 5vw, 3.5rem)); /* wave + space before the info panel */
   color: var(--ink);
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
@@ -657,4 +660,112 @@ a.provider:hover {
     scroll-behavior: auto !important;
     transition: none !important;
   }
+}
+
+/* Retro shapes (80s/90s): small outlines and a dot grid on the dark green surfaces, plus a wavy
+   lower edge on the home hero. Decorative only; see RetroShapes.tsx. */
+.hero::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  top: 0;
+  bottom: 0;
+  background: #1f5c3f;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  bottom: -1.5rem;
+  height: calc(1.5rem + 2px); /* overlaps the band by 2px so no seam shows between them */
+  background: #1f5c3f;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 24'%3E%3Cpath d='M0 0H80V12C70 12 70 24 60 24S50 12 40 12 30 24 20 24 10 12 0 12Z'/%3E%3C/svg%3E")
+    repeat-x top left / 80px 100%;
+  pointer-events: none;
+}
+.hero > :not(.retro) {
+  position: relative;
+  z-index: 1;
+}
+.site-footer {
+  position: relative;
+  overflow: hidden;
+}
+.site-footer > :not(.retro) {
+  position: relative;
+  z-index: 1;
+}
+.retro {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.retro__shape {
+  position: absolute;
+  overflow: visible;
+}
+.retro__squiggle,
+.retro__zigzag,
+.retro__ring,
+.retro__triangle {
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.retro__squiggle {
+  stroke: #e9785f; /* chili, lifted for the dark green */
+  width: 4.5rem;
+}
+.retro__zigzag {
+  stroke: #f2c14e;
+  width: 3.5rem;
+}
+.retro__ring {
+  stroke: #a8d5b5;
+  width: 2.75rem;
+}
+.retro__triangle {
+  stroke: #ffffff;
+  width: 2.25rem;
+  opacity: 0.85;
+}
+.retro__dots {
+  fill: #ffffff;
+  opacity: 0.35;
+  width: 3rem;
+}
+.retro__half {
+  fill: #e9785f;
+  width: 2.5rem;
+}
+
+/* Hero: shapes sit in the gutter between text and image and around the image corners. */
+.retro--hero .retro__dots { top: 8%; left: 46%; }
+.retro--hero .retro__squiggle { bottom: 10%; left: 40%; transform: rotate(-8deg); }
+.retro--hero .retro__ring { top: 3%; right: -1.5rem; }
+.retro--hero .retro__triangle { bottom: 4%; right: 44%; transform: rotate(14deg); }
+.retro--hero .retro__zigzag { top: 44%; left: 47%; transform: rotate(80deg); }
+.retro--hero .retro__half { bottom: 6%; right: -1rem; transform: rotate(-20deg); }
+
+/* Footer: a few shapes at the edges, away from the text columns. */
+.retro--footer .retro__squiggle { top: 1.25rem; right: 6%; transform: rotate(6deg); }
+.retro--footer .retro__dots { bottom: 1rem; right: 2%; }
+.retro--footer .retro__ring { top: 45%; left: -1rem; }
+.retro--footer .retro__zigzag,
+.retro--footer .retro__triangle,
+.retro--footer .retro__half { display: none; }
+
+@media (max-width: 48rem) {
+  /* One column on phones: keep only shapes that cannot sit on top of text. */
+  .retro--hero .retro__dots,
+  .retro--hero .retro__squiggle,
+  .retro--hero .retro__zigzag,
+  .retro--hero .retro__triangle { display: none; }
+  .retro--hero .retro__ring { top: 1rem; right: -0.75rem; }
+  .retro--hero .retro__half { bottom: auto; top: 46%; right: -0.75rem; }
+  .retro--footer .retro__squiggle { top: 0.75rem; right: 4%; }
 }
