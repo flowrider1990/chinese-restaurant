@@ -204,7 +204,7 @@ Spec: `docs/superpowers/specs/2026-10-14-vouchers-design.md`.
 - **Database:** production uses its own Turso database `chinese-restaurant-demo` (a copy of the
   dev DB). `vercel-build` runs `pnpm migrate:deploy` (scripts/migrate-deploy.ts, the same
   migration list as the integration tests) before `next build`, so schema changes ship with the
-  code; it logs "Migrations up to date (n recorded, n known)" and fails the build on any error.
+  code; it logs "Migrations up to date (n applied)" and fails the build on any error, on a dev-push (batch -1) row and if any known migration is still missing afterwards.
   `payload migrate` is not used there: on the first Vercel build (2026-10-15) it exited 0 without
   running or logging anything, and the build then failed on a missing column.
 - **Node and pnpm:** `engines.node` (`>=22.12.0 <23`) makes Vercel build and run on Node 22.x,
