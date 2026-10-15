@@ -18,9 +18,9 @@ export type PdfRestaurant = {
   phone: string
 }
 
-const INK = rgb(0.118, 0.153, 0.251) // #1e2740
-const COBALT = rgb(0.169, 0.341, 0.627) // #2b57a0
-const SOFT = rgb(0.4, 0.43, 0.5)
+const INK = rgb(0.114, 0.149, 0.129) // #1d2621
+const ACCENT = rgb(0.122, 0.361, 0.247) // #1f5c3f
+const SOFT = rgb(0.333, 0.384, 0.353) // #55625a
 
 /** The built-in Helvetica only covers WinAnsi (Latin, €, umlauts); other characters become "?". */
 export function pdfSafe(text: string, supported: Set<number>): string {
@@ -58,8 +58,8 @@ export async function voucherPdf(v: PdfVoucher, r: PdfRestaurant): Promise<Uint8
   const margin = 40
   const width = 595 - margin * 2
 
-  page.drawRectangle({ x: 16, y: 16, width: 563, height: 388, borderColor: COBALT, borderWidth: 2 })
-  page.drawText(safe(r.name), { x: margin, y: 360, size: 22, font: bold, color: COBALT })
+  page.drawRectangle({ x: 16, y: 16, width: 563, height: 388, borderColor: ACCENT, borderWidth: 2 })
+  page.drawText(safe(r.name), { x: margin, y: 360, size: 22, font: bold, color: ACCENT })
   page.drawText(en ? 'Gift voucher' : 'Gutschein', {
     x: margin,
     y: 320,
@@ -94,7 +94,7 @@ export async function voucherPdf(v: PdfVoucher, r: PdfRestaurant): Promise<Uint8
   }
 
   page.drawText('Code', { x: margin, y: 104, size: 10, font: regular, color: SOFT })
-  page.drawText(v.code, { x: margin, y: 80, size: 24, font: bold, color: COBALT })
+  page.drawText(v.code, { x: margin, y: 80, size: 24, font: bold, color: ACCENT })
   const until = new Intl.DateTimeFormat(en ? 'en-GB' : 'de-DE', {
     day: 'numeric',
     month: 'long',

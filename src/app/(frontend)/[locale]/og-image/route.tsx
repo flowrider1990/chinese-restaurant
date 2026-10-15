@@ -24,7 +24,7 @@ export async function GET(_request: Request, { params }: RouteContext<'/[locale]
           justifyContent: 'space-between',
           padding: '72px 80px',
           background: '#f5f6f2',
-          color: '#1e2740',
+          color: '#1d2621',
         }}
       >
         <div
@@ -32,20 +32,20 @@ export async function GET(_request: Request, { params }: RouteContext<'/[locale]
             width: 112,
             height: 112,
             borderRadius: 56,
-            border: '8px solid #2b57a0',
+            border: '8px solid #1f5c3f',
             background: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <div style={{ width: 36, height: 36, borderRadius: 18, background: '#2b57a0' }} />
+          <div style={{ width: 36, height: 36, borderRadius: 18, background: '#1f5c3f' }} />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div style={{ fontSize: 104, fontWeight: 800, letterSpacing: -3 }}>{info.name}</div>
-          {info.tagline && <div style={{ fontSize: 40, color: '#55607a', maxWidth: 950 }}>{info.tagline}</div>}
+          {info.tagline && <div style={{ fontSize: 40, color: '#55625a', maxWidth: 950 }}>{info.tagline}</div>}
         </div>
-        <div style={{ display: 'flex', fontSize: 30, color: '#2b57a0' }}>
+        <div style={{ display: 'flex', fontSize: 30, color: '#1f5c3f' }}>
           {`${address.street} · ${address.postalCode} ${address.city}`}
         </div>
       </div>

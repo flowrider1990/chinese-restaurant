@@ -89,7 +89,7 @@ export function buildVoucherMail(
   }
 
   const text = lines.join('\n')
-  const html = `<div style="font-family:system-ui,sans-serif;line-height:1.5;color:#1e2740">${lines
+  const html = `<div style="font-family:system-ui,sans-serif;line-height:1.5;color:#1d2621">${lines
     .map((l) => (l === '' ? '<br>' : `<p style="margin:0">${esc(l)}</p>`))
     .join('')}</div>`
   return { subject, text, html }

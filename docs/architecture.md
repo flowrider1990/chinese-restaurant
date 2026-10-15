@@ -70,13 +70,12 @@ the Local API, then prints the target and versions.
   data (one Overpass query, ODbL, attribution under the map). Viewing it contacts no third party.
   Re-run the script when the coordinates in the site settings change. Map tiles from
   tile.openstreetmap.org are not used: their policy forbids offline use.
-- Design tokens are at the top of `src/app/(frontend)/[locale]/site.css`: enamel white, ink blue,
-  cobalt accent, light jade surface, chili only for spice markers. Fonts (Bricolage Grotesque,
+- Design tokens are at the top of `src/app/(frontend)/[locale]/site.css`: enamel white, near-black
+  ink, dark green accent (`--accent`, also the footer and the mobile bar), light jade surface, chili
+  only for spice markers and the focus ring. Fonts (Bricolage Grotesque,
   Instrument Sans, both OFL) are self-hosted through `next/font`; Chinese text uses system fonts.
-- Light/dark: follows the device by default; the header toggle stores `theme` in localStorage and
-  sets `data-theme` on `<html>` before the first paint (inline script in the layout). Every dark
-  colour rule therefore exists twice: under `prefers-color-scheme: dark` (guarded by
-  `:not([data-theme='light'])`) and under `[data-theme='dark']`. The map has a light and a dark SVG.
+- Light theme only (decided 2026-10-15): no dark mode, no theme toggle. `color-scheme: light` and
+  `<meta name="darkreader-lock">` keep browsers and the Dark Reader extension from recolouring it.
 - Menu filters (`MenuFilter`): one dietary choice plus any number of allergens to leave out; dishes
   carry `data-allergens` codes.
 - `pnpm demo:post` adds a second demo post with a title image and an inline image (needs

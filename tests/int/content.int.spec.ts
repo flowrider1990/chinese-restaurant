@@ -163,7 +163,7 @@ describe('globals', () => {
 
 describe('media', () => {
   it('can delete an image that a category and the restaurant page still use', async () => {
-    const png = await sharp({ create: { width: 8, height: 8, channels: 3, background: '#2b57a0' } }).png().toBuffer()
+    const png = await sharp({ create: { width: 8, height: 8, channels: 3, background: '#1f5c3f' } }).png().toBuffer()
     const media = await payload.create({
       collection: 'media',
       locale: 'de',
