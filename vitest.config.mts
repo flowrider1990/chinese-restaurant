@@ -18,8 +18,14 @@ export default defineConfig({
           include: ['tests/int/**/*.int.spec.ts'],
           globalSetup: ['./tests/int/global-setup.ts'],
           setupFiles: ['./vitest.setup.ts'],
-          // Overrides .env so tests never touch the dev or Turso database or send real e-mails.
-          env: { DATABASE_URL: 'file:./data/test.db', DATABASE_AUTH_TOKEN: '', RESEND_API_KEY: '' },
+          // Overrides .env so tests never touch the dev or Turso database, the Blob store or send
+          // real e-mails.
+          env: {
+            DATABASE_URL: 'file:./data/test.db',
+            DATABASE_AUTH_TOKEN: '',
+            RESEND_API_KEY: '',
+            BLOB_READ_WRITE_TOKEN: '',
+          },
           fileParallelism: false,
           testTimeout: 30_000,
           hookTimeout: 60_000,

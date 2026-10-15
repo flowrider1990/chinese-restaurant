@@ -1,5 +1,6 @@
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { resendAdapter } from '@payloadcms/email-resend'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { de } from '@payloadcms/translations/languages/de'
 import { en } from '@payloadcms/translations/languages/en'
@@ -22,6 +23,7 @@ import { About, Home, Legal } from './globals/Pages'
 import { SiteSettings } from './globals/SiteSettings'
 import { defaultLocale, locales } from './i18n/locales'
 import { mailConfigProblem } from './lib/mail-config'
+import { mediaOnBlob } from './lib/media-storage'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -81,5 +83,18 @@ export default buildConfig({
     const problem = mailConfigProblem(process.env)
     if (problem) payload.logger.error(problem)
   },
-  plugins: [],
+  plugins: [
+    vercelBlobStorage({
+      enabled: mediaOnBlob(process.env),
+      // Same schema (prefix, _objectKey) with and without Blob, so one migration fits everywhere.
+      alwaysInsertFields: true,
+      collections: {
+        // Media is public (read: anyone): serve direct Blob URLs instead of proxying via /api.
+        media: { disablePayloadAccessControl: true },
+      },
+      // Admin uploads go from the browser straight to Blob (Vercel functions accept 4.5 MB max).
+      clientUploads: true,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    }),
+  ],
 })
