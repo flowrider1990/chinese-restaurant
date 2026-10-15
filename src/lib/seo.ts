@@ -4,10 +4,20 @@ import { href, type RouteKey } from '@/i18n/routes'
 import { getRestaurantInfo, type RestaurantInfo } from './queries'
 import { DAYS } from './opening-hours'
 
-/** Public base URL (no trailing slash). Set NEXT_PUBLIC_SITE_URL per environment. */
-export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '')
+/**
+ * Public base URL (no trailing slash). Set NEXT_PUBLIC_SITE_URL per environment (inlined at build
+ * time). On Vercel without it, the project's production domain is used. Server-only.
+ */
+export const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : 'http://localhost:3000')
+).replace(/\/$/, '')
 
-export const absolute = (path: string) => (path === '/' ? siteUrl : `${siteUrl}${path}`)
+/** Site path → absolute URL. Already absolute URLs (media on Vercel Blob) pass through unchanged. */
+export const absolute = (path: string) =>
+  /^https?:\/\//.test(path) ? path : path === '/' ? siteUrl : `${siteUrl}${path}`
 
 const ogLocale: Record<Locale, string> = { de: 'de_DE', en: 'en_GB' }
 

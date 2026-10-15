@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
+    "vercel-build": "cross-env NODE_OPTIONS=--no-deprecation payload migrate && pnpm run build",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
@@ -23,15 +24,18 @@
     "map:generate": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/static-map.ts",
     "images:import": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/import-images.ts",
     "reservations:cleanup": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/reservations-cleanup.ts",
-    "demo:post": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/add-demo-post.ts"
+    "demo:post": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/add-demo-post.ts",
+    "media:to-blob": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/media-to-blob.ts"
   },
   "dependencies": {
     "@payloadcms/db-sqlite": "3.90.2",
     "@payloadcms/email-resend": "3.90.2",
     "@payloadcms/next": "3.90.2",
     "@payloadcms/richtext-lexical": "3.90.2",
+    "@payloadcms/storage-vercel-blob": "3.90.2",
     "@payloadcms/translations": "3.90.2",
     "@payloadcms/ui": "3.90.2",
+    "@vercel/blob": "2.3.1",
     "cross-env": "^7.0.3",
     "dotenv": "16.4.7",
     "graphql": "^16.8.1",

@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
       },
       { pathname: '/brands/**' },
     ],
+    // CMS media on Vercel Blob (see src/lib/media-storage.ts).
+    remotePatterns: [{ protocol: 'https', hostname: '*.public.blob.vercel-storage.com' }],
+  },
+  // StaticMap checks public/map/* on disk; serverless re-renders (revalidation) need the files traced.
+  outputFileTracingIncludes: {
+    '/\\[locale\\]/restaurant': ['./public/map/*.svg'],
   },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {

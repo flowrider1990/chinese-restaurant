@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "pnpm run vercel-build",
+  "regions": ["dub1"],
+  "git": {
+    "deploymentEnabled": {
+      "**": false,
+      "main": true
+    }
+  },
+  "crons": [{ "path": "/api/reservations/cleanup", "schedule": "0 3 * * *" }]
+}
