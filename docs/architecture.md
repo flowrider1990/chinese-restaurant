@@ -173,6 +173,19 @@ Spec: `docs/superpowers/specs/2026-10-14-vouchers-design.md`.
 - `src/lib/stripe.ts` deliberately has no `import 'server-only'`: the module is reachable from the Payload
   config (CLI scripts would break) and is only imported by server modules.
 - Deleting a staff user sets the "by" field of their redemptions to empty (`ON DELETE set null`).
+- Redemption date and staff member (user decision 2026-10-15): each row has "Eingelöst am"
+  (`redeemedAt`, date+time picker, default the moment the row is added) and "Eingelöst von" (`by`,
+  default the logged-in user), both choosable so colleagues can enter for each other or enter a
+  redemption later. The server stamps the read-only "Erfasst am"/"Erfasst von" (`recordedAt`,
+  `recordedBy`; null for server code) on new rows and ignores client values, so the history stays
+  tamper-evident. Rules for new rows (`checkRedemptions` + Vouchers `beforeChange`): date required
+  (server default now), not more than 5 minutes in the future, not before `paidAt`, not after
+  `validUntil` (the row's date counts, not the entry time); staff member required (default the
+  current user) and must exist. Saved rows are append-only: any change to amount, note, date, staff
+  member or the stamps is rejected ("Frühere Einlösungen können nicht geändert oder gelöscht
+  werden."). Earlier rows still look editable in the admin; the server rejects the save. Migration
+  `20261015_094059_redemption_audit` adds the columns (`recorded_by_id … ON DELETE set null`) and
+  backfills existing rows from `redeemed_at`/`by_id`.
 - Verified live on 2026-10-14 with the Stripe CLI in test mode: purchase, webhook `[200]`, voucher
   paid with code and validity 31 Dec 2029, thank-you page, cancel via the Stripe back link leaves a
   pending voucher. Still open as manual checks: buyer mail with PDF arriving (needs a real recipient

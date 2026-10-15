@@ -84,7 +84,7 @@ Copy uses the formal "Sie", like the rest of the site and the reservation mails.
 | `stripeSessionId` | text, unique | Links the webhook event to the voucher. |
 | `stripePaymentIntent` | text | For finding the payment in the Stripe dashboard. |
 | `paidAt`, `validUntil` | date | Set on payment. |
-| `redemptions` | array: `amount` (cents), `redeemedAt`, `note`, `by` (user) | Append-only. `redeemedAt` and `by` set by the server. |
+| `redemptions` | array: `amount` (cents), `note`, `redeemedAt`, `by` (user), `recordedAt`, `recordedBy` (user) | Append-only. `redeemedAt` (default now) and `by` (default the logged-in user) are chosen by staff; `recordedAt`/`recordedBy` are stamped by the server and read-only (changed 2026-10-15, user decision; before, the server set `redeemedAt` and `by`). |
 
 Access: no public read, create, update or delete. Create only through the server code
 (`overrideAccess: true` in `startVoucherCheckout`). Signed-in staff read, update (redemptions,
@@ -143,8 +143,15 @@ payable for 31 minutes; deleting earlier could lose a payment).
 
 - Amount: integer euros, 10–300; quick picks are just preset values of the same field.
 - Text fields trimmed; length limits enforced on the server.
-- Redemption: amount > 0, at most the current balance; only for `paid` vouchers not past
-  `validUntil`. Existing rows cannot be changed or removed (compared in `beforeChange`).
+- Redemption: amount > 0, at most the current balance; only for `paid` vouchers. Existing rows
+  cannot be changed or removed (compared in `beforeChange`, including date, staff member and the
+  audit stamps; relationships compared by id).
+- Redemption date and staff member (2026-10-15, user decision): a new row's `redeemedAt` is
+  required (server default now), at most 5 minutes in the future (clock skew), not before
+  `paidAt` and not after `validUntil`, so a redemption made within the validity may be entered
+  later. `by` is required (default the current user) and must be an existing user.
+  `recordedAt` = now and `recordedBy` = the signed-in user (null for server code) are always set by
+  the server for new rows.
 - `cancelled` vouchers cannot be redeemed; `cancelled` can only be set from `paid`.
 - A live Stripe key is refused at startup of the Stripe client.
 

@@ -3,7 +3,7 @@ import { authenticated } from '@/access'
 import { priceField } from '@/fields/price'
 import { getStripe } from '@/lib/stripe'
 import { handleStripeEvent } from '@/lib/voucher-webhook'
-import { balanceCents, checkRedemptions, type RedemptionRow } from '@/lib/voucher-rules'
+import { balanceCents, checkRedemptions, relationId, type RedemptionRow } from '@/lib/voucher-rules'
 
 const readOnlyForStaff = { update: () => false }
 
@@ -16,7 +16,7 @@ export const Vouchers: CollectionConfig = {
     defaultColumns: ['code', 'amount', 'balance', 'status', 'buyerName', 'paidAt'],
     listSearchableFields: ['code', 'buyerName', 'buyerEmail'],
     description:
-      'Einlösen: unter „Einlösungen" eine Zeile mit dem Betrag hinzufügen und speichern. Frühere Einlösungen bleiben unverändert.',
+      'Einlösen: unter „Einlösungen" eine Zeile mit dem Betrag hinzufügen, Datum und Mitarbeiter bei Bedarf anpassen und speichern. Gespeicherte Einlösungen können nicht mehr geändert werden.',
   },
   defaultSort: '-createdAt',
   access: {
@@ -70,7 +70,7 @@ export const Vouchers: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [
-      ({ data, originalDoc, operation, req }) => {
+      async ({ data, originalDoc, operation, req }) => {
         if (operation === 'create') {
           data.balance = data.amount
           return data
@@ -90,27 +90,56 @@ export const Vouchers: CollectionConfig = {
             })
         }
         const previous: RedemptionRow[] = prev.redemptions ?? []
+        const now = new Date()
+        const userId = req.user?.id ?? null
+        // Date and staff member of a new row are chosen in the admin (defaults: now, the
+        // logged-in user); when and by whom it was entered is always stamped here.
         const next: RedemptionRow[] = (data.redemptions ?? previous).map(
           (row: RedemptionRow, i: number) =>
             i < previous.length
-              ? // Earlier rows keep who and when from the stored record, whatever was submitted.
-                { ...row, redeemedAt: previous[i].redeemedAt, by: previous[i].by }
-              : { ...row, redeemedAt: new Date().toISOString(), by: req.user?.id ?? null },
+              ? row
+              : {
+                  ...row,
+                  redeemedAt: row.redeemedAt || now.toISOString(),
+                  by: relationId(row.by) ?? userId,
+                  recordedAt: now.toISOString(),
+                  recordedBy: userId,
+                },
         )
+        const reject = (message: string) =>
+          new ValidationError({
+            collection: 'vouchers',
+            errors: [{ path: 'redemptions', message }],
+          })
         const problem = checkRedemptions({
           previous,
           next,
           amountCents: prev.amount,
           status: data.status ?? prev.status,
           validUntil: prev.validUntil,
-          now: new Date(),
+          paidAt: prev.paidAt,
+          now,
         })
-        if (problem)
-          throw new ValidationError({
-            collection: 'vouchers',
-            errors: [{ path: 'redemptions', message: problem }],
+        if (problem) throw reject(problem)
+        for (const row of next.slice(previous.length)) {
+          const { totalDocs } = await req.payload.count({
+            collection: 'users',
+            where: { id: { equals: relationId(row.by) } },
+            req,
           })
-        data.redemptions = next
+          if (totalDocs === 0) throw reject('Der ausgewählte Mitarbeiter existiert nicht.')
+          row.redeemedAt = new Date(row.redeemedAt!).toISOString()
+        }
+        // Earlier rows are stored exactly as before (checked equal above), with plain ids.
+        data.redemptions = next.map((row, i) =>
+          i < previous.length
+            ? {
+                ...previous[i],
+                by: relationId(previous[i].by),
+                recordedBy: relationId(previous[i].recordedBy),
+              }
+            : row,
+        )
         data.balance = balanceCents(prev.amount, next)
         return data
       },
@@ -169,14 +198,50 @@ export const Vouchers: CollectionConfig = {
               name: 'redeemedAt',
               type: 'date',
               label: 'Eingelöst am',
-              admin: { readOnly: true, width: '50%', date: { pickerAppearance: 'dayAndTime' } },
+              // Evaluated when a row is added in the admin, so it is the moment of entry. Not
+              // `required` (that would rebuild the table in the migration); the hook requires it.
+              defaultValue: () => new Date().toISOString(),
+              admin: {
+                width: '50%',
+                date: { pickerAppearance: 'dayAndTime', displayFormat: 'dd.MM.yyyy HH:mm' },
+              },
             },
             {
+              // Not `required`: a deleted user leaves earlier rows without a staff member, and
+              // those rows must still save. The hook requires it for new rows.
               name: 'by',
               type: 'relationship',
               relationTo: 'users',
-              label: 'Von',
-              admin: { readOnly: true, width: '50%' },
+              label: 'Eingelöst von',
+              defaultValue: ({ user }) => user?.id,
+              admin: { width: '50%' },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'recordedAt',
+              type: 'date',
+              label: 'Erfasst am',
+              admin: {
+                readOnly: true,
+                width: '50%',
+                description: 'Wird beim Speichern automatisch gesetzt.',
+                date: { pickerAppearance: 'dayAndTime', displayFormat: 'dd.MM.yyyy HH:mm' },
+              },
+            },
+            {
+              name: 'recordedBy',
+              type: 'relationship',
+              relationTo: 'users',
+              label: 'Erfasst von',
+              admin: {
+                readOnly: true,
+                width: '50%',
+                description: 'Wird beim Speichern automatisch gesetzt.',
+              },
             },
           ],
         },

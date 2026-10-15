@@ -8,6 +8,7 @@ import * as migration_20261014_120130_about_image from './20261014_120130_about_
 import * as migration_20261014_130914_reservations from './20261014_130914_reservations';
 import * as migration_20261014_172131_vouchers from './20261014_172131_vouchers';
 import * as migration_20261015_084419_media_storage from './20261015_084419_media_storage';
+import * as migration_20261015_094059_redemption_audit from './20261015_094059_redemption_audit';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261015_084419_media_storage.up,
     down: migration_20261015_084419_media_storage.down,
-    name: '20261015_084419_media_storage'
+    name: '20261015_084419_media_storage',
+  },
+  {
+    up: migration_20261015_094059_redemption_audit.up,
+    down: migration_20261015_094059_redemption_audit.down,
+    name: '20261015_094059_redemption_audit'
   },
 ];
