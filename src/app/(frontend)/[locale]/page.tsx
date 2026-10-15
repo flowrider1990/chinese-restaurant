@@ -1,3 +1,4 @@
+import { RetroShapes } from '@/components/site/RetroShapes'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Dish } from '@/components/site/Dish'
@@ -44,6 +45,7 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={jsonLdScript(restaurantJsonLd(info, locale, reserve))}
       />
       <section className="hero">
+        <RetroShapes variant="hero" />
         <div className="hero__text">
           <h1>{info.tagline ?? info.name}</h1>
           <OpenStatus hours={info.hours} locale={locale} />

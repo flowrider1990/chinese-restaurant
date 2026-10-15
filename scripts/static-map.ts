@@ -1,5 +1,5 @@
 /**
- * Builds public/map/restaurant.svg and restaurant-dark.svg: our own drawing of the streets around the restaurant
+ * Builds public/map/restaurant.svg: our own drawing of the streets around the restaurant
  * (site settings → "Koordinaten"), rendered from OpenStreetMap data. Visitors load the map from
  * this site, so no third party is contacted when the page is viewed.
  *
@@ -133,34 +133,24 @@ for (const l of best.values()) {
 
 const px = WIDTH / 2
 const py = HEIGHT / 2
-/** Dark variant colours; the page shows the matching file for its theme (see StaticMap). */
-const DARK_RULES = `
-  .bg { fill: #1a2133 } .green { fill: #22382b } .water { fill: #1f3352 }
-  .casing { stroke: #10151f } .road { stroke: #2c3550 } .rail { stroke: #5b6580 }
-  .label { fill: #a9b1c4; stroke: #1a2133 }
-  .pin { fill: #8fb1ec; stroke: #10182a } .pin-dot { fill: #10182a }
-  .name { fill: #eef0ea; stroke: #1a2133 }
-`
-
-const render = (dark: boolean) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" width="${WIDTH}" height="${HEIGHT}" role="img">
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" width="${WIDTH}" height="${HEIGHT}" role="img">
 <title>${esc(name)}</title>
 <style>
   .bg { fill: #eef0ea }
   .green { fill: #d6e8da }
   .water { fill: #cfe0f2 }
-  .casing { fill: none; stroke: #d3d7de; stroke-linecap: round; stroke-linejoin: round }
+  .casing { fill: none; stroke: #d4d8d3; stroke-linecap: round; stroke-linejoin: round }
   .road { fill: none; stroke: #ffffff; stroke-linecap: round; stroke-linejoin: round }
   .major { stroke-width: 16 } .casing.major { stroke-width: 19 }
   .medium { stroke-width: 12 } .casing.medium { stroke-width: 15 }
   .minor { stroke-width: 9 } .casing.minor { stroke-width: 11.5 }
   .service { stroke-width: 4 } .casing.service { stroke-width: 5.5 }
-  .rail { fill: none; stroke: #9aa2b3; stroke-width: 2.5; stroke-dasharray: 8 5 }
-  .label { font: 500 13px "Segoe UI", system-ui, sans-serif; fill: #55607a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px }
+  .rail { fill: none; stroke: #9ba39c; stroke-width: 2.5; stroke-dasharray: 8 5 }
+  .label { font: 500 13px "Segoe UI", system-ui, sans-serif; fill: #55625a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px }
   .label.major { font-size: 15px; font-weight: 600 }
-  .pin { fill: #2b57a0; stroke: #ffffff; stroke-width: 3 }
+  .pin { fill: #1f5c3f; stroke: #ffffff; stroke-width: 3 }
   .pin-dot { fill: #ffffff }
-  .name { font: 800 20px "Segoe UI", system-ui, sans-serif; fill: #1e2740; paint-order: stroke; stroke: #ffffff; stroke-width: 5px; stroke-linejoin: round }
-${dark ? DARK_RULES : ''}
+  .name { font: 800 20px "Segoe UI", system-ui, sans-serif; fill: #1d2621; paint-order: stroke; stroke: #ffffff; stroke-width: 5px; stroke-linejoin: round }
 </style>
 <defs>${labelDefs.join('')}</defs>
 <rect class="bg" width="${WIDTH}" height="${HEIGHT}"/>
@@ -176,10 +166,8 @@ ${labelUses.join('\n')}
 `
 
 await mkdir('public/map', { recursive: true })
-const light = render(false)
-await writeFile('public/map/restaurant.svg', light)
-await writeFile('public/map/restaurant-dark.svg', render(true))
+await writeFile('public/map/restaurant.svg', svg)
 console.log(
-  `Wrote public/map/restaurant.svg and restaurant-dark.svg (${elements.length} OSM ways, ${labelUses.length} street labels, ${(light.length / 1024).toFixed(0)} KB) for ${lat}, ${lng}.`,
+  `Wrote public/map/restaurant.svg (${elements.length} OSM ways, ${labelUses.length} street labels, ${(svg.length / 1024).toFixed(0)} KB) for ${lat}, ${lng}.`,
 )
 process.exit(0)

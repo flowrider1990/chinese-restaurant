@@ -1,20 +1,21 @@
 /*
- * Design tokens (approved 2026-10-14): white enamel ground, ink-blue text, cobalt as the one accent,
- * a light jade surface for highlights, chili only for spice markers.
+ * Design tokens (approved 2026-10-14, recoloured 2026-10-15): light theme only. White enamel ground,
+ * near-black text with a slight green tint, dark green as the one accent (links, buttons, chips,
+ * footer, mobile bar), a light jade surface for highlights, chili only for spice markers and focus.
  */
 :root {
   --porcelain: #f5f6f2;
   --surface: #ffffff;
-  --ink: #1e2740;
-  --ink-soft: #55607a;
-  --enamel: #2b57a0;
-  --enamel-strong: #214783;
-  --enamel-ink: #ffffff;
+  --ink: #1d2621;
+  --ink-soft: #55625a;
+  --accent: #1f5c3f;
+  --accent-strong: #174a32;
+  --accent-ink: #ffffff;
   --jade: #e8f1ea;
-  --tag: #d2e6d7; /* dietary tags such as "vegetarisch": green in both themes */
+  --tag: #d2e6d7; /* dietary tags such as "vegetarisch" */
   --chili: #c4442a;
   --open: #2e7d4f;
-  --line: #d9dce3;
+  --line: #d9ddd8;
   --focus: #c4442a;
 
   --display: var(--font-display), 'Segoe UI', system-ui, sans-serif;
@@ -28,43 +29,6 @@
   color-scheme: light;
 }
 
-/* Dark theme: follows the device unless the visitor picked a theme with the header toggle
-   (data-theme on <html>, set before the first paint by the script in the layout). */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --porcelain: #141a29;
-    --surface: #1c2336;
-    --ink: #eef0ea;
-    --ink-soft: #a9b1c4;
-    --enamel: #8fb1ec;
-    --enamel-strong: #b0c8f3;
-    --enamel-ink: #10182a;
-    --jade: #1c2539;
-    --tag: #2e4c39;
-    --chili: #f07d62;
-    --open: #6fcf97;
-    --line: #2f3850;
-    --focus: #f07d62;
-    color-scheme: dark;
-  }
-}
-:root[data-theme='dark'] {
-  --porcelain: #141a29;
-  --surface: #1c2336;
-  --ink: #eef0ea;
-  --ink-soft: #a9b1c4;
-  --enamel: #8fb1ec;
-  --enamel-strong: #b0c8f3;
-  --enamel-ink: #10182a;
-  --jade: #1c2539;
-  --tag: #2e4c39;
-  --chili: #f07d62;
-  --open: #6fcf97;
-  --line: #2f3850;
-  --focus: #f07d62;
-  color-scheme: dark;
-}
-
 *,
 *::before,
 *::after {
@@ -73,6 +37,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Full-bleed decorations (hero wave) may reach past the edges; never scroll sideways. */
+  overflow-x: clip;
   /* Reserve the scrollbar's space on short pages too, so switching pages never shifts the layout sideways. */
   scrollbar-gutter: stable;
 }
@@ -117,16 +83,17 @@ p {
   margin: 0;
 }
 
-/* One link style everywhere: cobalt, thin underline that gets stronger on hover. */
+/* One link style everywhere: dark green, semibold, with a bold underline that thickens on hover. */
 a {
-  color: var(--enamel);
+  color: var(--accent);
+  font-weight: 600;
   text-decoration-line: underline;
-  text-decoration-thickness: 1px;
-  text-decoration-color: color-mix(in srgb, var(--enamel) 45%, transparent);
-  text-underline-offset: 0.2em;
+  text-decoration-thickness: 2px;
+  text-decoration-color: currentColor;
+  text-underline-offset: 0.22em;
 }
 a:hover {
-  text-decoration-color: currentColor;
+  text-decoration-thickness: 3px;
 }
 
 :focus-visible {
@@ -171,26 +138,26 @@ a:hover {
   min-height: 2.75rem;
   padding: 0.55rem 1.15rem;
   border-radius: 999px;
-  border: 2px solid var(--enamel);
+  border: 2px solid var(--accent);
   font: 600 0.95rem/1.2 var(--body);
   text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
 }
 .btn--primary {
-  background: var(--enamel);
-  color: var(--enamel-ink);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 .btn--primary:hover {
-  background: var(--enamel-strong);
-  border-color: var(--enamel-strong);
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
 }
 .btn--outline {
   background: transparent;
-  color: var(--enamel);
+  color: var(--accent);
 }
 .btn--outline:hover {
-  background: color-mix(in srgb, var(--enamel) 10%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .icon-btn {
@@ -223,13 +190,39 @@ a:hover {
 }
 
 /* Header */
+/* Dark green surfaces (header, home hero, footer): the colour tokens are redefined inside, so
+   text, links, buttons and the focus ring turn light. Light pop-ups inside restore the defaults. */
+.site-header,
+.hero__text,
+.site-footer {
+  --surface: color-mix(in srgb, #ffffff 15%, transparent); /* hovers and pills on green */
+  --ink: #ffffff;
+  --ink-soft: #e8f1ea;
+  --accent: #ffffff;
+  --accent-strong: #e8f1ea;
+  --accent-ink: #1f5c3f;
+  --line: color-mix(in srgb, #ffffff 25%, transparent);
+  --focus: #ffffff;
+  --open: #8fd6a8;
+}
+.mobile-nav__list {
+  --surface: #ffffff;
+  --ink: #1d2621;
+  --ink-soft: #55625a;
+  --accent: #1f5c3f;
+  --line: #d9ddd8;
+  --focus: #c4442a;
+}
 .site-header {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: color-mix(in srgb, var(--porcelain) 92%, transparent);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--line);
+  background: #1f5c3f;
+  color: var(--ink);
+  border-bottom: 1px solid color-mix(in srgb, #000000 15%, #1f5c3f);
+}
+.site-header .icon-btn {
+  background: transparent;
 }
 .site-header__inner {
   max-width: var(--max);
@@ -271,7 +264,7 @@ a:hover {
 }
 .site-nav a:hover,
 .site-nav a[aria-current='page'] {
-  border-bottom-color: var(--enamel);
+  border-bottom-color: var(--accent);
 }
 
 .lang-switch ul {
@@ -331,6 +324,13 @@ a:hover {
 
 /* Home hero (Phase 3 shell) */
 .hero {
+  --focus: #ffffff; /* the carousel keeps light tokens but sits on the green band */
+  /* Full-bleed green band (::before) with a wavy lower edge (::after); html clips the overflow
+     sideways, so the page never scrolls horizontally. */
+  position: relative;
+  isolation: isolate;
+  margin-bottom: calc(1.5rem + clamp(1.75rem, 5vw, 3.5rem)); /* wave + space before the info panel */
+  color: var(--ink);
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: clamp(1.5rem, 4vw, 3rem);
@@ -344,6 +344,7 @@ a:hover {
   line-height: 1;
 }
 .hero__text {
+  color: var(--ink);
   display: grid;
   gap: 1.25rem;
   justify-items: start;
@@ -420,26 +421,6 @@ a.provider:hover {
 .provider__logo--wolt {
   height: 1.6rem;
 }
-.provider__logo--wolt-dark {
-  height: 1.15rem;
-}
-.provider__logo--dark {
-  display: none;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .provider__logo--light {
-    display: none;
-  }
-  :root:not([data-theme='light']) .provider__logo--dark {
-    display: block;
-  }
-}
-:root[data-theme='dark'] .provider__logo--light {
-  display: none;
-}
-:root[data-theme='dark'] .provider__logo--dark {
-  display: block;
-}
 .provider__name {
   font-weight: 700;
 }
@@ -458,9 +439,10 @@ a.provider:hover {
 
 /* Footer */
 .site-footer {
+  /* Dark green surface: light colour tokens, see "Dark green surfaces" above. */
   margin-top: clamp(3rem, 8vw, 5rem);
-  background: var(--jade);
-  border-top: 1px solid var(--line);
+  background: #1f5c3f; /* the accent, fixed here because --accent is light inside the footer */
+  color: var(--ink);
 }
 .site-footer__inner {
   max-width: var(--max);
@@ -528,7 +510,7 @@ a.provider:hover {
   display: none;
 }
 
-/* Five menu items plus language, theme and phone do not fit on narrow desktops: the phone button
+/* Five menu items plus language and phone do not fit on narrow desktops: the phone button
    shrinks to its icon first, then the menu moves into the menu button. */
 @media (max-width: 75rem) {
   .site-header__call {
@@ -600,7 +582,9 @@ a.provider:hover {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.4rem;
-    background: var(--ink);
+    --focus: #ffffff; /* the chili ring is too faint on dark green */
+    /* A shade darker than the accent, so the bar stays one surface above the green footer. */
+    background: var(--accent-strong);
     border-radius: 999px;
     padding: 0.35rem;
     box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 25%, transparent);
@@ -630,17 +614,17 @@ a.provider:hover {
     border: 0;
     border-radius: 999px;
     background: transparent;
-    color: var(--porcelain);
+    color: var(--accent-ink);
     font: 600 0.95rem/1 var(--body);
     text-decoration: none;
     cursor: pointer;
   }
   .action-bar__buttons [aria-current='page'] {
-    background: var(--enamel);
-    color: var(--enamel-ink);
+    background: var(--surface);
+    color: var(--accent);
   }
   .action-bar__buttons [aria-expanded='true'] {
-    background: color-mix(in srgb, var(--porcelain) 18%, transparent);
+    background: color-mix(in srgb, #ffffff 18%, transparent);
   }
   .action-bar__panel {
     margin-bottom: 0.5rem;
@@ -660,7 +644,7 @@ a.provider:hover {
     background: none;
     border: 0;
     padding: 0.25rem 0;
-    color: var(--enamel);
+    color: var(--accent);
     font: 600 0.95rem/1.2 var(--body);
     text-decoration: underline;
     cursor: pointer;
@@ -680,4 +664,117 @@ a.provider:hover {
     scroll-behavior: auto !important;
     transition: none !important;
   }
+}
+
+/* Retro shapes (80s/90s): small outlines and a dot grid on the dark green surfaces, plus a wavy
+   lower edge on the home hero. Decorative only; see RetroShapes.tsx. */
+.hero::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  top: 0;
+  bottom: 0;
+  background: #1f5c3f;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  bottom: -1.5rem;
+  height: calc(1.5rem + 2px); /* overlaps the band by 2px so no seam shows between them */
+  background: #1f5c3f;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 24'%3E%3Cpath d='M0 0H80V12C70 12 70 24 60 24S50 12 40 12 30 24 20 24 10 12 0 12Z'/%3E%3C/svg%3E")
+    repeat-x top left / 80px 100%;
+  pointer-events: none;
+}
+.hero > :not(.retro) {
+  position: relative;
+  z-index: 1;
+}
+.site-footer {
+  position: relative;
+  overflow: hidden;
+}
+.site-footer > :not(.retro) {
+  position: relative;
+  z-index: 1;
+}
+.retro {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.retro__shape {
+  position: absolute;
+  overflow: visible;
+}
+.retro__squiggle,
+.retro__zigzag,
+.retro__ring,
+.retro__triangle {
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.retro__squiggle {
+  stroke: #e9785f; /* chili, lifted for the dark green */
+  width: 4.5rem;
+}
+.retro__zigzag {
+  stroke: #f2c14e;
+  width: 3.5rem;
+}
+.retro__ring {
+  stroke: #a8d5b5;
+  width: 2.75rem;
+}
+.retro__triangle {
+  stroke: #ffffff;
+  width: 2.25rem;
+  opacity: 0.85;
+}
+.retro__dots {
+  fill: #ffffff;
+  opacity: 0.35;
+  width: 3rem;
+}
+.retro__half {
+  fill: #e9785f;
+  width: 2.5rem;
+}
+
+/* Hero: shapes sit in the gutter between text and image and around the image corners. */
+.retro--hero .retro__dots { top: 8%; left: 46%; }
+.retro--hero .retro__squiggle { bottom: 10%; left: 40%; transform: rotate(-8deg); }
+.retro--hero .retro__ring { top: 3%; right: -1.5rem; }
+.retro--hero .retro__triangle { bottom: 4%; right: 44%; transform: rotate(14deg); }
+.retro--hero .retro__zigzag { top: 44%; left: 47%; transform: rotate(80deg); }
+.retro--hero .retro__half { bottom: 6%; right: -1rem; transform: rotate(-20deg); }
+
+/* Footer: a few shapes at the edges, away from the text columns. */
+.retro--footer .retro__squiggle { top: 1.25rem; right: 6%; transform: rotate(6deg); }
+.retro--footer .retro__dots { bottom: 1rem; right: 2%; }
+.retro--footer .retro__ring { top: 45%; left: -1rem; }
+.retro--footer .retro__zigzag,
+.retro--footer .retro__triangle,
+.retro--footer .retro__half { display: none; }
+
+@media (max-width: 48rem) {
+  /* One column on phones: keep only shapes that cannot sit on top of text. */
+  .retro--hero .retro__dots,
+  .retro--hero .retro__squiggle,
+  .retro--hero .retro__zigzag,
+  .retro--hero .retro__triangle { display: none; }
+  .retro--hero .retro__ring { top: 1rem; right: -0.75rem; }
+  .retro--hero .retro__half { bottom: auto; top: 46%; right: -0.75rem; }
+  .retro--footer .retro__squiggle { top: 0.75rem; right: 4%; }
+  .retro--footer .retro__ring { display: none; } /* would cross the stacked footer columns */
+}
+@media (min-width: 48.01rem) and (max-width: 68rem) {
+  /* Two columns but a narrow gutter: the zigzag would touch the headline. */
+  .retro--hero .retro__zigzag { display: none; }
 }

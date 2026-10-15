@@ -24,7 +24,7 @@ plans folder.
 **Decisions (2026-10-14)**
 - Reservations: online requests confirmed or declined by staff in the admin, e-mails via Resend, personal data deleted after 30 days (branch `feature/reservations`).
 - Vouchers: gift vouchers paid via Stripe Checkout (test mode only), delivered by e-mail with PDF, redeemed by staff in the admin (branch `feature/vouchers`).
-- Design direction: modern but approachable, warm and friendly. No Chinese clichés. Approved: enamel white, ink blue, cobalt accent, light jade surface (instead of bamboo).
+- Design direction: modern but approachable, warm and friendly. No Chinese clichés. Approved: enamel white, ink blue, cobalt accent, light jade surface (instead of bamboo). Changed 2026-10-15: light theme only (dark mode removed), dark green accent `#1f5c3f` instead of cobalt, dark green footer and mobile bar, near-black green-tinted text.
 - Restaurant: fictional "Xiao Chu", Simon-Dach-Straße 99, 10245 Berlin-Friedrichshain. Placeholder images.
 - Ordering: Lieferando and Wolt are shown, but not functional yet (no URL, no redirect).
 - Hosting (2026-10-15): Vercel (functions in `dub1`) + Turso (`aws-eu-west-1`) + Vercel Blob. Production DB `chinese-restaurant-demo` is a copy of the dev DB. Only `main` deploys; no preview deployments for now (deliberate deferral of the preview environment in §6).

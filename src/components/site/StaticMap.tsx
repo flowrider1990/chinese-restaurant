@@ -4,7 +4,6 @@ import path from 'path'
 import { Icon } from './Icon'
 
 const FILE = 'map/restaurant.svg'
-const DARK_FILE = 'map/restaurant-dark.svg'
 
 /**
  * Map drawn from OpenStreetMap data at build time (pnpm map:generate) and served from this site,
@@ -26,24 +25,14 @@ export function StaticMap({
   return (
     <figure className="map">
       {exists && (
-        <>
-          <Image
-            src={`/${FILE}`}
-            alt={alt}
-            width={1200}
-            height={600}
-            unoptimized
-            className="map__image map__image--light"
-          />
-          <Image
-            src={`/${DARK_FILE}`}
-            alt={alt}
-            width={1200}
-            height={600}
-            unoptimized
-            className="map__image map__image--dark"
-          />
-        </>
+        <Image
+          src={`/${FILE}`}
+          alt={alt}
+          width={1200}
+          height={600}
+          unoptimized
+          className="map__image"
+        />
       )}
       <figcaption className="map__caption">
         <span className="map__links">

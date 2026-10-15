@@ -8,26 +8,20 @@ import { Icon } from './Icon'
  * launch). Providers without a logo file fall back to their name as text.
  */
 type Logo = { src: string; width: number; height: number }
-const providers: Record<string, { name: string | null; light: Logo | null; dark: Logo | null }> = {
+const providers: Record<string, { name: string | null; logo: Logo | null }> = {
   lieferando: {
     name: 'Lieferando',
-    light: { src: '/brands/lieferando.png', width: 526, height: 120 },
-    dark: { src: '/brands/lieferando-white.png', width: 526, height: 120 },
+    logo: { src: '/brands/lieferando.png', width: 526, height: 120 },
   },
-  wolt: {
-    name: 'Wolt',
-    light: { src: '/brands/wolt.png', width: 162, height: 160 },
-    dark: { src: '/brands/wolt-white.png', width: 261, height: 96 },
-  },
-  ubereats: { name: 'Uber Eats', light: null, dark: null },
-  other: { name: null, light: null, dark: null },
+  wolt: { name: 'Wolt', logo: { src: '/brands/wolt.png', width: 162, height: 160 } },
+  ubereats: { name: 'Uber Eats', logo: null },
+  other: { name: null, logo: null },
 }
 
 /**
- * Colour logo on light backgrounds, the provider's official white logo in dark mode. Which of the
- * two is visible is decided by CSS (the theme is not known on the server), so both images are
- * decorative and the provider's name is given once as text. Inside a link, the link's own label
- * names the provider (`named={false}`).
+ * The provider's logo, its alt text naming the provider. Inside a link, the link's own label
+ * names the provider (`named={false}`), so the logo is decorative there and the name is announced
+ * once.
  */
 function ProviderMark({
   provider,
@@ -39,23 +33,13 @@ function ProviderMark({
   named?: boolean
 }) {
   const p = providers[provider] ?? providers.other
-  if (!p.light || !p.dark) return <span className="provider__name">{p.name ?? label}</span>
+  if (!p.logo) return <span className="provider__name">{p.name ?? label}</span>
   return (
-    <>
-      <Image
-        className={`provider__logo provider__logo--light provider__logo--${provider}`}
-        {...p.light}
-        alt=""
-        aria-hidden="true"
-      />
-      <Image
-        className={`provider__logo provider__logo--dark provider__logo--${provider}-dark`}
-        {...p.dark}
-        alt=""
-        aria-hidden="true"
-      />
-      {named && <span className="visually-hidden">{p.name ?? label}</span>}
-    </>
+    <Image
+      className={`provider__logo provider__logo--${provider}`}
+      {...p.logo}
+      alt={named ? (p.name ?? label) : ''}
+    />
   )
 }
 
